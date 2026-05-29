@@ -1,0 +1,3710 @@
+==================================================
+LOCAL FOLDER CONTEXT: Fluid-HTN
+Generated on: 2026-05-20 21:25:41
+==================================================
+
+
+
+// [FILE_START]: BaseDomainBuilder.cs
+// PATH: BaseDomainBuilder.cs
+// ------------------------------------------
+
+﻿using System;
+using System.Collections.Generic;
+using FluidHTN.Compounds;
+using FluidHTN.Conditions;
+using FluidHTN.Effects;
+using FluidHTN.Factory;
+using FluidHTN.Operators;
+using FluidHTN.PrimitiveTasks;
+
+namespace FluidHTN
+{
+    public abstract class BaseDomainBuilder<DB, T>
+        where DB : BaseDomainBuilder<DB, T>
+        where T : IContext
+    {
+        // ========================================================= FIELDS
+
+        protected readonly Domain<T> _domain;
+        protected List<ITask> _pointers;
+        protected readonly IFactory _factory;
+
+        // ========================================================= CONSTRUCTION
+
+        public BaseDomainBuilder(string domainName, IFactory factory)
+        {
+            _factory = factory;
+            _domain = new Domain<T>(domainName);
+            _pointers = _factory.CreateList<ITask>();
+            _pointers.Add(_domain.Root);
+        }
+
+        // ========================================================= PROPERTIES
+
+        public ITask Pointer
+        {
+            get
+            {
+                if (_pointers.Count == 0)
+                {
+                    return null;
+                }
+
+                return _pointers[_pointers.Count - 1];
+            }
+        }
+
+        // ========================================================= HIERARCHY HANDLING
+
+        /// <summary>
+        ///     Compound tasks are where HTN get their “hierarchical” nature. You can think of a compound task as 
+        ///     a high level task that has multiple ways of being accomplished. There are primarily two types of 
+        ///     compound tasks. Selectors and Sequencers. A Selector must be able to decompose a single sub-task, 
+        ///     while a Sequence must be able to decompose all its sub-tasks successfully for itself to have decomposed 
+        ///     successfully. There is nothing stopping you from extending this toolset with RandomSelect, UtilitySelect,
+        ///     etc. These tasks are decomposed until we're left with only Primitive Tasks, which represent a final plan. 
+        ///     Compound tasks are comprised of a set of subtasks and a set of conditions.
+        ///     http://www.gameaipro.com/GameAIPro/GameAIPro_Chapter12_Exploring_HTN_Planners_through_Example.pdf
+        /// </summary>
+        /// <typeparam name="P">The type of compound task</typeparam>
+        /// <param name="name">The name given to the task, mainly for debug/display purposes</param>
+        /// <returns></returns>
+        public DB CompoundTask<P>(string name) where P : ICompoundTask, new()
+        {
+            var parent = new P();
+            return CompoundTask(name, parent);
+        }
+
+        /// <summary>
+        ///     Compound tasks are where HTN get their “hierarchical” nature. You can think of a compound task as 
+        ///     a high level task that has multiple ways of being accomplished. There are primarily two types of 
+        ///     compound tasks. Selectors and Sequencers. A Selector must be able to decompose a single sub-task, 
+        ///     while a Sequence must be able to decompose all its sub-tasks successfully for itself to have decomposed 
+        ///     successfully. There is nothing stopping you from extending this toolset with RandomSelect, UtilitySelect,
+        ///     etc. These tasks are decomposed until we're left with only Primitive Tasks, which represent a final plan. 
+        ///     Compound tasks are comprised of a set of subtasks and a set of conditions.
+        ///     http://www.gameaipro.com/GameAIPro/GameAIPro_Chapter12_Exploring_HTN_Planners_through_Example.pdf
+        /// </summary>
+        /// <typeparam name="P">The type of compound task</typeparam>
+        /// <param name="name">The name given to the task, mainly for debug/display purposes</param>
+        /// <param task="task">The task instance</param>
+        /// <returns></returns>
+        public DB CompoundTask<P>(string name, P task) where P : ICompoundTask
+        {
+            if (task != null)
+            {
+                if (Pointer is ICompoundTask compoundTask)
+                {
+                    task.Name = name;
+                    _domain.Add(compoundTask, task);
+                    _pointers.Add(task);
+                }
+                else
+                {
+                    throw new Exception(
+                        "Pointer is not a compound task type. Did you forget an End() after a Primitive Task Action was defined?");
+                }
+            }
+            else
+            {
+                throw new ArgumentNullException(
+                    "task");
+            }
+
+            return (DB) this;
+        }
+
+        /// <summary>
+        ///     Primitive tasks represent a single step that can be performed by our AI. A set of primitive tasks is 
+        ///     the plan that we are ultimately getting out of the HTN. Primitive tasks are comprised of an operator, 
+        ///     a set of effects, a set of conditions and a set of executing conditions.
+        ///     http://www.gameaipro.com/GameAIPro/GameAIPro_Chapter12_Exploring_HTN_Planners_through_Example.pdf
+        /// </summary>
+        /// <typeparam name="P">The type of primitive task</typeparam>
+        /// <param name="name">The name given to the task, mainly for debug/display purposes</param>
+        /// <returns></returns>
+        public DB PrimitiveTask<P>(string name) where P : IPrimitiveTask, new()
+        {
+            if (Pointer is ICompoundTask compoundTask)
+            {
+                var parent = new P { Name = name };
+                _domain.Add(compoundTask, parent);
+                _pointers.Add(parent);
+            }
+            else
+            {
+                throw new Exception(
+                    "Pointer is not a compound task type. Did you forget an End() after a Primitive Task Action was defined?");
+            }
+
+            return (DB) this;
+        }
+
+        /// <summary>
+        ///     Partial planning is one of the most powerful features of HTN. In simplest terms, it allows
+        ///     the planner the ability to not fully decompose a complete plan. HTN is able to do this because
+        ///     it uses forward decomposition or forward search to find plans. That is, the planner starts with
+        ///     the current world state and plans forward in time from that. This allows the planner to only
+        ///     plan ahead a few steps.
+        ///     http://www.gameaipro.com/GameAIPro/GameAIPro_Chapter12_Exploring_HTN_Planners_through_Example.pdf
+        /// </summary>
+        /// <returns></returns>
+        protected DB PausePlanTask()
+        {
+            if (Pointer is IDecomposeAll compoundTask)
+            {
+                var parent = new PausePlanTask() { Name = "Pause Plan" };
+                _domain.Add(compoundTask, parent);
+            }
+            else
+            {
+                throw new Exception(
+                    "Pointer is not a decompose-all compound task type, like a Sequence. Maybe you tried to Pause Plan a Selector, or forget an End() after a Primitive Task Action was defined?");
+            }
+
+            return (DB) this;
+        }
+
+        // ========================================================= COMPOUND TASKS
+
+        /// <summary>
+        ///     A compound task that requires all sub-tasks to be valid.
+        ///     Sub-tasks can be sequences, selectors or actions.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public DB Sequence(string name)
+        {
+            return CompoundTask<Sequence>(name);
+        }
+
+        /// <summary>
+        ///     A compound task that requires a single sub-task to be valid.
+        ///     Sub-tasks can be sequences, selectors or actions.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public DB Select(string name)
+        {
+            return CompoundTask<Selector>(name);
+        }
+
+        // ========================================================= PRIMITIVE TASKS
+
+        /// <summary>
+        ///     A primitive task that can contain conditions, an operator and effects.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public DB Action(string name)
+        {
+            return PrimitiveTask<PrimitiveTask>(name);
+        }
+
+        // ========================================================= CONDITIONS
+
+        /// <summary>
+        ///     A precondition is a boolean statement required for the parent task to validate.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        public DB Condition(string name, Func<T, bool> condition)
+        {
+            var cond = new FuncCondition<T>(name, condition);
+            Pointer.AddCondition(cond);
+
+            return (DB) this;
+        }
+
+        /// <summary>
+        ///     An executing condition is a boolean statement validated before every call to the current
+        ///		primitive task's operator update tick. It's only supported inside primitive tasks / Actions.
+        ///		Note that this condition is never validated during planning, only during execution.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        public DB ExecutingCondition(string name, Func<T, bool> condition)
+        {
+            if (Pointer is IPrimitiveTask task)
+            {
+                var cond = new FuncCondition<T>(name, condition);
+                task.AddExecutingCondition(cond);
+            }
+            else
+            {
+                throw new Exception("Tried to add an Executing Condition, but the Pointer is not a Primitive Task!");
+            }
+
+            return (DB) this;
+        }
+
+        // ========================================================= OPERATORS
+
+        /// <summary>
+        ///     The operator of an Action / primitive task.
+        /// </summary>
+        public DB Do(Func<T, TaskStatus> action, Func<T, TaskStatus> start = null, Action<T> forceStopAction = null)
+        {
+            if (Pointer is IPrimitiveTask task)
+            {
+                var op = new FuncOperator<T>(func: action, start: start, funcStop: forceStopAction);
+                task.SetOperator(op);
+            }
+            else
+            {
+                throw new Exception("Tried to add an Operator, but the Pointer is not a Primitive Task!");
+            }
+
+            return (DB) this;
+        }
+
+        // ========================================================= EFFECTS
+
+        /// <summary>
+        ///     Effects can be added to an Action / primitive task.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="effectType"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public DB Effect(string name, EffectType effectType, Action<T, EffectType> action)
+        {
+            if (Pointer is IPrimitiveTask task)
+            {
+                var effect = new ActionEffect<T>(name, effectType, action);
+                task.AddEffect(effect);
+            }
+            else
+            {
+                throw new Exception("Tried to add an Effect, but the Pointer is not a Primitive Task!");
+            }
+
+            return (DB) this;
+        }
+
+        // ========================================================= OTHER OPERANDS
+
+        /// <summary>
+        ///     Every task encapsulation must end with a call to End(), otherwise subsequent calls will be applied wrong.
+        /// </summary>
+        /// <returns></returns>
+        public DB End()
+        {
+            _pointers.RemoveAt(_pointers.Count - 1);
+            return (DB) this;
+        }
+
+        /// <summary>
+        ///     We can splice multiple domains together, allowing us to define reusable sub-domains.
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <returns></returns>
+        public DB Splice(Domain<T> domain)
+        {
+            if (Pointer is ICompoundTask compoundTask)
+            {
+                _domain.Add(compoundTask, domain.Root);
+            }
+            else
+            {
+                throw new Exception(
+                    "Pointer is not a compound task type. Did you forget an End()?");
+            }
+
+            return (DB) this;
+        }
+
+        /// <summary>
+        ///     The identifier associated with a slot can be used to splice 
+        ///     sub-domains onto the domain, and remove them, at runtime.
+        ///     Use TrySetSlotDomain and ClearSlot on the domain instance at
+        ///     runtime to manage this feature. SlotId can typically be implemented
+        ///     as an enum.
+        /// </summary>
+        public DB Slot(int slotId)
+        {
+            if (Pointer is ICompoundTask compoundTask)
+            {
+                var slot = new Slot() { SlotId = slotId, Name = $"Slot {slotId}" };
+                _domain.Add(compoundTask, slot);
+            }
+            else
+            {
+                throw new Exception(
+                    "Pointer is not a compound task type. Did you forget an End()?");
+            }
+
+            return (DB) this;
+        }
+
+        /// <summary>
+        ///     We can add a Pause Plan when in a sequence in our domain definition,
+        ///     and this will give us partial planning.
+        ///     It means that we can tell our planner to only plan up to a certain point,
+        ///     then stop. If the partial plan completes execution successfully, the next
+        ///     time we try to find a plan, we will continue planning where we left off.
+        ///     Typical use cases is to split after we navigate toward a location, since
+        ///     this is often time consuming, it's hard to predict the world state when
+        ///     we have reached the destination, and thus there's little point wasting
+        ///     milliseconds on planning further into the future at that point. We might
+        ///     still want to plan what to do when reaching the destination, however, and
+        ///     this is where partial plans come into play.
+        /// </summary>
+        public DB PausePlan()
+        {
+            return PausePlanTask();
+        }
+
+        /// <summary>
+        ///     Build the designed domain and return a domain instance.
+        /// </summary>
+        /// <returns></returns>
+        public Domain<T> Build()
+        {
+            if (Pointer != _domain.Root)
+            {
+                throw new Exception($"The domain definition lacks one or more End() statements. Pointer is '{Pointer.Name}', but expected '{_domain.Root.Name}'.");
+            }
+
+            _factory.FreeList(ref _pointers);
+
+            return _domain;
+        }
+    }
+}
+
+
+// [FILE_END]: BaseDomainBuilder.cs
+// ==========================================
+
+
+// [FILE_START]: Domain.cs
+// PATH: Domain.cs
+// ------------------------------------------
+
+﻿using System;
+using System.Collections.Generic;
+using FluidHTN.Compounds;
+
+namespace FluidHTN
+{
+    public class Domain<T> : IDomain where T : IContext
+    {
+        // ========================================================= FIELDS
+
+        private Dictionary<int, Slot> _slots = null;
+
+        // ========================================================= CONSTRUCTION
+
+        public Domain(string name)
+        {
+            Root = new TaskRoot { Name = name, Parent = null };
+        }
+        // ========================================================= PROPERTIES
+
+        public TaskRoot Root { get; }
+
+        // ========================================================= HIERARCHY HANDLING
+
+        public void Add(ICompoundTask parent, ITask subtask)
+        {
+            if (parent == subtask)
+            {
+                throw new Exception("Parent-task and Sub-task can't be the same instance!");
+            }
+
+            parent.AddSubtask(subtask);
+            subtask.Parent = parent;
+        }
+
+        public void Add(ICompoundTask parent, Slot slot)
+        {
+            if (_slots != null)
+            {
+                if (_slots.ContainsKey(slot.SlotId))
+                {
+                    throw new Exception("This slot id already exist in the domain definition!");
+                }
+            }
+
+            parent.AddSubtask(slot);
+            slot.Parent = parent;
+
+            if(_slots == null)
+            {
+                _slots = new Dictionary<int, Slot>();
+            }
+
+            _slots.Add(slot.SlotId, slot);
+        }
+
+        // ========================================================= PLANNING
+
+        public DecompositionStatus FindPlan(T ctx, out Queue<ITask> plan)
+        {
+            if (ctx.IsInitialized == false)
+            {
+                throw new Exception("Context was not initialized!");
+            }
+
+            if (ctx.MethodTraversalRecord == null)
+            {
+                throw new Exception("We require the Method Traversal Record to have a valid instance.");
+            }
+
+            ctx.ContextState = ContextState.Planning;
+
+            plan = null;
+            var status = DecompositionStatus.Rejected;
+
+            // We first check whether we have a stored start task. This is true
+            // if we had a partial plan pause somewhere in our plan, and we now
+            // want to continue where we left off.
+            // If this is the case, we don't erase the MTR, but continue building it.
+            // However, if we have a partial plan, but LastMTR is not 0, that means
+            // that the partial plan is still running, but something triggered a replan.
+            // When this happens, we have to plan from the domain root (we're not
+            // continuing the current plan), so that we're open for other plans to replace
+            // the running partial plan.
+            if (ctx.HasPausedPartialPlan && ctx.LastMTR.Count == 0)
+            {
+                status = OnPausedPartialPlan(ctx, ref plan, status);
+            }
+            else
+            {
+                status = OnReplanDuringPartialPlanning(ctx, ref plan, status);
+            }
+
+            // If this MTR equals the last MTR, then we need to double-check whether we ended up
+            // just finding the exact same plan. During decomposition each compound task can't check
+            // for equality, only for less than, so this case needs to be treated after the fact.
+            if (HasFoundSamePlan(ctx))
+            {
+                plan = null;
+                status = DecompositionStatus.Rejected;
+            }
+
+            if (HasDecompositionSucceeded(status))
+            {
+                // Apply permanent world state changes to the actual world state used during plan execution.
+                ApplyPermanentWorldStateStackChanges(ctx);
+            }
+            else
+            {
+                // Clear away any changes that might have been applied to the stack
+                // No changes should be made or tracked further when the plan failed.
+                ClearWorldStateStackChanges(ctx);
+            }
+
+            ctx.ContextState = ContextState.Executing;
+            return status;
+        }
+
+        /// <summary>
+        /// We first check whether we have a stored start task. This is true
+        /// if we had a partial plan pause somewhere in our plan, and we now
+        /// want to continue where we left off.
+        /// If this is the case, we don't erase the MTR, but continue building it.
+        /// However, if we have a partial plan, but LastMTR is not 0, that means
+        /// that the partial plan is still running, but something triggered a replan.
+        /// When this happens, we have to plan from the domain root (we're not
+        /// continuing the current plan), so that we're open for other plans to replace
+        /// the running partial plan.
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="plan"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        private DecompositionStatus OnReplanDuringPartialPlanning(T ctx, ref Queue<ITask> plan, DecompositionStatus status)
+        {
+            var lastPartialPlanQueue = CacheLastPartialPlan(ctx);
+
+            ClearMethodTraversalRecord(ctx);
+
+            // Replan through decomposition of the hierarchy
+            status = Root.Decompose(ctx, 0, out plan);
+
+            if (HasDecompositionFailed(status))
+            {
+                RestoreLastPartialPlan(ctx, lastPartialPlanQueue, status);
+            }
+
+            return status;
+        }
+
+        /// <summary>
+        /// If there is a paused partial plan, we cache it to a last partial plan queue.
+        /// This is useful when we want to perform a replan, but don't know yet if it will
+        /// win over the current plan.
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
+        private Queue<PartialPlanEntry> CacheLastPartialPlan(T ctx)
+        {
+            if (ctx.HasPausedPartialPlan == false)
+            {
+                return null;
+            }
+
+            ctx.HasPausedPartialPlan = false;
+            var lastPartialPlanQueue = ctx.Factory.CreateQueue<PartialPlanEntry>();
+
+            while (ctx.PartialPlanQueue.Count > 0)
+            {
+                lastPartialPlanQueue.Enqueue(ctx.PartialPlanQueue.Dequeue());
+            }
+
+            return lastPartialPlanQueue;
+
+        }
+
+        /// <summary>
+        /// If we failed to find a new plan, we have to restore the old plan,
+        /// if it was a partial plan.
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="lastPartialPlanQueue"></param>
+        /// <param name="status"></param>
+        private void RestoreLastPartialPlan(T ctx, Queue<PartialPlanEntry> lastPartialPlanQueue, DecompositionStatus status)
+        {
+            if (lastPartialPlanQueue == null)
+            {
+                return;
+            }
+
+            ctx.HasPausedPartialPlan = true;
+            ctx.PartialPlanQueue.Clear();
+
+            while (lastPartialPlanQueue.Count > 0)
+            {
+                ctx.PartialPlanQueue.Enqueue(lastPartialPlanQueue.Dequeue());
+            }
+
+            ctx.Factory.FreeQueue(ref lastPartialPlanQueue);
+        }
+
+        /// <summary>
+        /// We only erase the MTR if we start from the root task of the domain.
+        /// </summary>
+        /// <param name="ctx"></param>
+        private void ClearMethodTraversalRecord(T ctx)
+        {
+            ctx.MethodTraversalRecord.Clear();
+
+            if (ctx.DebugMTR)
+            {
+                ctx.MTRDebug.Clear();
+            }
+        }
+
+        /// <summary>
+        /// If decomposition status is failed or rejected, the replan failed.
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        private bool HasDecompositionFailed(DecompositionStatus status)
+        {
+            return status == DecompositionStatus.Rejected || status == DecompositionStatus.Failed;
+        }
+
+        /// <summary>
+        /// If decomposition status is failed or rejected, the replan failed.
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        private bool HasDecompositionSucceeded(DecompositionStatus status)
+        {
+            return status == DecompositionStatus.Succeeded || status == DecompositionStatus.Partial;
+        }
+
+        /// <summary>
+        /// We first check whether we have a stored start task. This is true
+        /// if we had a partial plan pause somewhere in our plan, and we now
+        /// want to continue where we left off.
+        /// If this is the case, we don't erase the MTR, but continue building it.
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="plan"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        private DecompositionStatus OnPausedPartialPlan(T ctx, ref Queue<ITask> plan, DecompositionStatus status)
+        {
+            ctx.HasPausedPartialPlan = false;
+            while (ctx.PartialPlanQueue.Count > 0)
+            {
+                var kvp = ctx.PartialPlanQueue.Dequeue();
+                if (plan == null)
+                {
+                    status = kvp.Task.Decompose(ctx, kvp.TaskIndex, out plan);
+                }
+                else
+                {
+                    status = kvp.Task.Decompose(ctx, kvp.TaskIndex, out var subPlan);
+                    if (HasDecompositionSucceeded(status))
+                    {
+                        EnqueueToExistingPlan(ref plan, subPlan);
+                    }
+                }
+
+                // While continuing a partial plan, we might encounter
+                // a new pause.
+                if (ctx.HasPausedPartialPlan)
+                {
+                    break;
+                }
+            }
+
+            // If we failed to continue the paused partial plan,
+            // then we have to start planning from the root.
+            if (HasDecompositionFailed(status))
+            {
+                ClearMethodTraversalRecord(ctx);
+
+                status = Root.Decompose(ctx, 0, out plan);
+            }
+
+            return status;
+        }
+
+        /// <summary>
+        /// Enqueues the sub plan's queue onto the existing plan
+        /// </summary>
+        /// <param name="plan"></param>
+        /// <param name="subPlan"></param>
+        private void EnqueueToExistingPlan(ref Queue<ITask> plan, Queue<ITask> subPlan)
+        {
+            while (subPlan.Count > 0)
+            {
+                plan.Enqueue(subPlan.Dequeue());
+            }
+        }
+
+        /// <summary>
+        /// If this MTR equals the last MTR, then we need to double-check whether we ended up
+        /// just finding the exact same plan. During decomposition each compound task can't check
+        /// for equality, only for less than, so this case needs to be treated after the fact.
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
+        private bool HasFoundSamePlan(T ctx)
+        {
+            var isMTRsEqual = ctx.MethodTraversalRecord.Count == ctx.LastMTR.Count;
+            if (isMTRsEqual)
+            {
+                for (var i = 0; i < ctx.MethodTraversalRecord.Count; i++)
+                {
+                    if (ctx.MethodTraversalRecord[i] < ctx.LastMTR[i])
+                    {
+                        isMTRsEqual = false;
+                        break;
+                    }
+                }
+
+                return isMTRsEqual;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Apply permanent world state changes to the actual world state used during plan execution.
+        /// </summary>
+        /// <param name="ctx"></param>
+        private void ApplyPermanentWorldStateStackChanges(T ctx)
+        {
+            // Trim away any plan-only or plan&execute effects from the world state change stack, that only
+            // permanent effects on the world state remains now that the planning is done.
+            ctx.TrimForExecution();
+            
+            for (int i = 0; i < ctx.WorldStateChangeStack.Length; i++)
+            {
+                var stack = ctx.WorldStateChangeStack[i];
+                if (stack != null && stack.Count > 0)
+                {
+                    ctx.WorldState[i] = stack.Peek().Value;
+                    stack.Clear();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Clear away any changes that might have been applied to the stack
+        /// </summary>
+        /// <param name="ctx"></param>
+        private void ClearWorldStateStackChanges(T ctx)
+        {
+            foreach (var stack in ctx.WorldStateChangeStack)
+            {
+                if (stack != null && stack.Count > 0)
+                {
+                    stack.Clear();
+                }
+            }
+        }
+
+        // ========================================================= SLOTS
+
+        /// <summary>
+        ///     At runtime, set a sub-domain to the slot with the given id.
+        ///     This can be used with Smart Objects, to extend the behavior
+        ///     of an agent at runtime.
+        /// </summary>
+        public bool TrySetSlotDomain(int slotId, Domain<T> subDomain)
+        {
+            if(_slots != null && _slots.TryGetValue(slotId, out var slot))
+            {
+                return slot.Set(subDomain.Root);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        ///     At runtime, clear the sub-domain from the slot with the given id.
+        ///     This can be used with Smart Objects, to extend the behavior
+        ///     of an agent at runtime.
+        /// </summary>
+        public void ClearSlot(int slotId)
+        {
+            if (_slots != null && _slots.TryGetValue(slotId, out var slot))
+            {
+                slot.Clear();
+            }
+        }
+    }
+}
+
+
+// [FILE_END]: Domain.cs
+// ==========================================
+
+
+// [FILE_START]: DomainBuilder.cs
+// PATH: DomainBuilder.cs
+// ------------------------------------------
+
+﻿using FluidHTN.Factory;
+
+namespace FluidHTN
+{
+    /// <summary>
+    ///     A simple domain builder for easy use when one just need the core functionality
+    ///     of the BaseDomainBuilder. This class is sealed, so if you want to extend the
+    ///     functionality of the domain builder, extend BaseDomainBuilder instead.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public sealed class DomainBuilder<T> : BaseDomainBuilder<DomainBuilder<T>, T>
+        where T : IContext
+    {
+        // ========================================================= CONSTRUCTION
+
+        public DomainBuilder(string domainName) : base(domainName, new DefaultFactory())
+        {
+        }
+
+        public DomainBuilder(string domainName, IFactory factory) : base(domainName, factory)
+        {
+        }
+    }
+}
+
+// [FILE_END]: DomainBuilder.cs
+// ==========================================
+
+
+// [FILE_START]: IDomain.cs
+// PATH: IDomain.cs
+// ------------------------------------------
+
+﻿
+using FluidHTN.Compounds;
+
+namespace FluidHTN
+{
+    public interface IDomain
+    {
+        TaskRoot Root { get; }
+        void Add(ICompoundTask parent, ITask subtask);
+        void Add(ICompoundTask parent, Slot slot);
+    }
+}
+
+
+// [FILE_END]: IDomain.cs
+// ==========================================
+
+
+// [FILE_START]: FuncCondition.cs
+// PATH: Conditions\FuncCondition.cs
+// ------------------------------------------
+
+﻿using System;
+
+namespace FluidHTN.Conditions
+{
+    public class FuncCondition<T> : ICondition where T : IContext
+    {
+        // ========================================================= FIELDS
+
+        private readonly Func<T, bool> _func;
+
+        // ========================================================= CONSTRUCTION
+
+        public FuncCondition(string name, Func<T, bool> func)
+        {
+            Name = name;
+            _func = func;
+        }
+
+        // ========================================================= PROPERTIES
+
+        public string Name { get; }
+
+        // ========================================================= VALIDITY
+
+        public bool IsValid(IContext ctx)
+        {
+            if (ctx is T c)
+            {
+                var result = _func?.Invoke(c) ?? false;
+
+                if (ctx.LogDecomposition)
+                {
+                    ctx.Log(Name, $"FuncCondition.IsValid:{result}", ctx.CurrentDecompositionDepth+1, this, result ? ConsoleColor.DarkGreen : ConsoleColor.DarkRed);
+                }
+
+                return result;
+            }
+
+            throw new Exception("Unexpected context type!");
+        }
+    }
+}
+
+
+// [FILE_END]: FuncCondition.cs
+// ==========================================
+
+
+// [FILE_START]: ICondition.cs
+// PATH: Conditions\ICondition.cs
+// ------------------------------------------
+
+﻿namespace FluidHTN.Conditions
+{
+    public interface ICondition
+    {
+        string Name { get; }
+        bool IsValid(IContext ctx);
+    }
+}
+
+
+// [FILE_END]: ICondition.cs
+// ==========================================
+
+
+// [FILE_START]: BaseContext.cs
+// PATH: Contexts\BaseContext.cs
+// ------------------------------------------
+
+﻿using System;
+using System.Collections.Generic;
+using FluidHTN.Conditions;
+using FluidHTN.Debug;
+using FluidHTN.Factory;
+
+namespace FluidHTN.Contexts
+{
+    public abstract class BaseContext : IContext
+    {
+        // ========================================================= PROPERTIES
+
+        public bool IsInitialized { get; protected set; } = false;
+        public bool IsDirty { get; set; }
+        public ContextState ContextState { get; set; } = ContextState.Executing;
+        public int CurrentDecompositionDepth { get; set; } = 0;
+        public abstract IFactory Factory { get; protected set; }
+        public abstract IPlannerState PlannerState { get; protected set; }
+        public List<int> MethodTraversalRecord { get; set; } = new List<int>();
+        public List<int> LastMTR { get; } = new List<int>();
+        public abstract List<string> MTRDebug { get; set; }
+        public abstract List<string> LastMTRDebug { get; set; }
+        public abstract bool DebugMTR { get; }
+        public abstract Queue<IBaseDecompositionLogEntry> DecompositionLog { get; set; }
+        public abstract bool LogDecomposition { get; }
+        public Queue<PartialPlanEntry> PartialPlanQueue { get; set; } = new Queue<PartialPlanEntry>();
+        public bool HasPausedPartialPlan { get; set; } = false;
+
+        public abstract byte[] WorldState { get; }
+
+        public Stack<KeyValuePair<EffectType, byte>>[] WorldStateChangeStack { get; protected set; }
+
+        // ========================================================= INITIALIZATION
+
+        public virtual void Init()
+        {
+            if (WorldStateChangeStack == null)
+            {
+                WorldStateChangeStack = new Stack<KeyValuePair<EffectType, byte>>[WorldState.Length];
+                for (var i = 0; i < WorldState.Length; i++)
+                {
+                    WorldStateChangeStack[i] = new Stack<KeyValuePair<EffectType, byte>>();
+                }
+            }
+
+            if (DebugMTR)
+            {
+                if (MTRDebug == null)
+                {
+                    MTRDebug = new List<string>();
+                }
+
+                if (LastMTRDebug == null)
+                {
+                    LastMTRDebug = new List<string>();
+                }
+            }
+
+            if (LogDecomposition)
+            {
+                if (DecompositionLog == null)
+                {
+                    DecompositionLog = new Queue<IBaseDecompositionLogEntry>();
+                }
+            }
+
+            IsInitialized = true;
+        }
+
+        // ========================================================= STATE HANDLING
+
+        public bool HasState(int state, byte value)
+        {
+            return GetState(state) == value;
+        }
+
+        public byte GetState(int state)
+        {
+            if (ContextState == ContextState.Executing)
+            {
+                return WorldState[state];
+            }
+
+            if (WorldStateChangeStack[state].Count == 0)
+            {
+                return WorldState[state];
+            }
+
+            return WorldStateChangeStack[state].Peek().Value;
+        }
+
+        public virtual void SetState(int state, byte value, bool setAsDirty = true, EffectType e = EffectType.Permanent)
+        {
+            if (ContextState == ContextState.Executing)
+            {
+                // Prevent setting the world state dirty if we're not changing anything.
+                if (WorldState[state] == value)
+                {
+                    return;
+                }
+
+                WorldState[state] = value;
+                if (setAsDirty)
+                {
+                    IsDirty = true; // When a state change during execution, we need to mark the context dirty for replanning!
+                }
+            }
+            else
+            {
+                WorldStateChangeStack[state].Push(new KeyValuePair<EffectType, byte>(e, value));
+            }
+        }
+
+        // ========================================================= STATE STACK HANDLING
+
+        public int[] GetWorldStateChangeDepth(IFactory factory)
+        {
+            var stackDepth = factory.CreateArray<int>(WorldStateChangeStack.Length);
+
+            for (var i = 0; i < WorldStateChangeStack.Length; i++)
+            {
+                stackDepth[i] = WorldStateChangeStack[i]?.Count ?? 0;
+            }
+
+            return stackDepth;
+        }
+
+        public void TrimForExecution()
+        {
+            if (ContextState == ContextState.Executing)
+            {
+                throw new Exception("Can not trim a context when in execution mode");
+            }
+
+            foreach (var stack in WorldStateChangeStack)
+            {
+                while (stack.Count != 0 && stack.Peek().Key != EffectType.Permanent)
+                {
+                    stack.Pop();
+                }
+            }
+        }
+
+        public void TrimToStackDepth(int[] stackDepth)
+        {
+            if (ContextState == ContextState.Executing)
+            {
+                throw new Exception("Can not trim a context when in execution mode");
+            }
+
+            for (var i = 0; i < stackDepth.Length; i++)
+            {
+                var stack = WorldStateChangeStack[i];
+
+                while (stack.Count > stackDepth[i])
+                {
+                    stack.Pop();
+                }
+            }
+        }
+
+        // ========================================================= STATE RESET
+
+        public virtual void Reset()
+        {
+            MethodTraversalRecord?.Clear();
+            LastMTR?.Clear();
+
+            if (DebugMTR)
+            {
+                MTRDebug?.Clear();
+                LastMTRDebug?.Clear();
+            }
+
+            IsInitialized = false;
+        }
+
+        // ========================================================= DECOMPOSITION LOGGING
+
+        public void Log(string name, string description, int depth, ITask task, ConsoleColor color = ConsoleColor.White)
+        {
+            if (LogDecomposition == false)
+            {
+                return;
+            }
+
+            DecompositionLog.Enqueue(new DecomposedCompoundTaskEntry
+            {
+                Name = name,
+                Description = description,
+                Entry = task,
+                Depth = depth,
+                Color = color,
+            });
+        }
+
+        public void Log(string name, string description, int depth, ICondition condition, ConsoleColor color = ConsoleColor.DarkGreen)
+        {
+            if (LogDecomposition == false)
+            {
+                return;
+            }
+
+            DecompositionLog.Enqueue(new DecomposedConditionEntry
+            {
+                Name = name,
+                Description = description,
+                Entry = condition,
+                Depth = depth,
+                Color = color
+            });
+        }
+
+        public void Log(string name, string description, int depth, IEffect effect, ConsoleColor color = ConsoleColor.DarkYellow)
+        {
+            if (LogDecomposition == false)
+            {
+                return;
+            }
+
+            DecompositionLog.Enqueue(new DecomposedEffectEntry
+            {
+                Name = name,
+                Description = description,
+                Entry = effect,
+                Depth = depth,
+                Color = color,
+            });
+        }
+    }
+}
+
+
+// [FILE_END]: BaseContext.cs
+// ==========================================
+
+
+// [FILE_START]: IContext.cs
+// PATH: Contexts\IContext.cs
+// ------------------------------------------
+
+﻿using System;
+using System.Collections.Generic;
+using FluidHTN.Compounds;
+using FluidHTN.Conditions;
+using FluidHTN.Debug;
+using FluidHTN.Factory;
+
+namespace FluidHTN
+{
+    /// <summary>
+    ///     The state our context can be in. This is essentially planning or execution state.
+    /// </summary>
+    public enum ContextState
+    {
+        Planning,
+        Executing
+    }
+
+    public struct PartialPlanEntry
+    {
+        public ICompoundTask Task;
+        public int TaskIndex;
+    }
+
+    public interface IContext
+    {
+        bool IsInitialized { get; }
+        bool IsDirty { get; set; }
+        ContextState ContextState { get; set; }
+        int CurrentDecompositionDepth { get; set; }
+
+        IFactory Factory { get; }
+
+        IPlannerState PlannerState { get; }
+
+        /// <summary>
+        ///     The Method Traversal Record is used while decomposing a domain and
+        ///     records the valid decomposition indices as we go through our
+        ///     decomposition process.
+        ///     It "should" be enough to only record decomposition traversal in Selectors.
+        ///     This can be used to compare LastMTR with the MTR, and reject
+        ///     a new plan early if it is of lower priority than the last plan.
+        ///     It is the user's responsibility to set the instance of the MTR, so that
+        ///     the user is free to use pooled instances, or whatever optimization they
+        ///     see fit.
+        /// </summary>
+        List<int> MethodTraversalRecord { get; set; }
+
+        List<string> MTRDebug { get; set; }
+
+        /// <summary>
+        ///     The Method Traversal Record that was recorded for the currently
+        ///     running plan.
+        ///     If a plan completes successfully, this should be cleared.
+        ///     It is the user's responsibility to set the instance of the MTR, so that
+        ///     the user is free to use pooled instances, or whatever optimization they
+        ///     see fit.
+        /// </summary>
+        List<int> LastMTR { get; }
+
+        List<string> LastMTRDebug { get; set; }
+
+        /// <summary>
+        /// Whether the planning system should collect debug information about our Method Traversal Record.
+        /// </summary>
+        bool DebugMTR { get; }
+
+        /// <summary>
+        /// </summary>
+        Queue<IBaseDecompositionLogEntry> DecompositionLog { get; set; }
+
+        /// <summary>
+        /// Whether our planning system should log our decomposition. Specially condition success vs failure.
+        /// </summary>
+        bool LogDecomposition { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        Queue<PartialPlanEntry> PartialPlanQueue { get; set; }
+
+        bool HasPausedPartialPlan { get; set; }
+
+        byte[] WorldState { get; }
+
+        /// <summary>
+        ///     A stack of changes applied to each world state entry during planning.
+        ///     This is necessary if one wants to support planner-only and plan&execute effects.
+        /// </summary>
+        Stack<KeyValuePair<EffectType, byte>>[] WorldStateChangeStack { get; }
+
+        /// <summary>
+        ///     Reset the context state to default values.
+        /// </summary>
+        void Reset();
+
+        void TrimForExecution();
+        void TrimToStackDepth(int[] stackDepth);
+
+        bool HasState(int state, byte value);
+        byte GetState(int state);
+        void SetState(int state, byte value, bool setAsDirty = true, EffectType e = EffectType.Permanent);
+
+        int[] GetWorldStateChangeDepth(IFactory factory);
+
+        void Log(string name, string description, int depth, ITask task, ConsoleColor color = ConsoleColor.White);
+        void Log(string name, string description, int depth, ICondition condition, ConsoleColor color = ConsoleColor.DarkGreen);
+        void Log(string name, string description, int depth, IEffect effect, ConsoleColor color = ConsoleColor.DarkYellow);
+    }
+}
+
+
+// [FILE_END]: IContext.cs
+// ==========================================
+
+
+// [FILE_START]: DecompositionLogEntry.cs
+// PATH: Debug\DecompositionLogEntry.cs
+// ------------------------------------------
+
+﻿using System;
+using FluidHTN.Conditions;
+
+namespace FluidHTN.Debug
+{
+    public static class Debug
+    {
+        public static string DepthToString(int depth)
+        {
+            string s = "";
+            for (var i = 0; i < depth; i++)
+            {
+                s += "\t";
+            }
+
+            s += "- ";
+            return s;
+        }
+    }
+    public interface IBaseDecompositionLogEntry
+    {
+        string Name { get; set; }
+        string Description { get; set; }
+        int Depth { get; set; }
+        ConsoleColor Color { get; set; }
+        string ToString();
+    }
+
+    public interface IDecompositionLogEntry<T> : IBaseDecompositionLogEntry
+    {
+        T Entry { get; set; }
+    }
+
+    public struct DecomposedCompoundTaskEntry : IDecompositionLogEntry<ITask>
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public int Depth { get; set; }
+        public ConsoleColor Color { get; set; }
+        public ITask Entry { get; set; }
+    }
+
+    public struct DecomposedConditionEntry : IDecompositionLogEntry<ICondition> {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public int Depth { get; set; }
+        public ConsoleColor Color { get; set; }
+        public ICondition Entry { get; set; }
+    }
+
+    public struct DecomposedEffectEntry : IDecompositionLogEntry<IEffect> {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public int Depth { get; set; }
+        public ConsoleColor Color { get; set; }
+        public IEffect Entry { get; set; }
+    }
+}
+
+
+// [FILE_END]: DecompositionLogEntry.cs
+// ==========================================
+
+
+// [FILE_START]: ActionEffect.cs
+// PATH: Effects\ActionEffect.cs
+// ------------------------------------------
+
+﻿using System;
+
+namespace FluidHTN.Effects
+{
+    public class ActionEffect<T> : IEffect where T : IContext
+    {
+        // ========================================================= FIELDS
+
+        private readonly Action<T, EffectType> _action;
+
+        // ========================================================= CONSTRUCTION
+
+        public ActionEffect(string name, EffectType type, Action<T, EffectType> action)
+        {
+            Name = name;
+            Type = type;
+            _action = action;
+        }
+
+        // ========================================================= PROPERTIES
+
+        public string Name { get; }
+        public EffectType Type { get; }
+
+        // ========================================================= FUNCTIONALITY
+
+        public void Apply(IContext ctx)
+        {
+            if (ctx is T c)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    ctx.Log(Name, $"ActionEffect.Apply:{Type}", ctx.CurrentDecompositionDepth+1, this);
+                }
+
+                _action?.Invoke(c, Type);
+            }
+            else
+            {
+                throw new Exception("Unexpected context type!");
+            }
+        }
+    }
+}
+
+
+// [FILE_END]: ActionEffect.cs
+// ==========================================
+
+
+// [FILE_START]: EffectType.cs
+// PATH: Effects\EffectType.cs
+// ------------------------------------------
+
+﻿namespace FluidHTN
+{
+    public enum EffectType
+    {
+        PlanAndExecute,
+        PlanOnly,
+        Permanent
+    }
+}
+
+// [FILE_END]: EffectType.cs
+// ==========================================
+
+
+// [FILE_START]: IEffect.cs
+// PATH: Effects\IEffect.cs
+// ------------------------------------------
+
+﻿namespace FluidHTN
+{
+    public interface IEffect
+    {
+        string Name { get; }
+        EffectType Type { get; }
+        void Apply(IContext ctx);
+    }
+}
+
+
+// [FILE_END]: IEffect.cs
+// ==========================================
+
+
+// [FILE_START]: DefaultFactory.cs
+// PATH: Factory\DefaultFactory.cs
+// ------------------------------------------
+
+﻿
+using System.Collections.Generic;
+
+namespace FluidHTN.Factory
+{
+    public sealed class DefaultFactory : IFactory
+    {
+        public T[] CreateArray<T>(int length)
+        {
+            return new T[length];
+        }
+
+        public List<T> CreateList<T>()
+        {
+            return new List<T>();
+        }
+
+        public Queue<T> CreateQueue<T>()
+        {
+            return new Queue<T>();
+        }
+
+        public bool FreeArray<T>(ref T[] array)
+        {
+            array = null;
+            return array == null;
+        }
+
+        public bool FreeList<T>(ref List<T> list)
+        {
+            list = null;
+            return list == null;
+        }
+
+        public bool FreeQueue<T>(ref Queue<T> queue)
+        {
+            queue = null;
+            return queue == null;
+        }
+
+        public T Create<T>() where T : new()
+        {
+            return new T();
+        }
+
+        public bool Free<T>(ref T obj)
+        {
+            obj = default(T);
+            return obj == null;
+        }
+    }
+}
+
+
+// [FILE_END]: DefaultFactory.cs
+// ==========================================
+
+
+// [FILE_START]: IFactory.cs
+// PATH: Factory\IFactory.cs
+// ------------------------------------------
+
+﻿
+using System.Collections.Generic;
+
+namespace FluidHTN.Factory
+{
+    public interface IFactory
+    {
+        T[] CreateArray<T>(int length);
+        bool FreeArray<T>(ref T[] array);
+
+        Queue<T> CreateQueue<T>();
+        bool FreeQueue<T>(ref Queue<T> queue);
+
+        List<T> CreateList<T>();
+        bool FreeList<T>(ref List<T> list);
+
+        T Create<T>() where T : new();
+        bool Free<T>(ref T obj);
+    }
+}
+
+
+// [FILE_END]: IFactory.cs
+// ==========================================
+
+
+// [FILE_START]: FuncOperator.cs
+// PATH: Operators\FuncOperator.cs
+// ------------------------------------------
+
+﻿using System;
+
+namespace FluidHTN.Operators
+{
+    public class FuncOperator<T> : IOperator where T : IContext
+    {
+        // ========================================================= FIELDS
+
+        private readonly Func<T, TaskStatus> _func;
+        private readonly Func<T, TaskStatus> _start;
+        private readonly Action<T> _funcStop;
+        private readonly Action<T> _funcAborted;
+
+        // ========================================================= CONSTRUCTION
+
+        public FuncOperator(Func<T, TaskStatus> func, Func<T, TaskStatus> start = null, Action<T> funcStop = null, Action<T> funcAborted = null)
+        {
+            _func = func;
+            _start = start;
+            _funcStop = funcStop;
+            _funcAborted = funcAborted;
+        }
+
+        // ========================================================= FUNCTIONALITY
+
+        public TaskStatus Start(IContext ctx)
+        {
+            if (ctx is T c)
+            {
+                if (_start != null)
+                {
+                    return _start.Invoke(c);
+                }
+
+                return TaskStatus.Continue; // Start is not required, so report back Continue if we have no Start func.
+            }
+
+            throw new Exception("Unexpected context type!");
+        }
+
+        public TaskStatus Update(IContext ctx)
+        {
+            if (ctx is T c)
+            {
+                return _func?.Invoke(c) ?? TaskStatus.Failure;
+            }
+
+            throw new Exception("Unexpected context type!");
+        }
+
+        public void Stop(IContext ctx)
+        {
+            if (ctx is T c)
+            {
+                _funcStop?.Invoke(c);
+            }
+            else
+            {
+                throw new Exception("Unexpected context type!");
+            }
+        }
+
+        public void Abort(IContext ctx)
+        {
+            if (ctx is T c)
+            {
+                _funcAborted?.Invoke(c);
+            }
+            else
+            {
+                throw new Exception("Unexpected context type!");
+            }
+        }
+    }
+}
+
+
+// [FILE_END]: FuncOperator.cs
+// ==========================================
+
+
+// [FILE_START]: IOperator.cs
+// PATH: Operators\IOperator.cs
+// ------------------------------------------
+
+﻿namespace FluidHTN.Operators
+{
+    public interface IOperator
+    {
+        TaskStatus Start(IContext ctx);
+        TaskStatus Update(IContext ctx);
+
+        /// <summary>
+        /// Graceful end of task execution.
+        /// </summary>
+        /// <param name="ctx"></param>
+        void Stop(IContext ctx);
+
+        /// <summary>
+        /// Forced termination of task execution.
+        /// </summary>
+        /// <param name="ctx"></param>
+        void Abort(IContext ctx);
+    }
+}
+
+
+// [FILE_END]: IOperator.cs
+// ==========================================
+
+
+// [FILE_START]: DefaultPlannerState.cs
+// PATH: Planners\DefaultPlannerState.cs
+// ------------------------------------------
+
+﻿using FluidHTN.Conditions;
+using FluidHTN.PrimitiveTasks;
+using System;
+using System.Collections.Generic;
+
+namespace FluidHTN
+{
+    public class DefaultPlannerState : IPlannerState
+    {
+        // ========================================================= PROPERTIES
+
+        public ITask CurrentTask { get; set; }
+        public Queue<ITask> Plan { get; set; } = new Queue<ITask>();
+        public TaskStatus LastStatus { get; set; }
+
+        // ========================================================= CALLBACKS
+
+        public Action<Queue<ITask>> OnNewPlan { get; set; }
+        public Action<Queue<ITask>, ITask, Queue<ITask>> OnReplacePlan { get; set; }
+        public Action<ITask> OnNewTask { get; set; }
+        public Action<ITask, ICondition> OnNewTaskConditionFailed { get; set; }
+        public Action<IPrimitiveTask> OnStopCurrentTask { get; set; }
+        public Action<IPrimitiveTask> OnCurrentTaskCompletedSuccessfully { get; set; }
+        public Action<IEffect> OnApplyEffect { get; set; }
+        public Action<IPrimitiveTask> OnCurrentTaskFailed { get; set; }
+        public Action<IPrimitiveTask> OnCurrentTaskStarted { get; set; }
+        public Action<IPrimitiveTask> OnCurrentTaskContinues { get; set; }
+        public Action<IPrimitiveTask, ICondition> OnCurrentTaskExecutingConditionFailed { get; set; }
+    }
+}
+
+
+// [FILE_END]: DefaultPlannerState.cs
+// ==========================================
+
+
+// [FILE_START]: IPlannerState.cs
+// PATH: Planners\IPlannerState.cs
+// ------------------------------------------
+
+﻿using FluidHTN.Conditions;
+using FluidHTN.PrimitiveTasks;
+using System;
+using System.Collections.Generic;
+
+namespace FluidHTN
+{
+    public interface IPlannerState
+    {
+        // ========================================================= PROPERTIES
+
+        ITask CurrentTask { get; set; }
+        Queue<ITask> Plan { get; set; }
+        TaskStatus LastStatus { get; set; }
+
+        // ========================================================= CALLBACKS
+
+        /// <summary>
+        ///		OnNewPlan(newPlan) is called when we found a new plan, and there is no
+        ///		old plan to replace.
+        /// </summary>
+        Action<Queue<ITask>> OnNewPlan { get; set; }
+
+        /// <summary>
+        ///		OnReplacePlan(oldPlan, currentTask, newPlan) is called when we're about to replace the
+        ///		current plan with a new plan.
+        /// </summary>
+        Action<Queue<ITask>, ITask, Queue<ITask>> OnReplacePlan { get; set; }
+
+        /// <summary>
+        ///		OnNewTask(task) is called after we popped a new task off the current plan.
+        /// </summary>
+        Action<ITask> OnNewTask { get; set; }
+
+        /// <summary>
+        ///		OnNewTaskConditionFailed(task, failedCondition) is called when we failed to
+        ///		validate a condition on a new task.
+        /// </summary>
+        Action<ITask, ICondition> OnNewTaskConditionFailed { get; set; }
+
+        /// <summary>
+        ///		OnStopCurrentTask(task) is called when the currently running task was stopped
+        ///		forcefully.
+        /// </summary>
+        Action<IPrimitiveTask> OnStopCurrentTask { get; set; }
+
+        /// <summary>
+        ///		OnCurrentTaskCompletedSuccessfully(task) is called when the currently running task
+        ///		completes successfully, and before its effects are applied.
+        /// </summary>
+        Action<IPrimitiveTask> OnCurrentTaskCompletedSuccessfully { get; set; }
+
+        /// <summary>
+        ///		OnApplyEffect(effect) is called for each effect of the type PlanAndExecute on a
+        ///		completed task.
+        /// </summary>
+        Action<IEffect> OnApplyEffect { get; set; }
+
+        /// <summary>
+        ///		OnCurrentTaskFailed(task) is called when the currently running task fails to complete.
+        /// </summary>
+        Action<IPrimitiveTask> OnCurrentTaskFailed { get; set; }
+
+        /// <summary>
+        ///		OnCurrentTaskStarted(task) is called once when a new task in the plan is selected.
+        /// </summary>
+        Action<IPrimitiveTask> OnCurrentTaskStarted { get; set; }
+
+        /// <summary>
+        ///		OnCurrentTaskContinues(task) is called every tick that a currently running task
+        ///		needs to continue.
+        /// </summary>
+        Action<IPrimitiveTask> OnCurrentTaskContinues { get; set; }
+
+        /// <summary>
+        ///		OnCurrentTaskExecutingConditionFailed(task, condition) is called if an Executing Condition
+        ///		fails. The Executing Conditions are checked before every call to task.Operator.Update(...).
+        /// </summary>
+        Action<IPrimitiveTask, ICondition> OnCurrentTaskExecutingConditionFailed { get; set; }
+    }
+}
+
+
+// [FILE_END]: IPlannerState.cs
+// ==========================================
+
+
+// [FILE_START]: Planner.cs
+// PATH: Planners\Planner.cs
+// ------------------------------------------
+
+﻿using System;
+using System.Collections.Generic;
+using FluidHTN.Compounds;
+using FluidHTN.PrimitiveTasks;
+
+namespace FluidHTN
+{
+    /// <summary>
+    ///     A planner is a responsible for handling the management of finding plans in a domain, replan when the state of the
+    ///     running plan demands it, or look for a new potential plan if the world state gets dirty.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class Planner<T> where T : IContext
+    {
+        // ========================================================= TICK PLAN
+
+        /// <summary>
+        ///     Call this with a domain and context instance to have the planner manage plan and task handling for the domain at
+        ///     runtime.
+        ///     If the plan completes or fails, the planner will find a new plan, or if the context is marked dirty, the planner
+        ///     will attempt a replan to see whether we can find a better plan now that the state of the world has changed.
+        ///     This planner can also be used as a blueprint for writing a custom planner.
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <param name="ctx"></param>
+        /// <param name="allowImmediateReplanAndExecute"></param>
+        public void Tick(Domain<T> domain, T ctx, bool allowImmediateReplanAndExecute = true)
+        {
+            if (ctx.IsInitialized == false)
+            {
+                throw new Exception("Context was not initialized!");
+            }
+
+            var decompositionStatus = DecompositionStatus.Failed;
+            var isTryingToReplacePlan = false;
+            
+            // Check whether state has changed or the current plan has finished running.
+            // and if so, try to find a new plan.
+            if (ShouldFindNewPlan(ctx))
+            {
+                isTryingToReplacePlan = TryFindNewPlan(domain, ctx, out decompositionStatus);
+            }
+
+            // If the plan has more tasks, we try to select the next one.
+            if (CanSelectNextTaskInPlan(ctx))
+            {
+                // Select the next task, but check whether the conditions of the next task failed to validate.
+                if (SelectNextTaskInPlan(domain, ctx) == false)
+                {
+                    return;
+                }
+
+                if (ctx.PlannerState.CurrentTask is IPrimitiveTask taskToStart)
+                {
+                    if (TryStartPrimitiveTaskOperator(domain, ctx, taskToStart, allowImmediateReplanAndExecute) == false)
+                    {
+                        return;
+                    }
+                }
+            }
+
+            // If the current task is a primitive task, we try to tick its operator.
+            if (ctx.PlannerState.CurrentTask is IPrimitiveTask task)
+            {
+                if (TryTickPrimitiveTaskOperator(domain, ctx, task, allowImmediateReplanAndExecute) == false)
+                {
+                    return;
+                }
+            }
+
+            // Check whether the planner failed to find a plan
+            if (HasFailedToFindPlan(isTryingToReplacePlan, decompositionStatus, ctx))
+            {
+                ctx.PlannerState.LastStatus = TaskStatus.Failure;
+            }
+        }
+
+        /// <summary>
+        /// Check whether state has changed or the current plan has finished running.
+        /// and if so, try to find a new plan.
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
+        private bool ShouldFindNewPlan(T ctx)
+        {
+            return ctx.IsDirty || (ctx.PlannerState.CurrentTask == null && ctx.PlannerState.Plan.Count == 0);
+        }
+
+        private bool TryFindNewPlan(Domain<T> domain, T ctx, out DecompositionStatus decompositionStatus)
+        {
+            var lastPartialPlanQueue = PrepareDirtyWorldStateForReplan(ctx);
+            var isTryingToReplacePlan = ctx.PlannerState.Plan.Count > 0;
+
+            decompositionStatus = domain.FindPlan(ctx, out var newPlan);
+
+            if (HasFoundNewPlan(decompositionStatus))
+            {
+                OnFoundNewPlan(ctx, newPlan);
+            }
+            else if (lastPartialPlanQueue != null)
+            {
+                RestoreLastPartialPlan(ctx, lastPartialPlanQueue);
+                RestoreLastMethodTraversalRecord(ctx);
+            }
+
+            return isTryingToReplacePlan;
+        }
+
+        /// <summary>
+        /// If we're simply re-evaluating whether to replace the current plan because
+        /// some world state got dirty, then we do not intend to continue a partial plan
+        /// right now, but rather see whether the world state changed to a degree where
+        /// we should pursue a better plan.
+        /// </summary>
+        private Queue<PartialPlanEntry> PrepareDirtyWorldStateForReplan(T ctx)
+        {
+            if (ctx.IsDirty == false)
+            {
+                return null;
+            }
+
+            ctx.IsDirty = false;
+
+            var lastPartialPlan = CacheLastPartialPlan(ctx);
+            if (lastPartialPlan == null)
+            {
+                return null;
+            }
+
+            // We also need to ensure that the last mtr is up to date with the on-going MTR of the partial plan,
+            // so that any new potential plan that is decomposing from the domain root has to beat the currently
+            // running partial plan.
+            CopyMtrToLastMtr(ctx);
+
+            return lastPartialPlan;
+        }
+
+        private Queue<PartialPlanEntry> CacheLastPartialPlan(T ctx)
+        {
+            if (ctx.HasPausedPartialPlan == false)
+            {
+                return null;
+            }
+
+            ctx.HasPausedPartialPlan = false;
+            var lastPartialPlanQueue = ctx.Factory.CreateQueue<PartialPlanEntry>();
+
+            while (ctx.PartialPlanQueue.Count > 0)
+            {
+                lastPartialPlanQueue.Enqueue(ctx.PartialPlanQueue.Dequeue());
+            }
+
+            return lastPartialPlanQueue;
+
+        }
+
+        private void RestoreLastPartialPlan(T ctx, Queue<PartialPlanEntry> lastPartialPlanQueue)
+        {
+            ctx.HasPausedPartialPlan = true;
+            ctx.PartialPlanQueue.Clear();
+
+            while (lastPartialPlanQueue.Count > 0)
+            {
+                ctx.PartialPlanQueue.Enqueue(lastPartialPlanQueue.Dequeue());
+            }
+
+            ctx.Factory.FreeQueue(ref lastPartialPlanQueue);
+        }
+
+        private bool HasFoundNewPlan(DecompositionStatus decompositionStatus)
+        {
+            return decompositionStatus == DecompositionStatus.Succeeded ||
+                   decompositionStatus == DecompositionStatus.Partial;
+        }
+
+        private void OnFoundNewPlan(T ctx, Queue<ITask> newPlan)
+        {
+            if (ctx.PlannerState.OnReplacePlan != null && (ctx.PlannerState.Plan.Count > 0 || ctx.PlannerState.CurrentTask != null))
+            {
+                ctx.PlannerState.OnReplacePlan.Invoke(ctx.PlannerState.Plan, ctx.PlannerState.CurrentTask, newPlan);
+            }
+            else if (ctx.PlannerState.OnNewPlan != null && ctx.PlannerState.Plan.Count == 0)
+            {
+                ctx.PlannerState.OnNewPlan.Invoke(newPlan);
+            }
+
+            ctx.PlannerState.Plan.Clear();
+            while (newPlan.Count > 0)
+            {
+                ctx.PlannerState.Plan.Enqueue(newPlan.Dequeue());
+            }
+
+            // If a task was running from the previous plan, we stop it.
+            if (ctx.PlannerState.CurrentTask != null && ctx.PlannerState.CurrentTask is IPrimitiveTask t)
+            {
+                ctx.PlannerState.OnStopCurrentTask?.Invoke(t);
+                t.Stop(ctx);
+                ctx.PlannerState.CurrentTask = null;
+            }
+
+            // Copy the MTR into our LastMTR to represent the current plan's decomposition record
+            // that must be beat to replace the plan.
+            CopyMtrToLastMtr(ctx);
+        }
+
+        /// <summary>
+        /// Copy the MTR into our LastMTR to represent the current plan's decomposition record
+        /// that must be beat to replace the plan.
+        /// </summary>
+        /// <param name="ctx"></param>
+        private void CopyMtrToLastMtr(T ctx)
+        {
+            if (ctx.MethodTraversalRecord != null)
+            {
+                ctx.LastMTR.Clear();
+                foreach (var record in ctx.MethodTraversalRecord)
+                {
+                    ctx.LastMTR.Add(record);
+                }
+                
+                if (ctx.DebugMTR)
+                {
+                    ctx.LastMTRDebug.Clear();
+                    foreach (var record in ctx.MTRDebug)
+                    {
+                        ctx.LastMTRDebug.Add(record);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Copy the Last MTR back into our MTR. This is done during rollback when a new plan
+        /// failed to beat the last plan.
+        /// </summary>
+        /// <param name="ctx"></param>
+        private void RestoreLastMethodTraversalRecord(T ctx)
+        {
+            if (ctx.LastMTR.Count > 0)
+            {
+                ctx.MethodTraversalRecord.Clear();
+                foreach (var record in ctx.LastMTR)
+                {
+                    ctx.MethodTraversalRecord.Add(record);
+                }
+                ctx.LastMTR.Clear();
+
+                if (ctx.DebugMTR == false)
+                {
+                    return;
+                }
+
+                ctx.MTRDebug.Clear();
+                foreach (var record in ctx.LastMTRDebug)
+                {
+                    ctx.MTRDebug.Add(record);
+                }
+                ctx.LastMTRDebug.Clear();
+            }
+        }
+
+        /// <summary>
+        /// If current task is null, we need to verify that the plan has more tasks queued.
+        /// </summary>
+        /// <returns></returns>
+        private bool CanSelectNextTaskInPlan(T ctx)
+        {
+            return ctx.PlannerState.CurrentTask == null && ctx.PlannerState.Plan.Count > 0;
+        }
+
+        /// <summary>
+        /// Dequeues the next task of the plan and checks its conditions. If a condition fails, we require a replan.
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
+        private bool SelectNextTaskInPlan(Domain<T> domain, T ctx)
+        {
+            ctx.PlannerState.CurrentTask = ctx.PlannerState.Plan.Dequeue();
+            if (ctx.PlannerState.CurrentTask != null)
+            {
+                ctx.PlannerState.OnNewTask?.Invoke(ctx.PlannerState.CurrentTask);
+
+                return IsConditionsValid(ctx);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// When a new task is selected, we should run Start on its Operator.
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <param name="ctx"></param>
+        /// <param name="task"></param>
+        /// <param name="allowImmediateReplanAndExecute"></param>
+        /// <returns></returns>
+        private bool TryStartPrimitiveTaskOperator(Domain<T> domain, T ctx, IPrimitiveTask task, bool allowImmediateReplanAndExecute)
+        {
+            if (task.Operator != null)
+            {
+                ctx.PlannerState.LastStatus = task.Operator.Start(ctx);
+
+                // If the operation finished successfully already on start, we set task to null so that we dequeue the next task in the plan the following tick.
+                if (ctx.PlannerState.LastStatus == TaskStatus.Success)
+                {
+                    // We have to first invoke that the task operator has run its start function successfully, before we report that the operator finished.
+                    ctx.PlannerState.OnCurrentTaskStarted?.Invoke(task);
+
+                    OnOperatorFinishedSuccessfully(domain, ctx, task, allowImmediateReplanAndExecute);
+                    return true;
+                }
+
+                // If the operation failed to start, we need to fail the entire plan, so that we will replan the next tick.
+                if (ctx.PlannerState.LastStatus == TaskStatus.Failure)
+                {
+                    FailEntirePlan(domain, ctx, task, allowImmediateReplanAndExecute);
+                    return true;
+                }
+
+                // Otherwise the operation started as expected, and we are ready to start running Update ticks on the operator.
+                ctx.PlannerState.OnCurrentTaskStarted?.Invoke(task);
+                return true;
+            }
+
+            // This should not really happen if a domain is set up properly.
+            task.Abort(ctx);
+            ctx.PlannerState.CurrentTask = null;
+            ctx.PlannerState.LastStatus = TaskStatus.Failure;
+            return true;
+        }
+
+        /// <summary>
+        /// While we have a valid primitive task running, we should tick it each tick of the plan execution.
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <param name="ctx"></param>
+        /// <param name="task"></param>
+        /// <param name="allowImmediateReplanAndExecute"></param>
+        /// <returns></returns>
+        private bool TryTickPrimitiveTaskOperator(Domain<T> domain, T ctx, IPrimitiveTask task, bool allowImmediateReplanAndExecute)
+        {
+            if (task.Operator != null)
+            {
+                if (IsExecutingConditionsValid(domain, ctx, task, allowImmediateReplanAndExecute) == false)
+                {
+                    return false;
+                }
+
+                ctx.PlannerState.LastStatus = task.Operator.Update(ctx);
+
+                // If the operation finished successfully, we set task to null so that we dequeue the next task in the plan the following tick.
+                if (ctx.PlannerState.LastStatus == TaskStatus.Success)
+                {
+                    OnOperatorFinishedSuccessfully(domain, ctx, task, allowImmediateReplanAndExecute);
+                    return true;
+                }
+
+                // If the operation failed to finish, we need to fail the entire plan, so that we will replan the next tick.
+                if (ctx.PlannerState.LastStatus == TaskStatus.Failure)
+                {
+                    FailEntirePlan(domain, ctx, task, allowImmediateReplanAndExecute);
+                    return true;
+                }
+
+                // Otherwise the operation isn't done yet and need to continue.
+                ctx.PlannerState.OnCurrentTaskContinues?.Invoke(task);
+                return true;
+            }
+
+            // This should not really happen if a domain is set up properly.
+            task.Abort(ctx);
+            ctx.PlannerState.CurrentTask = null;
+            ctx.PlannerState.LastStatus = TaskStatus.Failure;
+            return true;
+        }
+
+        /// <summary>
+        /// Ensure conditions are valid when a new task is selected from the plan
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
+        private bool IsConditionsValid(T ctx)
+        {
+            foreach (var condition in ctx.PlannerState.CurrentTask.Conditions)
+            {
+                // If a condition failed, then the plan failed to progress! A replan is required.
+                if (condition.IsValid(ctx) == false)
+                {
+                    ctx.PlannerState.OnNewTaskConditionFailed?.Invoke(ctx.PlannerState.CurrentTask, condition);
+                    AbortTask(ctx, ctx.PlannerState.CurrentTask as IPrimitiveTask);
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Ensure executing conditions are valid during plan execution
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <param name="ctx"></param>
+        /// <param name="task"></param>
+        /// <param name="allowImmediateReplan"></param>
+        /// <returns></returns>
+        private bool IsExecutingConditionsValid(Domain<T> domain, T ctx, IPrimitiveTask task, bool allowImmediateReplanAndExecute)
+        {
+            foreach (var condition in task.ExecutingConditions)
+            {
+                // If a condition failed, then the plan failed to progress! A replan is required.
+                if (condition.IsValid(ctx) == false)
+                {
+                    ctx.PlannerState.OnCurrentTaskExecutingConditionFailed?.Invoke(task, condition);
+
+                    AbortTask(ctx, task);
+
+                    if (allowImmediateReplanAndExecute)
+                    {
+                        Tick(domain, ctx, allowImmediateReplanAndExecute: false);
+                    }
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// When a task is aborted (due to failed condition checks),
+        /// we prepare the context for a replan next tick.
+        /// </summary>
+        /// <param name="ctx"></param>
+        private void AbortTask(T ctx, IPrimitiveTask task)
+        {
+            task?.Abort(ctx);
+            ClearPlanForReplan(ctx);
+        }
+
+        /// <summary>
+        /// If the operation finished successfully, we set task to null so that we dequeue the next task in the plan the following tick.
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <param name="ctx"></param>
+        /// <param name="task"></param>
+        /// <param name="allowImmediateReplanAndExecute"></param>
+        private void OnOperatorFinishedSuccessfully(Domain<T> domain, T ctx, IPrimitiveTask task, bool allowImmediateReplanAndExecute)
+        {
+            ctx.PlannerState.OnCurrentTaskCompletedSuccessfully?.Invoke(task);
+
+            // All effects that is a result of running this task should be applied when the task is a success.
+            foreach (var effect in task.Effects)
+            {
+                if (effect.Type == EffectType.PlanAndExecute)
+                {
+                    ctx.PlannerState.OnApplyEffect?.Invoke(effect);
+                    effect.Apply(ctx);
+                }
+            }
+
+            ctx.PlannerState.CurrentTask = null;
+            if (ctx.PlannerState.Plan.Count == 0)
+            {
+                ctx.LastMTR.Clear();
+
+                if (ctx.DebugMTR)
+                {
+                    ctx.LastMTRDebug.Clear();
+                }
+
+                ctx.IsDirty = false;
+
+                if (allowImmediateReplanAndExecute)
+                {
+                    Tick(domain, ctx, allowImmediateReplanAndExecute: false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// If the operation failed to finish, we need to fail the entire plan, so that we will replan the next tick.
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="task"></param>
+        private void FailEntirePlan(Domain<T> domain, T ctx, IPrimitiveTask task, bool allowImmediateReplanAndExecute)
+        {
+            ctx.PlannerState.OnCurrentTaskFailed?.Invoke(task);
+
+            task.Abort(ctx);
+            ClearPlanForReplan(ctx);
+
+            if (allowImmediateReplanAndExecute)
+            {
+                Tick(domain, ctx, allowImmediateReplanAndExecute: false);
+            }
+        }
+        
+        /// <summary>
+        /// Prepare the planner state and context for a clean replan
+        /// </summary>
+        /// <param name="ctx"></param>
+        private void ClearPlanForReplan(T ctx)
+        {
+            ctx.PlannerState.CurrentTask = null;
+            ctx.PlannerState.Plan.Clear();
+
+            ctx.LastMTR.Clear();
+
+            if (ctx.DebugMTR)
+            {
+                ctx.LastMTRDebug.Clear();
+            }
+
+            ctx.HasPausedPartialPlan = false;
+            ctx.PartialPlanQueue.Clear();
+            ctx.IsDirty = false;
+        }
+
+        /// <summary>
+        /// If current task is null, and plan is empty, and we're not trying to replace the current plan, and decomposition failed or was rejected, then the planner failed to find a plan.
+        /// </summary>
+        /// <param name="isTryingToReplacePlan"></param>
+        /// <param name="decompositionStatus"></param>
+        /// <returns></returns>
+        private bool HasFailedToFindPlan(bool isTryingToReplacePlan, DecompositionStatus decompositionStatus, T ctx)
+        {
+            return ctx.PlannerState.CurrentTask == null && ctx.PlannerState.Plan.Count == 0 && isTryingToReplacePlan == false &&
+                   (decompositionStatus == DecompositionStatus.Failed ||
+                    decompositionStatus == DecompositionStatus.Rejected);
+        }
+
+        // ========================================================= RESET
+
+        public void Reset(T ctx)
+        {
+            ctx.PlannerState.Plan.Clear();
+
+            if (ctx.PlannerState.CurrentTask != null && ctx.PlannerState.CurrentTask is IPrimitiveTask task)
+            {
+                task.Stop(ctx);
+            }
+
+            ClearPlanForReplan(ctx);
+        }
+    }
+}
+
+
+// [FILE_END]: Planner.cs
+// ==========================================
+
+
+// [FILE_START]: AssemblyInfo.cs
+// PATH: Properties\AssemblyInfo.cs
+// ------------------------------------------
+
+﻿using System.Reflection;
+using System.Runtime.InteropServices;
+
+// General Information about an assembly is controlled through the following
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+[assembly: AssemblyTitle("Fluid-HTN")]
+[assembly: AssemblyDescription("A simple HTN planner based around the principles of the Builder pattern.")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("PTrefall")]
+[assembly: AssemblyProduct("Fluid-HTN")]
+[assembly: AssemblyCopyright("Copyright © 2019")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+
+// Setting ComVisible to false makes the types in this assembly not visible
+// to COM components.  If you need to access a type in this assembly from
+// COM, set the ComVisible attribute to true on that type.
+[assembly: ComVisible(false)]
+
+// The following GUID is for the ID of the typelib if this project is exposed to COM
+[assembly: Guid("b6908ced-5c0b-415c-9564-85f66a8b5025")]
+
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Build and Revision Numbers
+// by using the '*' as shown below:
+// [assembly: AssemblyVersion("1.0.*")]
+[assembly: AssemblyVersion("0.4.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
+
+
+// [FILE_END]: AssemblyInfo.cs
+// ==========================================
+
+
+// [FILE_START]: ITask.cs
+// PATH: Tasks\ITask.cs
+// ------------------------------------------
+
+﻿using System.Collections.Generic;
+using FluidHTN.Compounds;
+using FluidHTN.Conditions;
+
+namespace FluidHTN
+{
+    public interface ITask
+    {
+        /// <summary>
+        ///     Used for debugging and identification purposes
+        /// </summary>
+        string Name { get; set; }
+
+        /// <summary>
+        ///     The parent of this task in the hierarchy
+        /// </summary>
+        ICompoundTask Parent { get; set; }
+
+        /// <summary>
+        ///     The conditions that must be satisfied for this task to pass as valid.
+        /// </summary>
+        List<ICondition> Conditions { get; }
+
+        /// <summary>
+        ///     Add a new condition to the task.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        ITask AddCondition(ICondition condition);
+
+        /// <summary>
+        ///     Check the task's preconditions, returns true if all preconditions are valid.
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
+        bool IsValid(IContext ctx);
+
+        DecompositionStatus OnIsValidFailed(IContext ctx);
+    }
+}
+
+
+// [FILE_END]: ITask.cs
+// ==========================================
+
+
+// [FILE_START]: TaskStatus.cs
+// PATH: Tasks\TaskStatus.cs
+// ------------------------------------------
+
+﻿namespace FluidHTN
+{
+    public enum TaskStatus
+    {
+        Continue,
+        Success,
+        Failure
+    }
+}
+
+// [FILE_END]: TaskStatus.cs
+// ==========================================
+
+
+// [FILE_START]: CompoundTask.cs
+// PATH: Tasks\CompoundTasks\CompoundTask.cs
+// ------------------------------------------
+
+﻿using System;
+using System.Collections.Generic;
+using FluidHTN.Conditions;
+using FluidHTN.PrimitiveTasks;
+
+namespace FluidHTN.Compounds
+{
+    public abstract class CompoundTask : ICompoundTask
+    {
+        // ========================================================= PROPERTIES
+
+        public string Name { get; set; }
+        public ICompoundTask Parent { get; set; }
+        public List<ICondition> Conditions { get; } = new List<ICondition>();
+        public List<ITask> Subtasks { get; } = new List<ITask>();
+
+        // ========================================================= VALIDITY
+
+        public virtual DecompositionStatus OnIsValidFailed(IContext ctx)
+        {
+            return DecompositionStatus.Failed;
+        }
+
+        // ========================================================= ADDERS
+
+        public ITask AddCondition(ICondition condition)
+        {
+            Conditions.Add(condition);
+            return this;
+        }
+
+        public ICompoundTask AddSubtask(ITask subtask)
+        {
+            Subtasks.Add(subtask);
+            return this;
+        }
+
+        // ========================================================= DECOMPOSITION
+
+        public DecompositionStatus Decompose(IContext ctx, int startIndex, out Queue<ITask> result)
+        {
+            if (ctx.LogDecomposition)
+            {
+                ctx.CurrentDecompositionDepth++;
+            }
+
+            var status = OnDecompose(ctx, startIndex, out result);
+            
+            if (ctx.LogDecomposition)
+            {
+                ctx.CurrentDecompositionDepth--;
+            }
+
+            return status;
+        }
+
+        protected abstract DecompositionStatus OnDecompose(IContext ctx, int startIndex, out Queue<ITask> result);
+
+        // oldStackDepth is a snapshot of world state change stack depths taken before the
+        // decomposition loop began (see Sequence.OnDecompose). It is threaded through every
+        // helper so that a Sequence can roll back all accumulated world state changes on failure.
+        // Selector always passes null here because it never accumulates effects across alternatives.
+        protected abstract DecompositionStatus OnDecomposeTask(IContext ctx, ITask task, int taskIndex, int[] oldStackDepth, out Queue<ITask> result);
+
+        protected abstract void OnDecomposePrimitiveTask(IContext ctx, IPrimitiveTask task, int taskIndex, int[] oldStackDepth, out Queue<ITask> result);
+
+        protected abstract DecompositionStatus OnDecomposeCompoundTask(IContext ctx, ICompoundTask task, int taskIndex, int[] oldStackDepth, out Queue<ITask> result);
+
+        protected abstract DecompositionStatus OnDecomposeSlot(IContext ctx, Slot task, int taskIndex, int[] oldStackDepth, out Queue<ITask> result);
+
+        // ========================================================= VALIDITY
+
+        public virtual bool IsValid(IContext ctx)
+        {
+            foreach (var condition in Conditions)
+            {
+                var result = condition.IsValid(ctx);
+                
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"CompoundTask.IsValid:{(result ? "Success" : "Failed")}:{condition.Name} is{(result ? "" : " not")} valid!", result ? ConsoleColor.DarkGreen : ConsoleColor.DarkRed);
+                }
+
+                if (result == false)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        // ========================================================= LOGGING
+
+        protected virtual void Log(IContext ctx, string description, ConsoleColor color = ConsoleColor.White)
+        {
+            ctx.Log(Name, description, ctx.CurrentDecompositionDepth, this, color);
+        }
+    }
+}
+
+
+// [FILE_END]: CompoundTask.cs
+// ==========================================
+
+
+// [FILE_START]: DecompositionStatus.cs
+// PATH: Tasks\CompoundTasks\DecompositionStatus.cs
+// ------------------------------------------
+
+﻿namespace FluidHTN.Compounds
+{
+    public enum DecompositionStatus
+    {
+        Succeeded,
+        Partial,
+        Failed,
+        Rejected
+    }
+}
+
+
+// [FILE_END]: DecompositionStatus.cs
+// ==========================================
+
+
+// [FILE_START]: ICompoundTask.cs
+// PATH: Tasks\CompoundTasks\ICompoundTask.cs
+// ------------------------------------------
+
+﻿
+using System.Collections.Generic;
+
+namespace FluidHTN.Compounds
+{
+    public interface ICompoundTask : ITask
+    {
+        List<ITask> Subtasks { get; }
+        ICompoundTask AddSubtask(ITask subtask);
+
+        /// <summary>
+        ///     Decompose the task onto the tasks to process queue, mind it's depth first
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
+        DecompositionStatus Decompose(IContext ctx, int startIndex, out Queue<ITask> result);
+    }
+}
+
+
+// [FILE_END]: ICompoundTask.cs
+// ==========================================
+
+
+// [FILE_START]: IDecomposeAll.cs
+// PATH: Tasks\CompoundTasks\IDecomposeAll.cs
+// ------------------------------------------
+
+﻿namespace FluidHTN.Compounds
+{
+    /// <summary>
+    ///     The Decompose All interface is a tag to signify that this compound task type intends to
+    ///     decompose all its subtasks.
+    ///     For a task to support Pause Plan tasks, needed for partial planning, it must be
+    ///     a decompose-all compound task type.
+    /// </summary>
+    public interface IDecomposeAll : ICompoundTask
+    {
+    }
+}
+
+// [FILE_END]: IDecomposeAll.cs
+// ==========================================
+
+
+// [FILE_START]: PausePlanTask.cs
+// PATH: Tasks\CompoundTasks\PausePlanTask.cs
+// ------------------------------------------
+
+﻿using System;
+using System.Collections.Generic;
+using FluidHTN.Compounds;
+using FluidHTN.Conditions;
+
+namespace FluidHTN
+{
+    public class PausePlanTask : ITask
+    {
+        // ========================================================= PROPERTIES
+
+        public string Name { get; set; }
+        public ICompoundTask Parent { get; set; }
+        public List<ICondition> Conditions { get; } = null;
+        public List<IEffect> Effects { get; } = null;
+
+        // ========================================================= VALIDITY
+
+        public DecompositionStatus OnIsValidFailed(IContext ctx)
+        {
+            return DecompositionStatus.Failed;
+        }
+
+        // ========================================================= ADDERS
+
+        public ITask AddCondition(ICondition condition)
+        {
+            throw new Exception("Pause Plan tasks does not support conditions.");
+        }
+
+        public ITask AddEffect(IEffect effect)
+        {
+            throw new Exception("Pause Plan tasks does not support effects.");
+        }
+
+        // ========================================================= FUNCTIONALITY
+
+        public void ApplyEffects(IContext ctx)
+        {
+        }
+
+        // ========================================================= VALIDITY
+
+        public bool IsValid(IContext ctx)
+        {
+            if (ctx.LogDecomposition)
+            {
+                Log(ctx, $"PausePlanTask.IsValid:Success!");
+            }
+
+            return true;
+        }
+
+        // ========================================================= LOGGING
+
+        protected virtual void Log(IContext ctx, string description)
+        {
+            ctx.Log(Name, description, ctx.CurrentDecompositionDepth, this, ConsoleColor.Green);
+        }
+    }
+}
+
+
+// [FILE_END]: PausePlanTask.cs
+// ==========================================
+
+
+// [FILE_START]: Selector.cs
+// PATH: Tasks\CompoundTasks\Selector.cs
+// ------------------------------------------
+
+﻿using System;
+using System.Collections.Generic;
+using FluidHTN.PrimitiveTasks;
+
+namespace FluidHTN.Compounds
+{
+    public class Selector : CompoundTask
+    {
+        // ========================================================= FIELDS
+
+        protected readonly Queue<ITask> Plan = new Queue<ITask>();
+
+        // ========================================================= VALIDITY
+
+        public override bool IsValid(IContext ctx)
+        {
+            // Check that our preconditions are valid first.
+            if (base.IsValid(ctx) == false)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Selector.IsValid:Failed:Preconditions not met!", ConsoleColor.Red);
+                }
+
+                return false;
+            }
+
+            // Selector requires there to be at least one sub-task to successfully select from.
+            if (Subtasks.Count == 0)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Selector.IsValid:Failed:No sub-tasks!", ConsoleColor.Red);
+                }
+
+                return false;
+            }
+
+            if (ctx.LogDecomposition)
+            {
+                Log(ctx, $"Selector.IsValid:Success!", ConsoleColor.Green);
+            }
+
+            return true;
+        }
+
+        private bool BeatsLastMTR(IContext ctx, int taskIndex, int currentDecompositionIndex)
+        {
+            // If the last plan's traversal record for this decomposition layer 
+            // has a smaller index than the current task index we're about to
+            // decompose, then the new decomposition can't possibly beat the
+            // running plan, so we cancel finding a new plan.
+            if (ctx.LastMTR[currentDecompositionIndex] < taskIndex)
+            {
+                // But, if any of the earlier records beat the record in LastMTR, we're still good, as we're on a higher priority branch.
+                // This ensures that [0,0,1] can beat [0,1,0]
+                for (var i = 0; i < ctx.MethodTraversalRecord.Count; i++)
+                {
+                    var diff = ctx.MethodTraversalRecord[i] - ctx.LastMTR[i];
+
+                    if (diff < 0)
+                    {
+                        return true;
+                    }
+
+                    if (diff > 0)
+                    {
+                        // We should never really be able to get here, but just in case.
+                        return false;
+                    }
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
+        // ========================================================= DECOMPOSITION
+
+        /// <summary>
+        ///     In a Selector decomposition, just a single sub-task must be valid and successfully decompose for the Selector to be
+        ///     successfully decomposed.
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
+        protected override DecompositionStatus OnDecompose(IContext ctx, int startIndex, out Queue<ITask> result)
+        {
+            Plan.Clear();
+
+            for (var taskIndex = startIndex; taskIndex < Subtasks.Count; taskIndex++)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Selector.OnDecompose:Task index: {taskIndex}: {Subtasks[taskIndex]?.Name}");
+                }
+
+                // If the last plan is still running, we need to check whether the
+                // new decomposition can possibly beat it.
+                if (ctx.LastMTR != null && ctx.LastMTR.Count > 0)
+                {
+                    if (ctx.MethodTraversalRecord.Count < ctx.LastMTR.Count)
+                    {
+                        var currentDecompositionIndex = ctx.MethodTraversalRecord.Count;
+                        if (BeatsLastMTR(ctx, taskIndex, currentDecompositionIndex) == false)
+                        {
+                            ctx.MethodTraversalRecord.Add(-1);
+                            if (ctx.DebugMTR)
+                            {
+                                ctx.MTRDebug.Add($"REPLAN FAIL {Subtasks[taskIndex].Name}");
+                            }
+
+                            if (ctx.LogDecomposition)
+                            {
+                                Log(ctx,
+                                    $"Selector.OnDecompose:Rejected:Index {currentDecompositionIndex} is beat by last method traversal record!", ConsoleColor.Red);
+                            }
+
+                            result = null;
+                            return DecompositionStatus.Rejected;
+                        }
+                    }
+                }
+
+                var task = Subtasks[taskIndex];
+
+                // Selector passes null for oldStackDepth: each subtask alternative is independent,
+                // so there are no accumulated world state effects to roll back between attempts.
+                var status = OnDecomposeTask(ctx, task, taskIndex, null, out result);
+                switch (status)
+                {
+                    case DecompositionStatus.Rejected:
+                    case DecompositionStatus.Succeeded:
+                    case DecompositionStatus.Partial:
+                        return status;
+                    case DecompositionStatus.Failed:
+                    default:
+                        continue;
+                }
+            }
+
+            result = Plan;
+            return result.Count == 0 ? DecompositionStatus.Failed : DecompositionStatus.Succeeded;
+        }
+
+        protected override DecompositionStatus OnDecomposeTask(IContext ctx, ITask task, int taskIndex,
+            int[] oldStackDepth, out Queue<ITask> result)
+        {
+            if (task.IsValid(ctx) == false)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Selector.OnDecomposeTask:Failed:Task {task.Name}.IsValid returned false!", ConsoleColor.Red);
+                }
+
+                result = Plan;
+                return task.OnIsValidFailed(ctx);
+            }
+
+            if (task is ICompoundTask compoundTask)
+            {
+                return OnDecomposeCompoundTask(ctx, compoundTask, taskIndex, null, out result);
+            }
+
+            if (task is IPrimitiveTask primitiveTask)
+            {
+                OnDecomposePrimitiveTask(ctx, primitiveTask, taskIndex, null, out result);
+            }
+
+            if (task is Slot slot)
+            {
+                return OnDecomposeSlot(ctx, slot, taskIndex, null, out result);
+            }
+
+            result = Plan;
+            var status = result.Count == 0 ? DecompositionStatus.Failed : DecompositionStatus.Succeeded;
+
+            if (ctx.LogDecomposition)
+            {
+                Log(ctx, $"Selector.OnDecomposeTask:{status}!", status == DecompositionStatus.Succeeded ? ConsoleColor.Green : ConsoleColor.Red);
+            }
+
+            return status;
+        }
+
+        protected override void OnDecomposePrimitiveTask(IContext ctx, IPrimitiveTask task, int taskIndex,
+            int[] oldStackDepth, out Queue<ITask> result)
+        {
+            // We need to record the task index before we decompose the task,
+            // so that the traversal record is set up in the right order.
+            ctx.MethodTraversalRecord.Add(taskIndex);
+            if (ctx.DebugMTR)
+            {
+                ctx.MTRDebug.Add(task.Name);
+            }
+
+            if (ctx.LogDecomposition)
+            {
+                Log(ctx, $"Selector.OnDecomposeTask:Pushed {task.Name} to plan!", ConsoleColor.Blue);
+            }
+
+            task.ApplyEffects(ctx);
+            Plan.Enqueue(task);
+            result = Plan;
+        }
+
+        protected override DecompositionStatus OnDecomposeCompoundTask(IContext ctx, ICompoundTask task, int taskIndex,
+            int[] oldStackDepth, out Queue<ITask> result)
+        {
+            // We need to record the task index before we decompose the task,
+            // so that the traversal record is set up in the right order.
+            ctx.MethodTraversalRecord.Add(taskIndex);
+
+            if (ctx.DebugMTR)
+            {
+                ctx.MTRDebug.Add(task.Name);
+            }
+
+            var status = task.Decompose(ctx, 0, out var subPlan);
+
+            // If status is rejected, that means the entire planning procedure should cancel.
+            if (status == DecompositionStatus.Rejected)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Selector.OnDecomposeCompoundTask:{status}: Decomposing {task.Name} was rejected.", ConsoleColor.Red);
+                }
+
+                result = null;
+                return DecompositionStatus.Rejected;
+            }
+
+            // If the decomposition failed
+            if (status == DecompositionStatus.Failed)
+            {
+                // Remove the taskIndex if it failed to decompose.
+                ctx.MethodTraversalRecord.RemoveAt(ctx.MethodTraversalRecord.Count - 1);
+                if (ctx.DebugMTR)
+                {
+                    ctx.MTRDebug.RemoveAt(ctx.MTRDebug.Count - 1);
+                }
+
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Selector.OnDecomposeCompoundTask:{status}: Decomposing {task.Name} failed.", ConsoleColor.Red);
+                }
+
+                result = Plan;
+                return DecompositionStatus.Failed;
+            }
+
+            while (subPlan.Count > 0)
+            {
+                var p = subPlan.Dequeue();
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Selector.OnDecomposeCompoundTask:Decomposing {task.Name}:Pushed {p.Name} to plan!", ConsoleColor.Blue);
+                }
+
+                Plan.Enqueue(p);
+            }
+
+            if (ctx.HasPausedPartialPlan)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Selector.OnDecomposeCompoundTask:Return partial plan at index {taskIndex}!", ConsoleColor.DarkBlue);
+                }
+
+                result = Plan;
+                return DecompositionStatus.Partial;
+            }
+
+            result = Plan;
+            var s = result.Count == 0 ? DecompositionStatus.Failed : DecompositionStatus.Succeeded;
+
+            if (ctx.LogDecomposition)
+            {
+                Log(ctx, $"Selector.OnDecomposeCompoundTask:{s}!", s == DecompositionStatus.Succeeded ? ConsoleColor.Green : ConsoleColor.Red);
+            }
+
+            return s;
+        }
+
+        protected override DecompositionStatus OnDecomposeSlot(IContext ctx, Slot task, int taskIndex, int[] oldStackDepth, out Queue<ITask> result)
+        {
+            // We need to record the task index before we decompose the task,
+            // so that the traversal record is set up in the right order.
+            ctx.MethodTraversalRecord.Add(taskIndex);
+
+            if (ctx.DebugMTR)
+            {
+                ctx.MTRDebug.Add(task.Name);
+            }
+
+            var status = task.Decompose(ctx, 0, out var subPlan);
+
+            // If status is rejected, that means the entire planning procedure should cancel.
+            if (status == DecompositionStatus.Rejected)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Selector.OnDecomposeSlot:{status}: Decomposing {task.Name} was rejected.", ConsoleColor.Red);
+                }
+
+                result = null;
+                return DecompositionStatus.Rejected;
+            }
+
+            // If the decomposition failed
+            if (status == DecompositionStatus.Failed)
+            {
+                // Remove the taskIndex if it failed to decompose.
+                ctx.MethodTraversalRecord.RemoveAt(ctx.MethodTraversalRecord.Count - 1);
+                if (ctx.DebugMTR)
+                {
+                    ctx.MTRDebug.RemoveAt(ctx.MTRDebug.Count - 1);
+                }
+
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Selector.OnDecomposeSlot:{status}: Decomposing {task.Name} failed.", ConsoleColor.Red);
+                }
+
+                result = Plan;
+                return DecompositionStatus.Failed;
+            }
+
+            while (subPlan.Count > 0)
+            {
+                var p = subPlan.Dequeue();
+                
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Selector.OnDecomposeSlot:Decomposing {task.Name}:Pushed {p.Name} to plan!", ConsoleColor.Blue);
+                }
+
+                Plan.Enqueue(p);
+            }
+
+            if (ctx.HasPausedPartialPlan)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Selector.OnDecomposeSlot:Return partial plan!", ConsoleColor.DarkBlue);
+                }
+
+                result = Plan;
+                return DecompositionStatus.Partial;
+            }
+
+            result = Plan;
+            var s = result.Count == 0 ? DecompositionStatus.Failed : DecompositionStatus.Succeeded;
+
+            if (ctx.LogDecomposition)
+            {
+                Log(ctx, $"Selector.OnDecomposeSlot:{s}!", s == DecompositionStatus.Succeeded ? ConsoleColor.Green : ConsoleColor.Red);
+            }
+
+            return s;
+        }
+    }
+}
+
+
+// [FILE_END]: Selector.cs
+// ==========================================
+
+
+// [FILE_START]: Sequence.cs
+// PATH: Tasks\CompoundTasks\Sequence.cs
+// ------------------------------------------
+
+﻿using System;
+using System.Collections.Generic;
+using FluidHTN.PrimitiveTasks;
+
+namespace FluidHTN.Compounds
+{
+    public class Sequence : CompoundTask, IDecomposeAll
+    {
+        // ========================================================= FIELDS
+
+        protected readonly Queue<ITask> Plan = new Queue<ITask>();
+
+        // ========================================================= VALIDITY
+
+        public override bool IsValid(IContext ctx)
+        {
+            // Check that our preconditions are valid first.
+            if (base.IsValid(ctx) == false)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Sequence.IsValid:Failed:Preconditions not met!", ConsoleColor.Red);
+                }
+
+                return false;
+            }
+
+            // Selector requires there to be subtasks to successfully select from.
+            if (Subtasks.Count == 0)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Sequence.IsValid:Failed:No sub-tasks!", ConsoleColor.Red);
+                }
+
+                return false;
+            }
+
+            if (ctx.LogDecomposition)
+            {
+                Log(ctx, $"Sequence.IsValid:Success!", ConsoleColor.Green);
+            }
+
+            return true;
+        }
+
+        // ========================================================= DECOMPOSITION
+
+        /// <summary>
+        ///     In a Sequence decomposition, all sub-tasks must be valid and successfully decomposed in order for the Sequence to
+        ///     be successfully decomposed.
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
+        protected override DecompositionStatus OnDecompose(IContext ctx, int startIndex, out Queue<ITask> result)
+        {
+            Plan.Clear();
+
+            // Snapshot the current world state change stack depths before we begin decomposing
+            // subtasks. Because a Sequence must succeed as a whole, any world state effects applied
+            // during a failed subtask decomposition must be rolled back. We capture this snapshot
+            // here — outside the subtask loop — so that TrimToStackDepth can undo all accumulated
+            // changes across every subtask attempted so far.
+            var oldStackDepth = ctx.GetWorldStateChangeDepth(ctx.Factory);
+
+            for (var taskIndex = startIndex; taskIndex < Subtasks.Count; taskIndex++)
+            {
+                var task = Subtasks[taskIndex];
+
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Sequence.OnDecompose:Task index: {taskIndex}: {task?.Name}");
+                }
+
+                var status = OnDecomposeTask(ctx, task, taskIndex, oldStackDepth, out result);
+                switch (status)
+                {
+                    case DecompositionStatus.Rejected:
+                    case DecompositionStatus.Failed:
+                    case DecompositionStatus.Partial:
+                    {
+                        ctx.Factory.FreeArray(ref oldStackDepth);
+                        return status;
+                    }
+                }
+            }
+
+            ctx.Factory.FreeArray(ref oldStackDepth);
+
+            result = Plan;
+            return result.Count == 0 ? DecompositionStatus.Failed : DecompositionStatus.Succeeded;
+        }
+
+        protected override DecompositionStatus OnDecomposeTask(IContext ctx, ITask task, int taskIndex,
+            int[] oldStackDepth, out Queue<ITask> result)
+        {
+            if (task.IsValid(ctx) == false)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Sequence.OnDecomposeTask:Failed:Task {task.Name}.IsValid returned false!", ConsoleColor.Red);
+                }
+
+                Plan.Clear();
+                ctx.TrimToStackDepth(oldStackDepth);
+                result = Plan;
+                return task.OnIsValidFailed(ctx);
+            }
+
+            if (task is ICompoundTask compoundTask)
+            {
+                return OnDecomposeCompoundTask(ctx, compoundTask, taskIndex, oldStackDepth, out result);
+            }
+            else if (task is IPrimitiveTask primitiveTask)
+            {
+                OnDecomposePrimitiveTask(ctx, primitiveTask, taskIndex, oldStackDepth, out result);
+            }
+            else if (task is PausePlanTask)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Sequence.OnDecomposeTask:Return partial plan at index {taskIndex}!", ConsoleColor.DarkBlue);
+                }
+
+                ctx.HasPausedPartialPlan = true;
+                ctx.PartialPlanQueue.Enqueue(new PartialPlanEntry()
+                {
+                    Task = this,
+                    TaskIndex = taskIndex + 1,
+                });
+
+                result = Plan;
+                return DecompositionStatus.Partial;
+            }
+            else if (task is Slot slot)
+            {
+                return OnDecomposeSlot(ctx, slot, taskIndex, oldStackDepth, out result);
+            }
+
+            result = Plan;
+            var s = result.Count == 0 ? DecompositionStatus.Failed : DecompositionStatus.Succeeded;
+
+            if (ctx.LogDecomposition)
+            {
+                Log(ctx, $"Sequence.OnDecomposeTask:{s}!", s == DecompositionStatus.Succeeded ? ConsoleColor.Green : ConsoleColor.Red);
+            }
+
+            return s;
+        }
+
+        protected override void OnDecomposePrimitiveTask(IContext ctx, IPrimitiveTask task, int taskIndex,
+            int[] oldStackDepth, out Queue<ITask> result)
+        {
+            // oldStackDepth is not used here; rollback of primitive task effects is handled
+            // at the Sequence level (in OnDecomposeTask/OnDecomposeCompoundTask) via TrimToStackDepth.
+
+            // We don't add MTR tracking on sequences for primary sub-tasks, since they will always be included, so they're irrelevant to MTR tracking.
+
+            if (ctx.LogDecomposition)
+            {
+                Log(ctx, $"Sequence.OnDecomposeTask:Pushed {task.Name} to plan!", ConsoleColor.Blue);
+            }
+
+            task.ApplyEffects(ctx);
+            Plan.Enqueue(task);
+            result = Plan;
+        }
+
+        protected override DecompositionStatus OnDecomposeCompoundTask(IContext ctx, ICompoundTask task,
+            int taskIndex, int[] oldStackDepth, out Queue<ITask> result)
+        {
+            var status = task.Decompose(ctx, 0, out var subPlan);
+
+            // If result is null, that means the entire planning procedure should cancel.
+            if (status == DecompositionStatus.Rejected)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Sequence.OnDecomposeCompoundTask:{status}: Decomposing {task.Name} was rejected.", ConsoleColor.Red);
+                }
+
+                Plan.Clear();
+                ctx.TrimToStackDepth(oldStackDepth);
+
+                result = null;
+                return DecompositionStatus.Rejected;
+            }
+
+            // If the decomposition failed
+            if (status == DecompositionStatus.Failed)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Sequence.OnDecomposeCompoundTask:{status}: Decomposing {task.Name} failed.", ConsoleColor.Red);
+                }
+
+                Plan.Clear();
+                ctx.TrimToStackDepth(oldStackDepth);
+                result = Plan;
+                return DecompositionStatus.Failed;
+            }
+
+            while (subPlan.Count > 0)
+            {
+                var p = subPlan.Dequeue();
+
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Sequence.OnDecomposeCompoundTask:Decomposing {task.Name}:Pushed {p.Name} to plan!", ConsoleColor.Blue);
+                }
+
+                Plan.Enqueue(p);
+            }
+
+            if (ctx.HasPausedPartialPlan)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Sequence.OnDecomposeCompoundTask:Return partial plan at index {taskIndex}!", ConsoleColor.DarkBlue);
+                }
+
+                if (taskIndex < Subtasks.Count - 1)
+                {
+                    ctx.PartialPlanQueue.Enqueue(new PartialPlanEntry()
+                    {
+                        Task = this,
+                        TaskIndex = taskIndex + 1,
+                    });
+                }
+
+                result = Plan;
+                return DecompositionStatus.Partial;
+            }
+
+            result = Plan;
+
+            if (ctx.LogDecomposition)
+            {
+                Log(ctx, $"Sequence.OnDecomposeCompoundTask:Succeeded!", ConsoleColor.Green);
+            }
+
+            return DecompositionStatus.Succeeded;
+        }
+
+        protected override DecompositionStatus OnDecomposeSlot(IContext ctx, Slot task,
+            int taskIndex, int[] oldStackDepth, out Queue<ITask> result)
+        {
+            var status = task.Decompose(ctx, 0, out var subPlan);
+
+            // If result is null, that means the entire planning procedure should cancel.
+            if (status == DecompositionStatus.Rejected)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Sequence.OnDecomposeSlot:{status}: Decomposing {task.Name} was rejected.", ConsoleColor.Red);
+                }
+
+                Plan.Clear();
+                ctx.TrimToStackDepth(oldStackDepth);
+
+                result = null;
+                return DecompositionStatus.Rejected;
+            }
+
+            // If the decomposition failed
+            if (status == DecompositionStatus.Failed)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Sequence.OnDecomposeSlot:{status}: Decomposing {task.Name} failed.", ConsoleColor.Red);
+                }
+
+                Plan.Clear();
+                ctx.TrimToStackDepth(oldStackDepth);
+                result = Plan;
+                return DecompositionStatus.Failed;
+            }
+
+            while (subPlan.Count > 0)
+            {
+                var p = subPlan.Dequeue();
+
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Sequence.OnDecomposeSlot:Decomposing {task.Name}:Pushed {p.Name} to plan!", ConsoleColor.Blue);
+                }
+
+                Plan.Enqueue(p);
+            }
+
+            if (ctx.HasPausedPartialPlan)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"Sequence.OnDecomposeSlot:Return partial plan at index {taskIndex}!", ConsoleColor.DarkBlue);
+                }
+
+                if (taskIndex < Subtasks.Count - 1)
+                {
+                    ctx.PartialPlanQueue.Enqueue(new PartialPlanEntry()
+                    {
+                        Task = this,
+                        TaskIndex = taskIndex + 1,
+                    });
+                }
+
+                result = Plan;
+                return DecompositionStatus.Partial;
+            }
+
+            result = Plan;
+
+            if (ctx.LogDecomposition)
+            {
+                Log(ctx, $"Sequence.OnDecomposeSlot:Succeeded!", ConsoleColor.Green);
+            }
+
+            return DecompositionStatus.Succeeded;
+        }
+    }
+}
+
+
+// [FILE_END]: Sequence.cs
+// ==========================================
+
+
+// [FILE_START]: TaskRoot.cs
+// PATH: Tasks\CompoundTasks\TaskRoot.cs
+// ------------------------------------------
+
+﻿using FluidHTN.Compounds;
+
+namespace FluidHTN
+{
+    public class TaskRoot : Selector
+    {
+    }
+}
+
+// [FILE_END]: TaskRoot.cs
+// ==========================================
+
+
+// [FILE_START]: Slot.cs
+// PATH: Tasks\OtherTasks\Slot.cs
+// ------------------------------------------
+
+﻿using System;
+using System.Collections.Generic;
+using FluidHTN.Conditions;
+
+namespace FluidHTN.Compounds
+{
+    public class Slot : ITask
+    {
+        // ========================================================= PROPERTIES
+
+        public int SlotId { get; set; }
+        public string Name { get; set; }
+        public ICompoundTask Parent { get; set; }
+        public List<ICondition> Conditions { get; } = null;
+        public ICompoundTask Subtask { get; private set; } = null;
+
+        // ========================================================= VALIDITY
+
+        public DecompositionStatus OnIsValidFailed(IContext ctx)
+        {
+            return DecompositionStatus.Failed;
+        }
+
+        // ========================================================= ADDERS
+
+        public ITask AddCondition(ICondition condition)
+        {
+            throw new Exception("Slot tasks does not support conditions.");
+        }
+
+        // ========================================================= SET / REMOVE
+
+        public bool Set(ICompoundTask subtask)
+        {
+            if(Subtask != null)
+            {
+                return false;
+            }
+
+            Subtask = subtask;
+            return true;
+        }
+
+        public void Clear()
+        {
+            Subtask = null;
+        }
+
+        // ========================================================= DECOMPOSITION
+
+        public DecompositionStatus Decompose(IContext ctx, int startIndex, out Queue<ITask> result)
+        {
+            if(Subtask != null)
+            {
+                return Subtask.Decompose(ctx, startIndex, out result);
+            }
+
+            result = null;
+            return DecompositionStatus.Failed;
+        }
+
+        // ========================================================= VALIDITY
+
+        public virtual bool IsValid(IContext ctx)
+        {
+            var result = Subtask != null;
+            
+            if (ctx.LogDecomposition)
+            {
+                Log(ctx, $"Slot.IsValid:{(result ? "Success" : "Failed")}!", result ? ConsoleColor.Green : ConsoleColor.Red);
+            }
+
+            return result;
+        }
+
+        // ========================================================= LOGGING
+
+        protected virtual void Log(IContext ctx, string description, ConsoleColor color = ConsoleColor.White)
+        {
+            ctx.Log(Name, description, ctx.CurrentDecompositionDepth, this, color);
+        }
+    }
+}
+
+
+// [FILE_END]: Slot.cs
+// ==========================================
+
+
+// [FILE_START]: IPrimitiveTask.cs
+// PATH: Tasks\PrimitiveTasks\IPrimitiveTask.cs
+// ------------------------------------------
+
+﻿using System.Collections.Generic;
+using FluidHTN.Conditions;
+using FluidHTN.Operators;
+
+namespace FluidHTN.PrimitiveTasks
+{
+    public interface IPrimitiveTask : ITask
+    {
+        /// <summary>
+        ///     Executing conditions are validated before every call to Operator.Update(...)
+        /// </summary>
+        List<ICondition> ExecutingConditions { get; }
+
+        /// <summary>
+        ///     Add a new executing condition to the primitive task. This will be checked before
+        ///		every call to Operator.Update(...)
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        ITask AddExecutingCondition(ICondition condition);
+
+        IOperator Operator { get; }
+        void SetOperator(IOperator action);
+
+        List<IEffect> Effects { get; }
+        ITask AddEffect(IEffect effect);
+        void ApplyEffects(IContext ctx);
+
+        /// <summary>
+        /// Graceful end of task execution.
+        /// </summary>
+        /// <param name="ctx"></param>
+        void Stop(IContext ctx);
+
+        /// <summary>
+        /// Forced termination of task execution.
+        /// </summary>
+        /// <param name="ctx"></param>
+        void Abort(IContext ctx);
+    }
+}
+
+
+// [FILE_END]: IPrimitiveTask.cs
+// ==========================================
+
+
+// [FILE_START]: PrimitiveTask.cs
+// PATH: Tasks\PrimitiveTasks\PrimitiveTask.cs
+// ------------------------------------------
+
+﻿using System;
+using System.Collections.Generic;
+using FluidHTN.Compounds;
+using FluidHTN.Conditions;
+using FluidHTN.Operators;
+
+namespace FluidHTN.PrimitiveTasks
+{
+    public class PrimitiveTask : IPrimitiveTask
+    {
+        // ========================================================= PROPERTIES
+
+        public string Name { get; set; }
+        public ICompoundTask Parent { get; set; }
+        public List<ICondition> Conditions { get; } = new List<ICondition>();
+        public List<ICondition> ExecutingConditions { get; } = new List<ICondition>();
+        public IOperator Operator { get; private set; }
+        public List<IEffect> Effects { get; } = new List<IEffect>();
+
+        // ========================================================= VALIDITY
+
+        public DecompositionStatus OnIsValidFailed(IContext ctx)
+        {
+            return DecompositionStatus.Failed;
+        }
+
+        // ========================================================= ADDERS
+
+        public ITask AddCondition(ICondition condition)
+        {
+            Conditions.Add(condition);
+            return this;
+        }
+
+        public ITask AddExecutingCondition(ICondition condition)
+        {
+            ExecutingConditions.Add(condition);
+            return this;
+        }
+
+        public ITask AddEffect(IEffect effect)
+        {
+            Effects.Add(effect);
+            return this;
+        }
+
+        // ========================================================= SETTERS
+
+        public void SetOperator(IOperator action)
+        {
+            if (Operator != null)
+            {
+                throw new Exception("A Primitive Task can only contain a single Operator!");
+            }
+
+            Operator = action;
+        }
+
+        // ========================================================= FUNCTIONALITY
+
+        public void ApplyEffects(IContext ctx)
+        {
+            if (ctx.ContextState == ContextState.Planning)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    Log(ctx, $"PrimitiveTask.ApplyEffects", ConsoleColor.Yellow);
+                }
+            }
+
+            if (ctx.LogDecomposition)
+            {
+                ctx.CurrentDecompositionDepth++;
+            }
+
+            foreach (var effect in Effects)
+            {
+                effect.Apply(ctx);
+            }
+
+            if (ctx.LogDecomposition)
+            {
+                ctx.CurrentDecompositionDepth--;
+            }
+        }
+
+        public void Stop(IContext ctx)
+        {
+            Operator?.Stop(ctx);
+        }
+
+        public void Abort(IContext ctx)
+        {
+            Operator?.Abort(ctx);
+        }
+
+        // ========================================================= VALIDITY
+
+        public bool IsValid(IContext ctx)
+        {
+            if (ctx.LogDecomposition)
+            {
+                Log(ctx, $"PrimitiveTask.IsValid check");
+            }
+
+            foreach (var condition in Conditions)
+            {
+                if (ctx.LogDecomposition)
+                {
+                    ctx.CurrentDecompositionDepth++;
+                }
+
+                var result = condition.IsValid(ctx);
+
+                if (ctx.LogDecomposition)
+                {
+                    ctx.CurrentDecompositionDepth--;
+                    Log(ctx,
+                        $"PrimitiveTask.IsValid:{(result ? "Success" : "Failed")}:{condition.Name} is{(result ? "" : " not")} valid!",
+                        result ? ConsoleColor.DarkGreen : ConsoleColor.DarkRed);
+                }
+
+                if (result == false)
+                {
+                    if (ctx.LogDecomposition)
+                    {
+                        Log(ctx, $"PrimitiveTask.IsValid:Failed:Preconditions not met!", ConsoleColor.Red);
+                    }
+
+                    return false;
+                }
+            }
+
+            if (ctx.LogDecomposition)
+            {
+                Log(ctx, $"PrimitiveTask.IsValid:Success!", ConsoleColor.Green);
+            }
+
+            return true;
+        }
+
+        // ========================================================= LOGGING
+
+        protected virtual void Log(IContext ctx, string description, ConsoleColor color = ConsoleColor.White)
+        {
+            ctx.Log(Name, description, ctx.CurrentDecompositionDepth+1, this, color);
+        }
+    }
+}
+
+
+// [FILE_END]: PrimitiveTask.cs
+// ==========================================

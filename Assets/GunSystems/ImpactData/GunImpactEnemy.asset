@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1dbd5ed518f64e41a276378aa550968, type: 3}
+  m_Name: GunImpactEnemy
+  m_EditorClassIdentifier: Assembly-CSharp::SurfaceEffectData
+  impactVFX: {fileID: 4869826229994934321, guid: 2cb43b344c4458d4888f52cd89560562, type: 3}
+  decalPrefab: {fileID: 8835196024613212497, guid: 851d68410887d7744a66f8480b62922f, type: 3}

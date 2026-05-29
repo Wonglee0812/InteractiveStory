@@ -1,0 +1,162 @@
+﻿//Player độc thoại khi đứng trước cửa amory
+title: Armory_PlayerCC_1
+tags: 
+---
+Player: There is a star conduit.
+===
+
+//Player đọc tài liệu về pháo từ trường và thông tin về Mammoutech
+title: Armory_PlayerCC_2
+tags: 
+---
+// [VI] Pháo từ trường... Đây là thứ vũ khí duy nhất để chống lại cỗ máy chiến tranh đó sao? Mammoutech.
+Player: Electromagnetic artillery... Is this the only weapon meant to fight against their war machine? Mammoutech.
+
+// [VI] Nhưng sao chúng biết trước được? Bọn chúng đã chuẩn bị sẵn cho một cuộc chiến tranh toàn diện...
+Player: But how did they know? They've been preparing for an all-out war...
+
+<<jump Armory_01>>
+===
+
+//Player phát hiện ra thông tin về buster call và 
+title: Armory_PlayerCC_3
+tags: 
+---
+Player: What's this radar doing here?
+Player: Player: What's this radar doing here?
+Player: What exactly is a buster call, and why have I never heard of it?
+<<jump Monitor_01>>>>
+===
+
+
+//Player phát hiện ra thông tin về buster call và 
+title: Armory_PlayerCC_4
+tags: 
+---
+Player: What's this radar doing here?
+Player: Player: What's this radar doing here?
+Player: What exactly is a buster call, and why have I never heard of it?
+<<jump Monitor_01>>>>
+===
+
+//Đoạn hội thoại khi vào nhánh Armory, chạy cùng timeline
+title: Armory_01
+tags: 
+---
+// [VI] "Nhưng sao chúng biết trước được?" Hahaha... Ngươi đang đặt nhầm câu hỏi rồi, lính đánh thuê.
+Zenith General: "How did they know?" Hahaha... You are asking the wrong questions, mercenary.
+
+// [VI] Lộ diện đi. Mày là kẻ quái nào?
+Player: Who the hell are you?
+
+// [VI] Ta là ai không quan trọng. Ta cũng giống như ngươi... chỉ là một con tốt trên một bàn cờ rất lớn.
+Zenith General: Who I am is irrelevant. I am just like you... merely a pawn on a very large board.
+
+// [VI] Đừng đánh đồng tao với mày.
+Player: Don't compare me to you.
+
+// [VI] Hỏa lực vũ trang đầy mình, nhưng lại ngây thơ đến kinh ngạc. Nhìn quanh đi.
+Zenith General: Heavily armed, yet remarkably naive. Look around you.
+
+// [VI] Một cỗ máy chiến tranh đủ sức san phẳng một quốc gia. Pháo từ trường. Hệ thống giám sát dày đặc. Còn ngươi? Bị vứt vào đây hoàn toàn đơn độc.
+Zenith General: A war machine capable of leveling a nation. Electromagnetic artillery. Surveillance everywhere. And you? Sent in completely alone.
+
+// [VI] Đây là một nhiệm vụ tự sát. Ngươi được gửi đến đây để chết.
+Zenith General: It's a suicide mission. You were sent here to die.
+
+// [VI] Bớt nói nhảm đi. Mày muốn cái gì?
+Player: Cut the nonsense. What do you want?
+
+// [VI] Ta muốn cái gì à? Ta nên hỏi ngươi câu đó mới đúng! Ngươi có muốn biết vì sao bọn ta chuẩn bị ngần này hỏa lực không?
+Zenith General: What do *I* want? I should be asking you! Do you want to know why we prepared all this firepower?
+
+// [VI] Không phải để dành cho ngươi. Nếu chỉ đối phó với một con chuột sa hũ nếp, bọn ta đã không cất công đến vậy.
+Zenith General: It's not just for you. If it were just one rat in the maze, we wouldn't need all this.
+
+// [VI] Ý mày là... Apex chuẩn bị tuyên chiến?
+Player: You mean... Apex is declaring war?
+
+// [VI] Chúng đã làm rồi. Từ khoảnh khắc ngươi đặt chân lên hòn đảo này, hồng tâm đã bị khóa lại.
+Zenith General: They already did. From the moment you set foot on this island, the crosshairs were locked.
+
+// [VI] Ngay giây phút ngươi hoàn thành nhiệm vụ, ngươi, ta, và toàn bộ cơ sở này sẽ biến thành tro bụi.
+Zenith General: The second you complete your mission, you, I, and this entire facility will be reduced to ash.
+
+// [VI] Đừng ngu ngốc nghĩ rằng chúng có kế hoạch rút lui cho ngươi. Nhưng... chúng ta có thể viết lại cái kết này. Ngươi và ta.
+Zenith General: Don't be foolish enough to think they have an extraction plan for you. But... we could rewrite the ending. You and I.
+
+// [VI] Vì cái thá gì tao phải tin mày?
+Player: Why the hell should I believe you?
+
+// [VI] Vì cùng nhau sống sót là sự thật duy nhất còn sót lại. Đứng về phía bọn ta, cả hai cùng sống. Chống lại bọn ta... và chết như một công cụ trung thành. Chọn đi!
+Zenith General: Because mutual survival is the only truth left. Stand with us, and we both live. Stand against us... and die a loyal tool. Choose!
+
+-> Okay, I'll trust you this time.
+    // [VI] Quyết định thông minh đấy. Ngươi không mù quáng như ta tưởng.
+    Zenith General: A smart decision. You're not as blind as I thought.
+    // [VI] Để hoàn toàn lật lọng Apex, ngươi vẫn phải hoàn thành mục tiêu của mình. Khi thời cơ đến, chúng ta sẽ làm nên lịch sử.
+    Zenith General: To completely outsmart Apex, you must finish your objective. When the time is right, we make history.
+    <<trust_zenith>> 
+-> Don't even try to fool me. Die!
+    // [VI] Có vẻ như ngươi thực sự chỉ là một con chó dại bị xích cổ.
+    Zenith General: It seems you truly are just a rabid dog on a leash.
+    // [VI] Chết cho những kẻ chủ nhân thậm chí còn chả biết tên ngươi đi!
+    Zenith General: Die for masters who don't even know your name!
+    <<execute_general>> 
+===
+
+
+title: Monitor_01
+tags: 
+---
+// [VI] Nhìn vào biểu đồ radar quỹ đạo đó đi. Đẹp thật đúng không?
+Zenith General: Looking at that orbital radar, I presume? Beautiful, isn't it? 
+
+// [VI] Lộ diện đi. Cấu trúc này là cái quái gì? Một lệnh Buster Call?
+Player: Show yourself. What the hell is this signature? A Buster Call?
+
+// [VI] Một giao thức xóa sổ của Apex. Một thứ siêu vũ khí được thiết kế để san phẳng toàn bộ tọa độ này. Các chủ nhân của ngươi làm việc rất triệt để.
+Zenith General: An Apex erasure protocol. A superweapon designed to flatten this entire grid. Your masters are very thorough.
+
+// [VI] Bớt nói nhảm đi. Tại sao nó lại nhắm vào đây trong khi tao vẫn đang trích xuất Công Nghệ Lõi?
+Player: Cut the bullshit. Why is it aimed here while I'm still extracting the Core?
+
+// [VI] Động não đi, lính đánh thuê! Tại sao ngươi lại nghĩ mình được cử đi đơn độc? Ngươi không phải là kẻ thu hồi. Ngươi là mồi nhử định vị.
+Zenith General: Think, mercenary! Why do you think you were sent completely alone? You are not an extractor. You are the targeting beacon.
+
+// [VI] Ngay khoảnh khắc ngươi phát tín hiệu 'Hoàn thành nhiệm vụ', bầu trời đó sẽ khai hỏa. Không có sơ tán. Không có nhân chứng.
+Zenith General: The second you transmit the 'Mission Accomplished' signal, that sky fires. No extraction. No witnesses.
+
+// [VI] Mày mong tao tin mày thay vì bộ tư lệnh của tao sao?
+Player: You expect me to believe you over my own command?
+
+// [VI] Ngươi không cần phải tin ta. Hãy tin vào cái radar trước mắt ngươi. Đó là công nghệ của Apex mà, đúng chứ?
+Zenith General: You don't have to believe me. Believe the radar in front of your eyes. It's Apex tech, isn't it?
+
+// [VI] Ta chuẩn bị pháo đài này không phải để chống lại ngươi, mà là để sống sót qua cơn mưa địa ngục mà chủ nhân của ngươi sắp trút xuống.
+Zenith General: I prepared this fortress not to fight you, but to survive the hellfire your masters are about to rain down.
+
+// [VI] Nói đi, mày muốn cái gì?
+Player: Tell me, what do you want?
+
+// [VI] Đổi hướng bàn cờ này. Giao Lõi Năng Lượng cho ta.
+Zenith General: To change the trajectory of this board. Hand over the Core to me.
+
+// [VI] Bọn ta sẽ dùng nó để sạc khiên phòng thủ, và cùng nhau, ta sẽ quay nòng súng về phía hạm đội Apex.
+Zenith General: We use it to power our defense, and together, we turn the cannons back on the Apex fleet.
+
+// [VI] Trở thành người làm nên lịch sử, hoặc chết như một con chó săn hết giá trị lợi dụng. Lựa chọn đi.
+Zenith General: Live as a kingmaker, or die as a disposable hound. The choice is yours.
+
+-> Okay, I'll trust you this time.
+    // [VI] Một quyết định thông minh. Ngươi không mù quáng như ta tưởng.
+    Zenith General: A smart decision. You're not as blind as I thought.
+    // [VI] Để hoàn toàn lật lọng Apex, ngươi vẫn phải hoàn thành mục tiêu của mình. Khi thời cơ đến, chúng ta sẽ làm nên lịch sử.
+    Zenith General: To completely outsmart Apex, you must finish your objective. When the time is right, we make history.
+
+-> Did you think this childish trick could fool me? Don't even dream of it.
+    // [VI] Có vẻ như ngươi thực sự chỉ là một con chó dại bị xích cổ.
+    Zenith General: It seems you truly are just a rabid dog on a leash.
+    // [VI] Chết cho những kẻ chủ nhân thậm chí còn chả biết tên ngươi đi!
+    Zenith General: Die for masters who don't even know your name!
+===

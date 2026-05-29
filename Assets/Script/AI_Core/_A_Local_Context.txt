@@ -1,0 +1,2899 @@
+==================================================
+LOCAL FOLDER CONTEXT: AI_Core
+Generated on: 2026-05-29 13:05:42
+==================================================
+
+
+
+// [FILE_START]: AIAgent.cs
+// PATH: AIAgent.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+using UnityEngine.AI;
+using FluidHTN;
+
+[RequireComponent(typeof(NavMeshAgent))]
+public class AIAgent : MonoBehaviour
+{
+    public AiContext Context { get; private set; }
+    public Planner<AiContext> Planner { get; private set; }
+    public NavMeshAgent NavAgent { get; private set; }
+
+    public Domain<AiContext> AIDomain;
+
+    [Header("--- DESIGNER SETUP ---")]
+    [Tooltip("Kéo thả File Thông số Chiến thuật của quái vào đây")]
+    public AITacticalSettings TacticalSettings;
+
+    public AIPatrolPath shortcutPath;
+    public GroupAgent MyHerd;
+
+    [Header("Performance")]
+    public int FramesBetweenTicks = 3;
+    private int frameCounter = 0;
+    private bool _isLazyRotating = false; // Cờ theo dõi trạng thái xoay thân
+
+    void Awake()
+    {
+        NavAgent = GetComponent<NavMeshAgent>();
+        Context = new AiContext { Agent = this };
+        Context.Init();
+        Planner = new Planner<AiContext>();
+
+        frameCounter = Random.Range(0, FramesBetweenTicks);
+    }
+
+    void Start()
+    {
+        // ÉP CHỈ SỐ VẬT LÝ VÀO NAVMESH (Chống lỗi lù đù, xe tăng)
+        if (TacticalSettings != null && NavAgent != null)
+        {
+            NavAgent.acceleration = 40f; // Bứt tốc cực gắt
+            NavAgent.angularSpeed = 500f; // Xoay người như điện
+        }
+
+        if (shortcutPath != null) Context.PatrolPath = shortcutPath;
+        AIDomain = GreyboxDomain.Build();
+
+        if (MyHerd != null) MyHerd.RegisterAgent(this);
+        else
+        {
+            GroupAgent parentGroup = GetComponentInParent<GroupAgent>();
+            if (parentGroup != null) parentGroup.RegisterAgent(this);
+            else
+            {
+                GroupAgent globalGroup = FindFirstObjectByType<GroupAgent>();
+                if (globalGroup != null) globalGroup.RegisterAgent(this);
+            }
+        }
+    }
+    void Update()
+    {
+        frameCounter++;
+        if (frameCounter >= FramesBetweenTicks)
+        {
+            frameCounter = 0;
+            if (AIDomain != null) Planner.Tick(AIDomain, Context);
+        }
+
+        UpdateLocomotion();
+    }
+
+    private void UpdateLocomotion()
+    {
+        // 1. KHI ĐANG DI CHUYỂN: Xoay mượt theo hướng đi
+        if (NavAgent.hasPath && NavAgent.velocity.sqrMagnitude > 0.1f && NavAgent.updateRotation)
+        {
+            _isLazyRotating = false; // Đang đi bộ thì reset cờ lười biếng
+            Vector3 dir = NavAgent.desiredVelocity.normalized;
+            dir.y = 0;
+            if (dir != Vector3.zero)
+            {
+                Quaternion targetRot = Quaternion.LookRotation(dir);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 8f);
+            }
+        }
+        // 2. KHI ĐỨNG YÊN (Và không bị khóa bởi hệ thống Skill): Kích hoạt Lazy Rotation Toàn cục
+        else if (NavAgent.updateRotation)
+        {
+            if (Context.HasState(AIWorldState.HasTarget) && Context.Target != null)
+            {
+                // Vượt 45 độ mới xoay, gom vào 10 độ thì dừng (Chuẩn Master Plan)
+                FaceTargetLazy(Context.Target.position, TacticalSettings != null ? TacticalSettings.combatTurnSpeed : 5f, 45f, 10f);
+            }
+            else if (Context.HasState(AIWorldState.HasSuspectedLocation))
+            {
+                FaceTargetLazy(Context.SuspectedLocation, TacticalSettings != null ? TacticalSettings.turnSpeed : 3f, 45f, 10f);
+            }
+        }
+    }
+    private void OnDestroy()
+    {
+        // Khi xác chết bị xóa khỏi map, báo cho Bầy đàn gạch tên mình ra
+        if (MyHerd != null)
+        {
+            // Sếp nhớ check lại xem hàm xóa AI trong GroupAgent của sếp tên là gì nhé.
+            // Có thể là UnregisterAgent(this) hoặc RemoveAgent(this)
+            // MyHerd.UnregisterAgent(this); 
+        }
+    }
+
+    // [HỆ THỐNG LAZY ROTATION ĐÃ NÂNG CẤP]: Bổ sung Start/Stop Angle
+    public void FaceTargetLazy(Vector3 targetPos, float turnSpeed, float startAngle = 45f, float stopAngle = 10f)
+    {
+        Vector3 dir = (targetPos - transform.position).normalized;
+        dir.y = 0;
+        if (dir == Vector3.zero) return;
+
+        float angle = Vector3.Angle(transform.forward, dir);
+
+        // Kích hoạt khi lệch quá góc Start, tắt đi khi đã gom vào góc Stop
+        if (angle >= startAngle) _isLazyRotating = true;
+        if (angle <= stopAngle) _isLazyRotating = false;
+
+        if (_isLazyRotating)
+        {
+            Quaternion targetRot = Quaternion.LookRotation(dir);
+
+            // [FIX]: Dùng RotateTowards để xoay với tốc độ ổn định (Độ/Giây)
+            // Ép tốc độ xoay lười biếng nằm trong khoảng 30 đến 120 độ/giây để trông nặng nề
+            float actualTurnSpeed = Mathf.Clamp(turnSpeed, 30f, 120f);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, actualTurnSpeed * Time.deltaTime);
+        }
+    }
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        // =========================================================
+        // [FIX LỖI ĐỎ CONSOLE]: Chặn đứng mọi hoạt động vẽ Gizmo nếu Quái đã chết (bị tắt script)
+        // =========================================================
+        if (!Application.isPlaying || Context == null || Planner == null || !this.enabled || !gameObject.activeInHierarchy) return;
+
+        Vector3 headPos = transform.position + Vector3.up * 2.5f;
+
+        // 1. Tự suy luận trạng thái thay vì móc nội bộ HTN
+        string currentTask = "PATROL (Đi Tuần)";
+        if (Context.HasState(AIWorldState.HasTarget)) currentTask = "COMBAT (Chiến đấu)";
+        else if (Context.HasState(AIWorldState.IsSearching)) currentTask = "SEARCHING (Mất dấu - Tìm kiếm)";
+        else if (Context.HasState(AIWorldState.HasSuspectedLocation)) currentTask = "INVESTIGATING (Điều tra / Cảnh giác)";
+
+        // 2. Hiển thị Trạng thái Token đang nắm giữ
+        string tokens = "";
+        if (Context.HasState(AIWorldState.HasCombatToken)) tokens += "[COMBAT TOKEN] ";
+        if (Context.HasState(AIWorldState.HasInvestigateToken)) tokens += "[INVESTIGATE TOKEN]";
+
+        GUIStyle style = new GUIStyle();
+        style.normal.textColor = Context.HasState(AIWorldState.HasTarget) ? Color.red : Color.yellow;
+        style.fontSize = 14;
+        style.alignment = TextAnchor.MiddleCenter;
+
+        // Bọc trong try-catch để phòng hờ 1% Unity Editor vẫn bị kẹt Layout Event
+        try
+        {
+            UnityEditor.Handles.Label(headPos, $"{currentTask}\n{tokens}", style);
+        }
+        catch { }
+
+        // 3. Vẽ đường đi NavMesh
+        if (NavAgent != null && NavAgent.enabled && NavAgent.hasPath)
+        {
+            Gizmos.color = Color.cyan;
+            var corners = NavAgent.path.corners;
+            for (int i = 0; i < corners.Length - 1; i++)
+            {
+                Gizmos.DrawLine(corners[i], corners[i + 1]);
+            }
+        }
+    }
+#endif
+}
+
+// [FILE_END]: AIAgent.cs
+// ==========================================
+
+
+// [FILE_START]: AIArmor.cs
+// PATH: AIArmor.cs
+// ------------------------------------------
+
+﻿using System.Collections;
+using UnityEngine;
+
+public class AIArmor : MonoBehaviour, IDamageable
+{
+    [Header("--- ARMOR STATS ---")]
+    public float maxHealth = 150f;
+    private float _currentHealth;
+    private bool _isBroken = false;
+
+    [Header("--- AI INTEGRATION ---")]
+    public AIHealth mainHealth;
+    [Tooltip("Bắn vào giáp, Boss mất bao nhiêu % máu? (0.1 = 10%)")]
+    public float damageTransfer = 0.1f;
+
+    [Header("--- VISUALS & EFFECTS ---")]
+    public float tearOffForce = 15f;
+    public GameObject breakVFX;
+    public GameObject armorHitImpactPrefab;
+
+    private void Start()
+    {
+        _currentHealth = maxHealth;
+        if (mainHealth != null) mainHealth.RegisterArmor(); // Báo cho Boss biết có thêm 1 giáp
+    }
+
+    public void TakeDamage(float damage, Vector3 hitPoint, Vector3 hitNormal = default)
+    {
+        if (armorHitImpactPrefab != null)
+        {
+            Vector3 spawnNormal = hitNormal != Vector3.zero ? hitNormal : Vector3.up;
+            Instantiate(armorHitImpactPrefab, hitPoint, Quaternion.LookRotation(spawnNormal));
+        }
+        // Chuyển tiếp sát thương vào hàm xử lý cục bộ
+        ApplyLocalDamage(damage, hitPoint, hitNormal);
+    }
+
+    private void ApplyLocalDamage(float damage, Vector3 hitPoint, Vector3 hitNormal)
+    {
+        if (_isBroken) return;
+
+        _currentHealth -= damage;
+
+        // Truyền True Damage thẳng vào Boss (bỏ qua giảm trừ)
+        if (mainHealth != null && damageTransfer > 0)
+        {
+            mainHealth.ApplyTrueDamage(damage * damageTransfer, hitPoint);
+        }
+
+        if (_currentHealth <= 0)
+        {
+            BreakArmor(hitNormal);
+        }
+    }
+
+    private void BreakArmor(Vector3 hitNormal)
+    {
+        _isBroken = true;
+
+        if (breakVFX != null) Destroy(Instantiate(breakVFX, transform.position, Quaternion.identity), 0.1f);
+
+        if (mainHealth != null)
+        {
+            mainHealth.UnregisterArmor(); // Trừ số lượng giáp đi
+        }
+
+        transform.SetParent(null);
+        Rigidbody rb = gameObject.GetComponent<Rigidbody>();
+        if (rb == null) rb = gameObject.AddComponent<Rigidbody>();
+
+        rb.isKinematic = false;
+        rb.mass = 150f;
+        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+
+        Vector3 forceDir = (hitNormal + Vector3.up * 0.5f).normalized;
+        rb.AddForce(forceDir * tearOffForce, ForceMode.Impulse);
+        rb.AddTorque(Random.insideUnitSphere * tearOffForce, ForceMode.Impulse);
+
+        Destroy(rb.gameObject, 10f);
+        gameObject.layer = LayerMask.NameToLayer("Default");
+        this.enabled = false;
+    }
+}
+
+// [FILE_END]: AIArmor.cs
+// ==========================================
+
+
+// [FILE_START]: AIAuditorySystem.cs
+// PATH: AIAuditorySystem.cs
+// ------------------------------------------
+
+﻿using System;
+using UnityEngine;
+
+public static class AIAuditorySystem
+{
+    public static event Action<Vector3, float> OnSoundReported;
+
+    public static void ReportSound(Vector3 position, float radius)
+    {
+        OnSoundReported?.Invoke(position, radius);
+    }
+}
+
+// [FILE_END]: AIAuditorySystem.cs
+// ==========================================
+
+
+// [FILE_START]: AIBodyPart.cs
+// PATH: AIBodyPart.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+
+// Kế thừa Interface IDamageable của hệ thống
+public class AIBodyPart : MonoBehaviour, IDamageable
+{
+    [Header("--- BODY PART STATS ---")]
+    [Tooltip("Kéo script AIHealth ở object cha (Root) vào đây")]
+    public AIHealth mainHealth;
+
+    [Tooltip("Hệ số sát thương (VD: Bắn vào Đầu x2, bắn vào Đuôi x0.5)")]
+    public float damageMultiplier = 1.0f;
+
+    [Tooltip("Bắn trúng chỗ này có làm quái bị Khựng (Light Stagger) không? (VD: Dành cho Headshot)")]
+    public bool canCauseStagger = false;
+
+    public void TakeDamage(float damage, Vector3 hitPoint, Vector3 hitNormal = default)
+    {
+        if (mainHealth == null) return;
+
+        // Áp dụng hệ số nhân sát thương theo từng bộ phận (Ví dụ: Đầu x2)
+        float finalDamage = damage * damageMultiplier;
+
+        // Truyền sát thương thẳng xuống bộ xử lý trung tâm AIHealth
+        mainHealth.TakeDamage(finalDamage, hitPoint, hitNormal);
+    }
+}
+
+// [FILE_END]: AIBodyPart.cs
+// ==========================================
+
+
+// [FILE_START]: AiContext.cs
+// PATH: AiContext.cs
+// ------------------------------------------
+
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
+using FluidHTN;
+using FluidHTN.Contexts;
+using FluidHTN.Factory;
+using FluidHTN.Debug;
+using FluidHTN.Operators;
+
+public class AiContext : BaseContext
+{
+    [Header("--- CORE REFS ---")]
+    public AIAgent Agent;
+    public GroupAgent Group;
+
+    [Header("--- BLACKBOARD DATA ---")]
+    public Transform Target;
+    public Vector3 SuspectedLocation;
+    public Vector3 LastKnownPosition;
+    public ActiveSkill CurrentSelectedSkill { get; set; } = null;
+    public AISkillData CurrentExecutingSkill { get; set; } = null;
+
+    [Header("--- PATROL SYSTEM ---")]
+    public AIPatrolPath PatrolPath;
+    public int CurrentWaypointIndex = 0;
+    public Vector3 CurrentMoveDestination;
+
+    public Vector3? LookFocusOverride { get; set; } = null;
+    public bool IsScanning { get; set; } = false;
+
+    // --- BẮT BUỘC BỞI FLUID HTN ---
+    public override IFactory Factory { get; protected set; } = new DefaultFactory();
+    public override IPlannerState PlannerState { get; protected set; } = new DefaultPlannerState();
+    public override List<string> MTRDebug { get; set; } = null;
+    public override List<string> LastMTRDebug { get; set; } = null;
+    public override bool DebugMTR => false;
+    public override Queue<IBaseDecompositionLogEntry> DecompositionLog { get; set; } = null;
+    public override bool LogDecomposition => false;
+
+    private byte[] _worldState = new byte[Enum.GetValues(typeof(AIWorldState)).Length];
+    public override byte[] WorldState => _worldState;
+
+    public bool HasState(AIWorldState state)
+    {
+        return HasState((int)state, 1);
+    }
+
+    public void SetState(AIWorldState state, bool value, EffectType type = EffectType.Permanent)
+    {
+        SetState((int)state, (byte)(value ? 1 : 0), true, type);
+    }
+
+    public void SetTarget(Transform target)
+    {
+        Target = target;
+        SetState(AIWorldState.HasTarget, target != null, EffectType.Permanent);
+    }
+}
+
+// [FILE_END]: AiContext.cs
+// ==========================================
+
+
+// [FILE_START]: AICore.cs
+// PATH: AICore.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+
+public class AICore : MonoBehaviour, IDamageable
+{
+    [Header("--- CORE STATS ---")]
+    public float maxHealth = 100f;
+    private float _currentHealth;
+    private bool _isDestroyed = false;
+
+    [Header("--- EXPLOSION MECHANICS ---")]
+    public float explosionRadius = 15f;
+    public float bossExplosionDamage = 300f; // Boss ăn trọn 300 True Damage
+    public float armorExplosionDamage = 500f; // Bóc sạch giáp lân cận
+    public GameObject explosionVfx;
+    public LayerMask targetMask;
+
+    private void Start()
+    {
+        _currentHealth = maxHealth;
+    }
+
+    public void TakeDamage(float damage, Vector3 hitPoint, Vector3 hitNormal = default)
+    {
+        // Gọi hàm xử lý vụ nổ nội bộ của linh kiện
+        ApplyDamage(damage, hitPoint);
+    }
+
+    private void ApplyDamage(float amount, Vector3 hitPoint)
+    {
+        if (_isDestroyed) return;
+
+        // TUYỆT ĐỐI KHÔNG TRUYỀN SÁT THƯƠNG QUA BOSS KHI CHƯA NỔ
+        _currentHealth -= amount;
+
+        if (_currentHealth <= 0)
+        {
+            Explode(hitPoint);
+        }
+    }
+
+    private void Explode(Vector3 hitPoint)
+    {
+        _isDestroyed = true;
+
+        if (explosionVfx != null)
+        {
+            GameObject vfx = Instantiate(explosionVfx, transform.position, Quaternion.identity);
+            Destroy(vfx, 2f);
+        }
+
+        Collider[] hits = Physics.OverlapSphere(transform.position, explosionRadius, targetMask);
+        foreach (Collider hit in hits)
+        {
+            IDamageable target = hit.GetComponent<IDamageable>();
+            if (target == null) target = hit.GetComponentInParent<IDamageable>();
+
+            if (target != null && (target as MonoBehaviour != this))
+            {
+                if (target is AIHealth bossHealth)
+                {
+                    // LÕI NỔ -> TRỪ MÁU KHỦNG & ÉP GỤC NGÃ (HARD STAGGER)
+                    bossHealth.ApplyTrueDamage(bossExplosionDamage, transform.position);
+                }
+                else if (target is AIArmor)
+                {
+                    // [VI] Đã xóa số 10f / [EN] Removed 10f
+                    target.TakeDamage(armorExplosionDamage, hit.transform.position);
+                }
+            }
+        }
+        gameObject.SetActive(false);
+    }
+}
+
+// [FILE_END]: AICore.cs
+// ==========================================
+
+
+// [FILE_START]: AIHealth.cs
+// PATH: AIHealth.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+using UnityEngine.UI;
+using FluidHTN;
+
+[RequireComponent(typeof(AIAgent))]
+public class AIHealth : MonoBehaviour, IDamageable
+{
+    [Header("--- HEALTH STATS ---")]
+    public float maxHealth = 1000f;
+    public float currentHealth;
+    private bool _isDead = false;
+
+    [Header("--- ARMOR DEFENSE ---")]
+    public float damageReductionPerArmor = 0.15f;
+    private int _activeArmorCount = 0;
+
+    [Header("--- UI HEALTH BAR ---")]
+    public Transform healthBarCanvas;
+    public Slider frontHealthBar;
+    public Slider backHealthBar;
+
+    [Header("--- GHOST BAR SETTINGS ---")]
+    public float ghostDelay = 0.5f;
+    public float ghostLerpSpeed = 5f;
+    private float _ghostTimer = 0f;
+
+    private AIAgent _agent;
+    private Camera _mainCamera;
+
+    void Awake()
+    {
+        _agent = GetComponent<AIAgent>();
+        currentHealth = maxHealth;
+        _mainCamera = Camera.main;
+    }
+
+    void Start()
+    {
+        if (frontHealthBar != null) { frontHealthBar.maxValue = maxHealth; frontHealthBar.value = currentHealth; }
+        if (backHealthBar != null) { backHealthBar.maxValue = maxHealth; backHealthBar.value = currentHealth; }
+    }
+
+    void Update()
+    {
+        if (currentHealth <= 0 && !_isDead)
+        {
+            Die();
+            return;
+        }
+
+        if (_isDead) return;
+
+        if (frontHealthBar == null || backHealthBar == null) return;
+        frontHealthBar.value = currentHealth;
+
+        if (backHealthBar.value > frontHealthBar.value)
+        {
+            _ghostTimer += Time.deltaTime;
+            if (_ghostTimer > ghostDelay)
+            {
+                backHealthBar.value = Mathf.Lerp(backHealthBar.value, frontHealthBar.value, ghostLerpSpeed * Time.deltaTime);
+            }
+        }
+    }
+
+    void LateUpdate()
+    {
+        if (healthBarCanvas != null)
+        {
+            if (_mainCamera == null) _mainCamera = Camera.main;
+            if (_mainCamera != null) healthBarCanvas.forward = _mainCamera.transform.forward;
+        }
+    }
+
+    public void RegisterArmor() { _activeArmorCount++; }
+    public void UnregisterArmor() { _activeArmorCount--; if (_activeArmorCount < 0) _activeArmorCount = 0; }
+
+    public void TakeDamage(float damage, Vector3 hitPoint, Vector3 hitNormal = default)
+    {
+        if (_isDead) return;
+
+        float finalDamage = damage;
+        if (_activeArmorCount > 0)
+        {
+            float reduction = Mathf.Clamp(_activeArmorCount * damageReductionPerArmor, 0f, 0.8f);
+            finalDamage *= (1f - reduction);
+        }
+
+        currentHealth -= finalDamage;
+        _ghostTimer = 0f;
+
+        if (frontHealthBar != null) frontHealthBar.value = currentHealth;
+
+        // [VI] GỌI PHẢN XẠ QUAY ĐẦU / [EN] CALL TURN-AROUND REFLEX
+        HandleHitReaction(hitPoint, hitNormal);
+
+        if (currentHealth <= 0) Die();
+    }
+
+    public void ApplyTrueDamage(float trueDamage, Vector3 hitPoint, Vector3 hitNormal = default)
+    {
+        if (_isDead) return;
+
+        currentHealth -= trueDamage;
+        _ghostTimer = 0f;
+
+        // [VI] GỌI PHẢN XẠ QUAY ĐẦU / [EN] CALL TURN-AROUND REFLEX
+        HandleHitReaction(hitPoint, hitNormal);
+
+        if (currentHealth <= 0)
+        {
+            currentHealth = 0;
+            Die();
+        }
+    }
+
+    // ==========================================
+    // [VI] PHẢN XẠ NHẬN DIỆN KẺ ĐỊCH KHI BỊ BẮN LÉN
+    // [EN] ENEMY DETECTION REFLEX WHEN SHOT IN BACK
+    // ==========================================
+    private void HandleHitReaction(Vector3 hitPoint, Vector3 hitNormal)
+    {
+        if (_agent != null && _agent.Context != null && !_isDead)
+        {
+            // Nếu chưa thấy Player, nó sẽ tính toán vị trí dựa trên hướng đạn dội lại
+            if (!_agent.Context.HasState(AIWorldState.HasTarget))
+            {
+                // Vector hướng đạn tới (hitNormal là hướng nảy ra, nên ta lấy chính hitNormal)
+                Vector3 suspectDir = hitNormal != Vector3.zero ? hitNormal : Random.onUnitSphere;
+                suspectDir.y = 0; // Đừng ngó lên trời
+
+                // Suy đoán vị trí kẻ địch cách đó 15m
+                Vector3 suspectPos = hitPoint + (suspectDir.normalized * 15f);
+
+                _agent.Context.SuspectedLocation = suspectPos;
+                _agent.Context.SetState(AIWorldState.HasSuspectedLocation, true, EffectType.PlanAndExecute);
+
+                if (_agent.Context.Group != null)
+                    _agent.Context.Group.BroadcastPlayerLocation(suspectPos);
+            }
+        }
+    }
+
+    // [VI] ĐÃ XÓA TriggerLightStagger VÀ TriggerHardStagger
+    // [EN] DELETED TriggerLightStagger AND TriggerHardStagger
+
+    private void Die()
+    {
+        if (_isDead) return;
+        _isDead = true;
+        AISkillController skillCtrl = GetComponent<AISkillController>();
+        if (skillCtrl != null) skillCtrl.AbortExecution(FluidHTN.TaskStatus.Failure);
+        if (healthBarCanvas != null) healthBarCanvas.gameObject.SetActive(false);
+        if (_agent.NavAgent != null) _agent.NavAgent.enabled = false;
+
+        Collider mainCollider = GetComponent<Collider>();
+        if (mainCollider != null) mainCollider.enabled = false;
+
+        AIRagdollController ragdoll = GetComponent<AIRagdollController>();
+        if (ragdoll != null) ragdoll.EnableRagdoll();
+        else
+        {
+            Animator anim = GetComponentInChildren<Animator>();
+            if (anim != null) anim.enabled = false;
+        }
+
+        MonoBehaviour[] allScripts = GetComponents<MonoBehaviour>();
+        foreach (MonoBehaviour script in allScripts)
+        {
+            if (script != this && script.GetType() != typeof(AIRagdollController))
+            {
+                script.enabled = false;
+            }
+        }
+
+        this.enabled = false;
+        Destroy(gameObject, 10f);
+    }
+}
+
+// [FILE_END]: AIHealth.cs
+// ==========================================
+
+
+// [FILE_START]: AILookControler.cs
+// PATH: AILookControler.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+using UnityEngine.Animations.Rigging;
+
+[RequireComponent(typeof(AIAgent))]
+[DefaultExecutionOrder(100)]
+public class AILookController : MonoBehaviour
+{
+    [Header("--- CORE REFERENCES ---")]
+    private AIAgent _agent;
+    public Transform neckBase;
+    public ChainIKConstraint neckIKConstraint;
+    public Transform neckIKTarget;
+
+    [Header("--- HEAD OVERRIDE (CODE CONTROL) ---")]
+    public Transform headBone;
+    public Transform headAimTarget;
+    public Vector3 headFacingOffset = Vector3.zero;
+    public float headTurnSpeed = 10f;
+
+    [Header("--- BIOMECHANICS & POSTURE ---")]
+    public float maxNeckReach = 4f;
+    public float minNeckReach = 1.5f;
+    [Range(0.5f, 1f)] public float neckCurveRetainer = 0.8f;
+
+    // [ĐÃ KHÔI PHỤC]: Trả lại biến giới hạn khoảng cách ngắm!
+    public float minHeadTargetDistance = 3f;
+
+    public float virtualLookDistance = 5f;
+    public float maxLookAngle = 80f;
+
+    [Header("--- CHIỀU CAO CỔ & LÀM MƯỢT ---")]
+    public float maxHeadUpOffset = 0.8f;
+    public float maxHeadDownOffset = -1.2f;
+    public float patrolMovingNeckHeight = -0.5f;
+    public float patrolStoppedNeckHeight = 1.5f;
+    public float alertNeckHeight = 2.0f;
+    public float headSmoothTime = 0.15f;
+    public float neckSmoothTime = 0.25f;
+
+    [Header("--- ĐỘ MẠNH CỦA IK (WEIGHTS) ---")]
+    public float alertHeadWeight = 1.0f;
+    public float alertNeckWeight = 1.0f;
+    public float patrolHeadWeight = 1.0f;
+    public float patrolNeckWeight = 1.0f;
+    public float weightSmoothTime = 0.2f;
+
+    [Header("--- THỜI GIAN GIỮ MẮT (RADAR) ---")]
+    public float lookHoldTime = 2.0f;
+    public float lookTransitionSpeed = 4f;
+    public float stoppedHorizontalRange = 5.0f;
+    public float stoppedVerticalRange = 0.4f;
+    public float movingHorizontalRange = 1.5f;
+    public float movingVerticalRange = 0.1f;
+
+    [Header("--- NOISE SINH HỌC ---")]
+    public float noiseSpeed = 1.5f;
+    public float noiseAmplitude = 2.5f;
+
+    // --- VARIABLES ---
+    private Vector3 _smoothedTargetPos;
+    private Vector3 _targetPosVel;
+    private Vector3 _smoothedRelHead, _smoothedRelNeck;
+    private Vector3 _relHeadVel, _relNeckVel;
+
+    private float _currentHeadWeight = 1f;
+    private float _currentNeckWeight = 1f;
+    private float _headWeightVel, _neckWeightVel;
+
+    private float _lookTimer;
+    private Vector3 _targetVisualOffset;
+    private Vector3 _currentVisualOffset;
+    private float _smoothedPatrolHeight, _patrolHeightVel;
+    private float _smoothedLookRadius, _lookRadiusVel;
+    private bool _isStandingStill;
+
+    private Quaternion _lastHeadRot;
+    private bool _isFirstFrame = true;
+
+    private void Awake()
+    {
+        _agent = GetComponent<AIAgent>();
+        if (neckBase != null) _smoothedTargetPos = neckBase.position + transform.forward * virtualLookDistance;
+        _smoothedRelHead = transform.forward * virtualLookDistance;
+        _smoothedRelNeck = transform.forward * (virtualLookDistance * 0.5f);
+    }
+
+    private void LateUpdate()
+    {
+        if (neckBase == null || _agent == null) return;
+        _isStandingStill = _agent.NavAgent.velocity.magnitude < 0.1f;
+
+        float targetHeight = _isStandingStill ? patrolStoppedNeckHeight : patrolMovingNeckHeight;
+        _smoothedPatrolHeight = Mathf.SmoothDamp(_smoothedPatrolHeight, targetHeight, ref _patrolHeightVel, 0.25f);
+        float targetRadius = _isStandingStill ? stoppedHorizontalRange : movingHorizontalRange;
+        _smoothedLookRadius = Mathf.SmoothDamp(_smoothedLookRadius, targetRadius, ref _lookRadiusVel, 0.25f);
+
+        UpdateStaggeredLookAround();
+
+        Vector3 rawTargetPos = GetPointOfInterest();
+        bool isEngaged = _agent.Context.HasState(AIWorldState.HasTarget) || _agent.Context.LookFocusOverride.HasValue;
+        if (!isEngaged)
+        {
+            rawTargetPos += _currentVisualOffset;
+        }
+
+        Vector3 dirToRawTarget = (rawTargetPos - neckBase.position).normalized;
+        Vector3 localDir = transform.InverseTransformDirection(dirToRawTarget);
+        float currentAngle = Vector3.Angle(Vector3.forward, localDir);
+
+        if (currentAngle > maxLookAngle)
+        {
+            Vector3 clampedLocalDir = Vector3.Slerp(Vector3.forward, localDir, maxLookAngle / currentAngle);
+            dirToRawTarget = transform.TransformDirection(clampedLocalDir);
+            rawTargetPos = neckBase.position + dirToRawTarget * virtualLookDistance;
+        }
+
+        _smoothedTargetPos = Vector3.SmoothDamp(_smoothedTargetPos, rawTargetPos, ref _targetPosVel, 0.15f);
+
+        Vector3 targetRelHead = _smoothedTargetPos - neckBase.position;
+        Vector3 targetRelNeck = targetRelHead * 0.5f;
+
+        _smoothedRelHead = Vector3.SmoothDamp(_smoothedRelHead, targetRelHead, ref _relHeadVel, headSmoothTime);
+        _smoothedRelNeck = Vector3.SmoothDamp(_smoothedRelNeck, targetRelNeck, ref _relNeckVel, neckSmoothTime);
+
+        Vector3 smoothedWorldHead = neckBase.position + _smoothedRelHead;
+        Vector3 smoothedWorldNeck = neckBase.position + _smoothedRelNeck;
+
+        Vector3 dirToHead = smoothedWorldHead - neckBase.position;
+        if (dirToHead.magnitude < minHeadTargetDistance)
+            smoothedWorldHead = neckBase.position + dirToHead.normalized * minHeadTargetDistance;
+        smoothedWorldHead.y = Mathf.Clamp(smoothedWorldHead.y, neckBase.position.y + maxHeadDownOffset, neckBase.position.y + maxHeadUpOffset);
+
+        Vector3 flatNeckDir = (smoothedWorldNeck - neckBase.position).normalized;
+        flatNeckDir.y = 0; flatNeckDir.Normalize();
+        float distNeck = Mathf.Clamp(Vector3.Distance(neckBase.position, smoothedWorldNeck), minNeckReach, maxNeckReach * neckCurveRetainer);
+
+        bool isAlert = _agent.Context.HasState(AIWorldState.HasTarget) || _agent.Context.HasState(AIWorldState.HasSuspectedLocation);
+        float currentNeckHeight = isAlert ? alertNeckHeight : _smoothedPatrolHeight;
+        smoothedWorldNeck = neckBase.position + flatNeckDir * distNeck + Vector3.up * currentNeckHeight;
+
+        if (headAimTarget != null) headAimTarget.position = smoothedWorldHead;
+        if (neckIKTarget != null) neckIKTarget.position = smoothedWorldNeck;
+
+        float desiredHeadWeight = isAlert ? alertHeadWeight : patrolHeadWeight;
+        float desiredNeckWeight = isAlert ? alertNeckWeight : patrolNeckWeight;
+        _currentHeadWeight = Mathf.SmoothDamp(_currentHeadWeight, desiredHeadWeight, ref _headWeightVel, weightSmoothTime);
+        _currentNeckWeight = Mathf.SmoothDamp(_currentNeckWeight, desiredNeckWeight, ref _neckWeightVel, weightSmoothTime);
+        if (neckIKConstraint != null) neckIKConstraint.weight = _currentNeckWeight;
+
+        if (headBone != null)
+        {
+            if (_isFirstFrame) { _lastHeadRot = headBone.rotation; _isFirstFrame = false; }
+            Vector3 lookDir = smoothedWorldHead - headBone.position;
+            if (lookDir != Vector3.zero)
+            {
+                Quaternion targetLookRot = Quaternion.LookRotation(lookDir, Vector3.up) * Quaternion.Euler(headFacingOffset);
+                float nx = (Mathf.PerlinNoise(Time.time * noiseSpeed, 0f) - 0.5f) * 2f * noiseAmplitude;
+                float ny = (Mathf.PerlinNoise(0f, Time.time * noiseSpeed) - 0.5f) * 2f * noiseAmplitude;
+                targetLookRot *= Quaternion.Euler(nx, ny, 0f);
+
+                _lastHeadRot = Quaternion.Slerp(_lastHeadRot, targetLookRot, Time.deltaTime * headTurnSpeed);
+                headBone.rotation = Quaternion.Slerp(headBone.rotation, _lastHeadRot, _currentHeadWeight);
+            }
+        }
+    }
+
+    private void UpdateStaggeredLookAround()
+    {
+        bool hasTarget = _agent.Context.HasState(AIWorldState.HasTarget) && _agent.Context.Target != null;
+        if (hasTarget || _agent.Context.LookFocusOverride.HasValue)
+        {
+            _targetVisualOffset = Vector3.zero;
+            _currentVisualOffset = Vector3.MoveTowards(_currentVisualOffset, Vector3.zero, Time.deltaTime * lookTransitionSpeed * 2f);
+            return;
+        }
+
+        if (Time.time >= _lookTimer)
+        {
+            _lookTimer = Time.time + lookHoldTime + Random.Range(-0.5f, 0.5f);
+            bool hasSuspicion = _agent.Context.HasState(AIWorldState.HasSuspectedLocation);
+            bool isScanning = _agent.Context.IsScanning;
+
+            float currentMaxX = (isScanning || hasSuspicion) ? stoppedHorizontalRange : _smoothedLookRadius;
+            float currentMaxY = (isScanning || hasSuspicion) ? stoppedVerticalRange : (_isStandingStill ? stoppedVerticalRange : movingVerticalRange);
+
+            _targetVisualOffset = transform.right * Random.Range(-currentMaxX, currentMaxX) + Vector3.up * Random.Range(-currentMaxY, currentMaxY);
+        }
+        _currentVisualOffset = Vector3.Lerp(_currentVisualOffset, _targetVisualOffset, Time.deltaTime * lookTransitionSpeed);
+    }
+
+    private Vector3 GetPointOfInterest()
+    {
+        if (_agent.Context.HasState(AIWorldState.HasTarget) && _agent.Context.Target != null)
+            return _agent.Context.Target.position + Vector3.up * 1.2f;
+
+        if (_agent.Context.LookFocusOverride.HasValue)
+            return _agent.Context.LookFocusOverride.Value;
+
+        if (_agent.Context.HasState(AIWorldState.HasSuspectedLocation))
+            return _agent.Context.SuspectedLocation + Vector3.up * 1.2f;
+
+        if (_agent.NavAgent.hasPath && _agent.NavAgent.remainingDistance > 0.5f)
+        {
+            return _agent.NavAgent.steeringTarget + Vector3.up * 1.2f;
+        }
+
+        return neckBase.position + transform.forward * virtualLookDistance + Vector3.up * 1.2f;
+    }
+}
+
+// [FILE_END]: AILookControler.cs
+// ==========================================
+
+
+// [FILE_START]: AIMeleeHitbox.cs
+// PATH: AIMeleeHitbox.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+
+[RequireComponent(typeof(Collider))]
+public class AIMeleeHitbox : MonoBehaviour
+{
+    public LayerMask targetMask;
+    private float _damage = 0f;
+    private float _knockback = 0f; // Thêm biến lưu lực hất tạm thời
+    private Collider _hitboxCollider;
+
+    void Awake()
+    {
+        _hitboxCollider = GetComponent<Collider>();
+        if (_hitboxCollider != null)
+        {
+            _hitboxCollider.isTrigger = true;
+            _hitboxCollider.enabled = false; // Mặc định luôn tắt
+        }
+    }
+
+    public void DeactivateHitbox()
+    {
+        if (_hitboxCollider != null) _hitboxCollider.enabled = false;
+    }
+
+    // [SAFE ABORT]: Tự động ngắt Hitbox nếu script bị tắt ngang
+    void OnDisable()
+    {
+        DeactivateHitbox();
+    }
+
+    // Cập nhật hàm này để nhận thêm lực hất từ Skill Controller
+    public void ActivateHitbox(float skillDamage, float knockback)
+    {
+        _damage = skillDamage;
+        _knockback = knockback;
+        if (_hitboxCollider != null) _hitboxCollider.enabled = true;
+    }
+
+    // ... (Giữ nguyên DeactivateHitbox và OnDisable)
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (((1 << other.gameObject.layer) & targetMask) != 0)
+        {
+            IDamageable target = other.GetComponent<IDamageable>();
+            if (target == null) target = other.GetComponentInParent<IDamageable>();
+
+            if (target != null)
+            {
+                // [VI] Đã xóa tham số _knockback / [EN] Removed _knockback parameter
+                target.TakeDamage(_damage, transform.position);
+                DeactivateHitbox();
+            }
+        }
+    }
+}
+
+// [FILE_END]: AIMeleeHitbox.cs
+// ==========================================
+
+
+// [FILE_START]: AIPatrolPath.cs
+// PATH: AIPatrolPath.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+
+public class AIPatrolPath : MonoBehaviour
+{
+    [Header("--- PATROL WAYPOINTS ---")]
+    public Transform[] waypoints;
+
+    public int WaypointCount => waypoints != null ? waypoints.Length : 0;
+
+    public Vector3 GetWaypointPosition(int index)
+    {
+        if (waypoints == null || waypoints.Length == 0 || index < 0 || index >= waypoints.Length)
+            return transform.position;
+
+        return waypoints[index].position;
+    }
+
+    // Vẽ đường đi nối các điểm trên cửa sổ Scene để thiết kế map cực nhàn
+    private void OnDrawGizmos()
+    {
+        if (waypoints == null || waypoints.Length < 2) return;
+
+        Gizmos.color = Color.cyan;
+        for (int i = 0; i < waypoints.Length; i++)
+        {
+            if (waypoints[i] == null) continue;
+
+            // Vẽ khối cầu tại mỗi điểm waypoint
+            Gizmos.DrawSphere(waypoints[i].position, 0.4f);
+
+            // Vẽ đường thẳng nối điểm hiện tại với điểm tiếp theo
+            int nextIndex = (i + 1) % waypoints.Length;
+            if (waypoints[nextIndex] != null)
+            {
+                Gizmos.DrawLine(waypoints[i].position, waypoints[nextIndex].position);
+            }
+        }
+    }
+}
+
+// [FILE_END]: AIPatrolPath.cs
+// ==========================================
+
+
+// [FILE_START]: AIProceduralBody.cs
+// PATH: AIProceduralBody.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+using UnityEngine.AI;
+
+[RequireComponent(typeof(NavMeshAgent))]
+public class AIProceduralBody : MonoBehaviour
+{
+    [Header("--- HỆ THỐNG NHỊP BƯỚC (TROT GAIT) ---")]
+    public AIProceduralLeg frontLeftLeg;
+    public AIProceduralLeg backRightLeg;
+    public AIProceduralLeg frontRightLeg;
+    public AIProceduralLeg backLeftLeg;
+
+    [Header("--- NHỊP THỞ & NHẤP NHÔ (BODY BOBBING) ---")]
+    public Transform bodyMesh;
+    public float idleBobSpeed = 2f;
+    public float idleBobAmount = 0.05f;
+    public float moveBobSpeed = 15f;
+    public float moveBobAmount = 0.15f;
+
+    public bool isIKLocked = false;
+    public bool isSkillActive = false; // [MỚI] Cờ kiểm soát vòng đời Skill
+
+    private NavMeshAgent _navAgent;
+    private float _bobTimer;
+    private Vector3 _startBodyLocalPos;
+
+    void Awake() { _navAgent = GetComponent<NavMeshAgent>(); }
+    void Start() { if (bodyMesh != null) _startBodyLocalPos = bodyMesh.localPosition; }
+
+    void Update()
+    {
+        // [FIX LỖI CHÂN GIẬT]: Nếu đang lướt hoặc đang thu đòn -> KHÔNG CHO TROT GAIT HOẠT ĐỘNG
+        if (isIKLocked || isSkillActive) return;
+
+        float currentSpeed = _navAgent.velocity.magnitude;
+        bool isMoving = currentSpeed > 0.1f;
+        float speedMultiplier = Mathf.Max(1f, currentSpeed / Mathf.Max(1f, _navAgent.speed));
+
+        bool isPairAStepping = frontLeftLeg.IsStepping || backRightLeg.IsStepping;
+        bool isPairBStepping = frontRightLeg.IsStepping || backLeftLeg.IsStepping;
+
+        bool pairAWantsToStep = frontLeftLeg.WantsToStep() || backRightLeg.WantsToStep();
+        bool pairBWantsToStep = frontRightLeg.WantsToStep() || backLeftLeg.WantsToStep();
+
+        if (!isPairBStepping && pairAWantsToStep)
+        {
+            frontLeftLeg.Step(); backRightLeg.Step();
+        }
+        else if (!isPairAStepping && pairBWantsToStep)
+        {
+            frontRightLeg.Step(); backLeftLeg.Step();
+        }
+
+        if (bodyMesh != null)
+        {
+            float currentBobSpeed = isMoving ? moveBobSpeed * speedMultiplier : idleBobSpeed;
+            float currentBobAmount = isMoving ? moveBobAmount : idleBobAmount;
+            _bobTimer += Time.deltaTime * currentBobSpeed;
+            float offsetY = Mathf.Sin(_bobTimer) * currentBobAmount;
+            Vector3 targetBodyPos = _startBodyLocalPos + new Vector3(0f, offsetY, 0f);
+            bodyMesh.localPosition = Vector3.Lerp(bodyMesh.localPosition, targetBodyPos, Time.deltaTime * 10f);
+        }
+    }
+
+    public void LockAndResetLegs(bool isLocked)
+    {
+        isIKLocked = isLocked;
+        if (frontLeftLeg != null) frontLeftLeg.SetLocked(isLocked);
+        if (backRightLeg != null) backRightLeg.SetLocked(isLocked);
+        if (frontRightLeg != null) frontRightLeg.SetLocked(isLocked);
+        if (backLeftLeg != null) backLeftLeg.SetLocked(isLocked);
+
+        if (!isLocked)
+        {
+            if (frontLeftLeg != null) frontLeftLeg.SnapToIdealPosition();
+            if (backRightLeg != null) backRightLeg.SnapToIdealPosition();
+            if (frontRightLeg != null) frontRightLeg.SnapToIdealPosition();
+            if (backLeftLeg != null) backLeftLeg.SnapToIdealPosition();
+        }
+    }
+}
+
+// [FILE_END]: AIProceduralBody.cs
+// ==========================================
+
+
+// [FILE_START]: AIProceduralLeg.cs
+// PATH: AIProceduralLeg.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+using DG.Tweening;
+using UnityEngine.AI;
+
+public class AIProceduralLeg : MonoBehaviour
+{
+    public bool isLocked = false;
+
+    [Header("--- CORE REFERENCES ---")]
+    public Transform homeTransform;
+    public NavMeshAgent navAgent;
+    public LayerMask groundLayer;
+
+    [Header("--- STEPPING SETTINGS (PREDICTIVE) ---")]
+    public float stepDistance = 1.0f;
+    public float stepHeight = 0.4f;
+    public float stepDurationBase = 0.3f;
+    public float overshootMultiplier = 0.5f;
+
+    public bool IsStepping { get; private set; }
+    public Vector3 IdealPosition { get; private set; }
+    private Vector3 _currentFootprint;
+
+    // [FIX]: Biến quản lý DOTween an toàn
+    private Sequence _stepSeq;
+
+    void Start()
+    {
+        _currentFootprint = transform.position;
+        IdealPosition = transform.position;
+    }
+
+    void Update()
+    {
+        if (isLocked)
+        {
+            if (homeTransform != null)
+            {
+                _currentFootprint = homeTransform.position + (Vector3.down * 0.5f);
+                transform.position = _currentFootprint;
+            }
+            return;
+        }
+
+        if (!IsStepping) transform.position = _currentFootprint;
+    }
+
+    public bool WantsToStep()
+    {
+        if (IsStepping) return false;
+        Vector3 velocityOffset = Vector3.zero;
+        if (navAgent != null && navAgent.isActiveAndEnabled)
+            velocityOffset = navAgent.velocity * overshootMultiplier;
+
+        Vector3 predictedPos = homeTransform.position + velocityOffset;
+        if (Physics.Raycast(predictedPos + Vector3.up * 2f, Vector3.down, out RaycastHit hit, 5f, groundLayer))
+            IdealPosition = hit.point;
+
+        return Vector3.Distance(_currentFootprint, IdealPosition) > stepDistance;
+    }
+
+    public void Step()
+    {
+        IsStepping = true;
+        float currentSpeed = navAgent != null ? Mathf.Max(navAgent.velocity.magnitude, 1f) : 1f;
+        float actualDuration = Mathf.Clamp(stepDurationBase / (currentSpeed * 0.5f), 0.1f, 0.4f);
+
+        _currentFootprint = IdealPosition;
+
+        // [FIX]: Chặt đứt mọi DOTween đang dở dang trước khi bước nhịp mới
+        if (_stepSeq != null && _stepSeq.IsActive()) _stepSeq.Kill();
+
+        _stepSeq = DOTween.Sequence();
+        _stepSeq.Join(transform.DOMoveY(IdealPosition.y + stepHeight, actualDuration / 2f).SetEase(Ease.OutSine));
+        _stepSeq.Append(transform.DOMoveY(IdealPosition.y, actualDuration / 2f).SetEase(Ease.InSine));
+        _stepSeq.Insert(0, transform.DOMove(IdealPosition, actualDuration).SetEase(Ease.Linear));
+
+        _stepSeq.OnComplete(() => { IsStepping = false; });
+    }
+
+    // Hàm gọi khi đang bay
+    public void SetLocked(bool locked)
+    {
+        isLocked = locked;
+        if (locked)
+        {
+            if (_stepSeq != null && _stepSeq.IsActive()) _stepSeq.Kill();
+            IsStepping = false;
+        }
+    }
+
+    // Hàm gọi khi vừa hạ cánh
+    public void SnapToIdealPosition()
+    {
+        if (_stepSeq != null && _stepSeq.IsActive()) _stepSeq.Kill();
+        IsStepping = false;
+
+        if (Physics.Raycast(homeTransform.position + Vector3.up * 4f, Vector3.down, out RaycastHit hit, 5f, groundLayer))
+            IdealPosition = hit.point;
+        else
+            IdealPosition = homeTransform.position - Vector3.up * 1f;
+
+        _currentFootprint = IdealPosition;
+        transform.position = IdealPosition;
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (homeTransform != null && navAgent != null)
+        {
+            Gizmos.color = Color.red;
+            Vector3 predictedPos = homeTransform.position + (navAgent.velocity * overshootMultiplier);
+            Gizmos.DrawLine(predictedPos + Vector3.up * 2f, predictedPos + Vector3.down * 3f);
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(IdealPosition, 0.1f);
+        }
+    }
+}
+
+// [FILE_END]: AIProceduralLeg.cs
+// ==========================================
+
+
+// [FILE_START]: AIProceduralTail.cs
+// PATH: AIProceduralTail.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+using UnityEngine.AI;
+
+public class AIProceduralTail : MonoBehaviour
+{
+    [Header("--- CORE REFERENCES ---")]
+    [Tooltip("Kéo cục NavMeshAgent của con quái vào đây")]
+    public NavMeshAgent navAgent;
+
+    [Header("--- HÌNH DÁNG ĐUÔI (TAIL SHAPE) ---")]
+    [Tooltip("Ép đuôi cong tự nhiên. (Thử Z âm để kéo giật chóp đuôi lại, Y dương để hếch lên)")]
+    public Vector3 restCurveOffset = new Vector3(0f, 0.5f, -0.5f);
+
+    [Header("--- IDLE SWAY (LÚC ĐỨNG YÊN) ---")]
+    public float idleSwaySpeed = 1.5f;
+    public float idleHorizontalSway = 0.3f;
+    public float idleVerticalSway = 0.15f;
+
+    [Header("--- MOVING SWAY (LÚC DI CHUYỂN) ---")]
+    public float moveSpeedMultiplier = 0.5f;
+    public float moveHorizontalMultiplier = 2.5f;
+    public float moveVerticalOffset = 0.4f;
+
+    private Vector3 _startLocalPosition;
+    private float _timeCounter = 0f;
+
+    void Start()
+    {
+        // Lưu lại vị trí gốc ban đầu
+        _startLocalPosition = transform.localPosition;
+    }
+
+    void Update()
+    {
+        float currentSpeed = 0f;
+        if (navAgent != null && navAgent.isActiveAndEnabled)
+        {
+            currentSpeed = navAgent.velocity.magnitude;
+        }
+
+        bool isMoving = currentSpeed > 0.1f;
+
+        // 1. VẬN TỐC VẪY
+        float actualSwaySpeed = idleSwaySpeed + (isMoving ? (currentSpeed * moveSpeedMultiplier) : 0f);
+        _timeCounter += Time.deltaTime * actualSwaySpeed;
+
+        // 2. BIÊN ĐỘ VẪY
+        float actualHorizSway = idleHorizontalSway * (isMoving ? moveHorizontalMultiplier : 1f);
+        float offsetX = Mathf.Sin(_timeCounter) * actualHorizSway;
+        float offsetY = Mathf.Sin(_timeCounter * 2f) * idleVerticalSway;
+
+        if (isMoving) offsetY += moveVerticalOffset;
+
+        // 3. TÍCH HỢP ĐỘ CONG TỰ NHIÊN (REST CURVE OFFSET) CỘNG VỚI SÓNG SIN
+        Vector3 targetPos = _startLocalPosition + restCurveOffset + new Vector3(offsetX, offsetY, 0f);
+
+        // 4. LÀM MƯỢT
+        transform.localPosition = Vector3.Lerp(transform.localPosition, targetPos, Time.deltaTime * 8f);
+    }
+}
+
+// [FILE_END]: AIProceduralTail.cs
+// ==========================================
+
+
+// [FILE_START]: AIRagdollController.cs
+// PATH: AIRagdollController.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+
+public class AIRagdollController : MonoBehaviour
+{
+    private Animator _animator;
+    private Rigidbody[] _boneRigidbodies;
+    private Collider[] _boneColliders;
+
+    [Header("--- RAGDOLL RECOVERY ---")]
+    [Tooltip("Kéo cục xương chậu (Hips/Pelvis) vào đây để làm mốc dời xác")]
+    public Transform hipsBone;
+
+    void Awake()
+    {
+        _animator = GetComponentInChildren<Animator>();
+        _boneRigidbodies = GetComponentsInChildren<Rigidbody>();
+        _boneColliders = GetComponentsInChildren<Collider>();
+
+        SetRagdollState(false);
+    }
+
+    // Dùng cho cái chết (Health = 0)
+    public void EnableRagdoll()
+    {
+        SetRagdollState(true);
+    }
+
+    // [DÙNG CHO HARD STAGGER]: Ngã ngửa văng ra sau
+    public void EnableRagdollWithForce(Vector3 force)
+    {
+        SetRagdollState(true);
+        if (hipsBone != null)
+        {
+            Rigidbody hipsRb = hipsBone.GetComponent<Rigidbody>();
+            if (hipsRb != null) hipsRb.AddForce(force, ForceMode.Impulse);
+        }
+    }
+
+    // [DÙNG KHI TỈNH DẬY]: Dời cái vỏ Root đến chỗ cục xương đang nằm
+    public void DisableRagdollAndAlignRoot()
+    {
+        if (hipsBone != null)
+        {
+            Vector3 newRootPos = hipsBone.position;
+            // Bắn tia Raycast xuống đất để Root không bị lơ lửng hoặc chui xuống gầm
+            if (Physics.Raycast(newRootPos + Vector3.up, Vector3.down, out RaycastHit hit, 3f))
+            {
+                newRootPos.y = hit.point.y;
+            }
+            transform.position = newRootPos;
+        }
+
+        SetRagdollState(false);
+    }
+
+    public void SetRagdollState(bool isRagdollActive)
+    {
+        foreach (Collider col in _boneColliders)
+        {
+            if (col == null) continue;
+
+            // [VI] SỬA LỖI Ở ĐÂY: KHÔNG tắt Collider nữa! Luôn bật để nhận tia Raycast.
+            // [EN] FIX HERE: DO NOT turn off the Collider anymore! Always enable to receive Raycasts.
+            col.enabled = true;
+        }
+
+        foreach (Rigidbody rb in _boneRigidbodies)
+        {
+            if (rb == null) continue;
+
+            // [VI] Rigidbody sẽ quyết định: Bật = Rớt tự do (Ragdoll), Tắt = Chạy theo Animation.
+            // [EN] Rigidbody decides: On = Free fall (Ragdoll), Off = Follow Animation.
+            rb.isKinematic = !isRagdollActive;
+            rb.useGravity = isRagdollActive;
+        }
+    }
+}
+
+// [FILE_END]: AIRagdollController.cs
+// ==========================================
+
+
+// [FILE_START]: AISkillController.cs
+// PATH: AISkillController.cs
+// ------------------------------------------
+
+﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.AI;
+using FluidHTN;
+using DG.Tweening;
+using TaskStatus = FluidHTN.TaskStatus;
+
+[System.Serializable]
+public class ActiveSkill
+{
+    public AISkillData data;
+    public float lastCastTime = -999f;
+    public bool IsCooldownReady() => Time.time >= (lastCastTime + data.cooldown);
+    public void RecordCastTime() => lastCastTime = Time.time;
+}
+
+public class AISkillController : MonoBehaviour
+{
+    [Header("--- ARSENAL ---")]
+    public List<ActiveSkill> availableSkills = new List<ActiveSkill>();
+    public float momentumBonus = 0.2f;
+
+    [Header("--- CHOREOGRAPHY REFS ---")]
+    public Transform groundPivot;
+    public Transform bodyMesh;
+    public AIMeleeHitbox meleeHitbox;
+    public AIProceduralBody proceduralBody;
+
+    [Header("--- RANGED COMBAT REFS ---")]
+    public GunController aiGunController; // [VI] Đã xóa biến aiGunBarrel / [EN] Removed aiGunBarrel variable
+
+    public TaskStatus CurrentSkillStatus { get; private set; } = TaskStatus.Success;
+
+    private AIAgent _agent;
+    private ActiveSkill _currentSkill;
+    private ActiveSkill _lastSelectedSkill;
+    private int _phase = 0;
+    private float _timer = 0f;
+    private Sequence _currentSkillSeq;
+    private Vector3 _originalBodyPos;
+    private Vector3 _snapshotTargetPos;
+
+    void Awake()
+    {
+        _agent = GetComponent<AIAgent>();
+        if (bodyMesh != null) _originalBodyPos = bodyMesh.localPosition;
+    }
+
+    public void StartBestSkill(Transform target)
+    {
+        _currentSkill = AIUtilityEvaluator.EvaluateBestSkill(availableSkills, transform, target, _lastSelectedSkill, momentumBonus);
+        _lastSelectedSkill = _currentSkill;
+
+        if (_currentSkill == null)
+        {
+            CurrentSkillStatus = TaskStatus.Failure;
+            return;
+        }
+
+        CurrentSkillStatus = TaskStatus.Continue;
+        _phase = 0;
+        _timer = 0f;
+
+        if (_agent.NavAgent != null)
+        {
+            _agent.NavAgent.ResetPath();
+            if (_currentSkill.data.skillType != SkillArchetype.RangedShoot)
+            {
+                _agent.NavAgent.updatePosition = false;
+            }
+            _agent.NavAgent.updateRotation = false;
+        }
+
+        _agent.Context.CurrentExecutingSkill = _currentSkill.data;
+        _agent.Context.LookFocusOverride = target.position + Vector3.up * 1.2f;
+    }
+
+    void Update()
+    {
+        if (CurrentSkillStatus != TaskStatus.Continue || _currentSkill == null || _agent.Context.Target == null) return;
+
+        _timer += Time.deltaTime;
+
+        if (_phase == 0)
+        {
+            Vector3 dirToTarget = (_agent.Context.Target.position - transform.position).normalized;
+            dirToTarget.y = 0;
+            float angleToTarget = Vector3.Angle(transform.forward, dirToTarget);
+
+            if (angleToTarget <= _currentSkill.data.weaponFOV / 2f)
+            {
+                _phase = 1;
+                ExecuteSkillChoreography();
+            }
+            else
+            {
+                _agent.FaceTargetLazy(_agent.Context.Target.position, _agent.TacticalSettings.combatTurnSpeed);
+                if (_timer > 3f) AbortExecution(TaskStatus.Failure);
+            }
+        }
+    }
+
+    private void ExecuteSkillChoreography()
+    {
+        _agent.Context.LookFocusOverride = null;
+        if (proceduralBody != null) proceduralBody.isSkillActive = true;
+        if (_currentSkillSeq != null && _currentSkillSeq.IsActive()) _currentSkillSeq.Kill();
+        _currentSkillSeq = DOTween.Sequence();
+
+        _snapshotTargetPos = _agent.Context.Target.position;
+
+        switch (_currentSkill.data.skillType)
+        {
+            case SkillArchetype.MeleeLunge:
+                Vector3 dashDir = (_snapshotTargetPos - transform.position).normalized;
+                dashDir.y = 0;
+                Vector3 finalDashTarget = _snapshotTargetPos + (dashDir * _currentSkill.data.overshootDistance);
+
+                if (NavMesh.SamplePosition(finalDashTarget, out NavMeshHit navHit, 3f, NavMesh.AllAreas))
+                    finalDashTarget = navHit.position;
+                else
+                    finalDashTarget = _snapshotTargetPos;
+
+                if (bodyMesh != null)
+                    _currentSkillSeq.Append(bodyMesh.DOLocalMoveY(_originalBodyPos.y - _currentSkill.data.windUpDip, _currentSkill.data.windUpTime).SetEase(Ease.InOutSine));
+                else
+                    _currentSkillSeq.AppendInterval(_currentSkill.data.windUpTime);
+
+                _currentSkillSeq.AppendCallback(() =>
+                {
+                    if (_agent.NavAgent != null) _agent.NavAgent.enabled = false;
+                    if (meleeHitbox != null) meleeHitbox.ActivateHitbox(_currentSkill.data.damage, _currentSkill.data.knockbackForce);
+                    if (proceduralBody != null) proceduralBody.LockAndResetLegs(true);
+                });
+
+                _currentSkillSeq.Append(transform.DOMove(finalDashTarget, _currentSkill.data.executeTime)
+                    .SetEase(Ease.OutExpo)
+                    .OnUpdate(() =>
+                    {
+                        if (groundPivot != null)
+                        {
+                            if (NavMesh.SamplePosition(groundPivot.position + Vector3.up * 2f, out NavMeshHit floorHit, 4f, NavMesh.AllAreas))
+                            {
+                                float offsetToRoot = transform.position.y - groundPivot.position.y;
+                                transform.position = new Vector3(transform.position.x, floorHit.position.y + offsetToRoot, transform.position.z);
+                            }
+                        }
+                    })
+                );
+
+                if (bodyMesh != null)
+                    _currentSkillSeq.Join(bodyMesh.DOLocalJump(_originalBodyPos, _currentSkill.data.jumpArcHeight, 1, _currentSkill.data.executeTime).SetEase(Ease.OutExpo));
+
+                _currentSkillSeq.AppendCallback(() =>
+                {
+                    if (meleeHitbox != null) meleeHitbox.DeactivateHitbox();
+                    if (_agent.NavAgent != null)
+                    {
+                        if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit2, 2f, NavMesh.AllAreas))
+                            transform.position = hit2.position;
+
+                        _agent.NavAgent.enabled = true;
+                        if (_agent.NavAgent.isOnNavMesh) _agent.NavAgent.Warp(transform.position);
+                    }
+                    if (proceduralBody != null) proceduralBody.LockAndResetLegs(false);
+                });
+
+                if (bodyMesh != null)
+                    _currentSkillSeq.Append(bodyMesh.DOLocalMoveY(_originalBodyPos.y, _currentSkill.data.recoveryTime).SetEase(Ease.InOutSine));
+                else
+                    _currentSkillSeq.AppendInterval(_currentSkill.data.recoveryTime);
+
+                _currentSkillSeq.OnComplete(() =>
+                {
+                    _currentSkill.RecordCastTime();
+                    AbortExecution(TaskStatus.Success);
+                });
+
+                break;
+
+            case SkillArchetype.RangedShoot:
+                if (bodyMesh != null)
+                    _currentSkillSeq.Append(bodyMesh.DOLocalMoveY(_originalBodyPos.y - _currentSkill.data.windUpDip, _currentSkill.data.windUpTime).SetEase(Ease.InOutSine));
+                else
+                    _currentSkillSeq.AppendInterval(_currentSkill.data.windUpTime);
+                int strafeDir = UnityEngine.Random.value > 0.5f ? 1 : -1;
+
+                _currentSkillSeq.AppendInterval(_currentSkill.data.executeTime)
+                    .OnUpdate(() =>
+                    {
+                        if (_agent != null && _agent.Context.Target != null)
+                        {
+                            _agent.FaceTargetLazy(_agent.Context.Target.position, _agent.TacticalSettings.combatTurnSpeed);
+                            if (aiGunController != null)
+                            {
+                                Vector3 aimTarget = _agent.Context.Target.position + (Vector3.up * 1.2f);
+                                aiGunController.ShootAtAI(aimTarget);
+                            }
+
+                            if (_agent.NavAgent != null && _agent.NavAgent.isOnNavMesh)
+                            {
+                                // Lấy hướng đâm thẳng vào người Player
+                                Vector3 dirToTarget = (_agent.Context.Target.position - transform.position).normalized;
+                                // Lấy Vector vuông góc 90 độ (bên trái/phải)
+                                Vector3 rightDir = Vector3.Cross(dirToTarget, Vector3.up) * strafeDir;
+
+                                // Ép quái di chuyển trượt sang ngang
+                                _agent.NavAgent.Move(rightDir * _agent.TacticalSettings.prowlSpeed * Time.deltaTime);
+                            }
+                        }
+                    });
+
+                if (bodyMesh != null)
+                    _currentSkillSeq.Append(bodyMesh.DOLocalMoveY(_originalBodyPos.y, _currentSkill.data.recoveryTime).SetEase(Ease.InOutSine));
+                else
+                    _currentSkillSeq.AppendInterval(_currentSkill.data.recoveryTime);
+
+                _currentSkillSeq.OnComplete(() =>
+                {
+                    _currentSkill.RecordCastTime();
+                    AbortExecution(TaskStatus.Success);
+                });
+                break;
+
+            case SkillArchetype.AoEStomp:
+                break;
+        }
+    }
+
+    public void AbortExecution(TaskStatus finalStatus = TaskStatus.Failure)
+    {
+        CurrentSkillStatus = finalStatus;
+
+        if (_currentSkillSeq != null && _currentSkillSeq.IsActive()) _currentSkillSeq.Kill();
+        if (meleeHitbox != null) meleeHitbox.DeactivateHitbox();
+        if (bodyMesh != null) bodyMesh.localPosition = _originalBodyPos;
+
+        if (_agent != null && _agent.NavAgent != null)
+        {
+            _agent.NavAgent.enabled = true;
+            _agent.NavAgent.updatePosition = true;
+            _agent.NavAgent.updateRotation = true;
+            if (_agent.NavAgent.isOnNavMesh) _agent.NavAgent.Warp(transform.position);
+        }
+
+        // ==========================================
+        // [VI] FIX LỖI KẸT IK CHÂN TẠI ĐÂY
+        // [EN] FIX IK LEG FREEZE BUG HERE
+        // ==========================================
+        if (proceduralBody != null)
+        {
+            proceduralBody.isSkillActive = false; // Báo hiệu đã hết dùng Skill
+            proceduralBody.LockAndResetLegs(false); // Thả rông đôi chân
+        }
+
+        _currentSkill = null;
+        if (_agent != null && _agent.Context != null)
+        {
+            _agent.Context.CurrentExecutingSkill = null;
+            _agent.Context.LookFocusOverride = null;
+        }
+    }
+
+    public void AddSkill(AISkillData data) { if (!availableSkills.Exists(s => s.data == data)) availableSkills.Add(new ActiveSkill { data = data }); }
+    public void RemoveSkill(AISkillData data) { availableSkills.RemoveAll(s => s.data == data); }
+}
+
+// [FILE_END]: AISkillController.cs
+// ==========================================
+
+
+// [FILE_START]: AISkillData.cs
+// PATH: AISkillData.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+
+public enum SkillArchetype
+{
+    MeleeLunge,     // Vồ tới cắn
+    RangedShoot,    // Bắn đạn/Phun độc
+    AoEStomp        // Dậm đất
+}
+
+[CreateAssetMenu(fileName = "NewSkillData", menuName = "AI/Skill Data V2")]
+public class AISkillData : ScriptableObject
+{
+    [Header("--- SKILL IDENTITY ---")]
+    public string skillName;
+    public SkillArchetype skillType = SkillArchetype.MeleeLunge;
+
+    [Header("--- UTILITY SCORING ---")]
+    [Tooltip("Khoảng cách xa nhất mà chiêu này có thể với tới")]
+    public float maxRange = 20f;
+
+    [Tooltip("Trục X: Khoảng cách chuẩn hóa (0 = 0m, 1 = maxRange). Trục Y: Điểm (0-1)")]
+    public AnimationCurve distanceScoreCurve;
+
+    public float cooldown = 5f;
+
+    [Header("--- COMBAT TIMING (GIÂY) ---")]
+    public float windUpTime = 1.0f;
+    public float executeTime = 0.5f;
+    public float recoveryTime = 1.5f;
+    [Tooltip("Khoảng cách lướt lố ra sau lưng Player (Ví dụ: 2m-3m)")]
+    public float overshootDistance = 2.5f; // <--- THÊM DÒNG NÀY
+
+    [Header("--- MOVEMENT & FOV ---")]
+    public float weaponFOV = 60f;
+
+    [Header("--- LUNGE SETTINGS (Dành riêng cho Vồ mồi) ---")]
+    public float windUpDip = 0.5f;
+    public float jumpArcHeight = 1.5f;
+    public float damage = 30f;
+    public float knockbackForce = 15f; // <--- THÊM DÒNG NÀY (Lực hất văng)
+
+}
+
+// [FILE_END]: AISkillData.cs
+// ==========================================
+
+
+// [FILE_START]: AITacticalSettings.cs
+// PATH: AITacticalSettings.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+
+[CreateAssetMenu(fileName = "NewTacticalSettings", menuName = "AI/Tactical Settings")]
+public class AITacticalSettings : ScriptableObject
+{
+    [Header("--- THỜI GIAN (GIÂY) ---")]
+    public float windUpTime = 1.5f;       // Thời gian khựng lại giật mình
+    public float searchDuration = 10f;    // Thời gian hùng hục sục sạo khi mất dấu
+    public float scanDuration = 4f;       // Thời gian rà quét bụi cỏ
+    public float overwatchTime = 5f;      // Thời gian đứng lườm yểm trợ
+    public float tauntDuration = 2f;      // Thời gian gầm gừ chờ đợi
+
+    [Header("--- DI CHUYỂN & VẬN ĐỘNG ---")]
+    public float circleRadius = 8f;       // Bán kính đi vòng cung vây ráp
+    public float turnSpeed = 4f;          // Tốc độ vặn người
+    public float prowlSpeed = 2.5f;       // Tốc độ đi bộ dạo quanh gầm gừ
+    public float approachDistance = 3f;   // Khoảng cách tiếp cận an toàn
+
+    [Header("--- CHIẾN ĐẤU (COMBAT) ---")]
+    public float combatTurnSpeed = 8f;    // Tốc độ vặn người lúc vung đòn
+    public float meleeDuration = 2f;      // Thời gian thực thi đòn cận chiến
+    public float rangedDuration = 2.5f;   // Thời gian thực thi đòn đánh xa
+}
+
+// [FILE_END]: AITacticalSettings.cs
+// ==========================================
+
+
+// [FILE_START]: AIUtilityEvaluator.cs
+// PATH: AIUtilityEvaluator.cs
+// ------------------------------------------
+
+﻿using System.Collections.Generic;
+using UnityEngine;
+
+public static class AIUtilityEvaluator
+{
+    // Hàm này chỉ tính toán và trả về chiêu tốt nhất, không can thiệp vào game
+    public static ActiveSkill EvaluateBestSkill(
+        List<ActiveSkill> arsenal,
+        Transform agentTransform,
+        Transform targetTransform,
+        ActiveSkill lastSelected,
+        float momentumBonus)
+    {
+        if (arsenal.Count == 0 || targetTransform == null) return null;
+
+        ActiveSkill bestSkill = null;
+        float highestScore = -1f;
+
+        // Tính khoảng cách thực tế từ quái đến Player
+        float distanceToTarget = Vector3.Distance(agentTransform.position, targetTransform.position);
+
+        foreach (var skill in arsenal)
+        {
+            if (!skill.IsCooldownReady()) continue; // Cổng lọc Cooldown
+
+            // ==========================================
+            // [FIX]: CHUẨN HÓA TRỤC X CỦA ĐỒ THỊ (0.0 ĐẾN 1.0)
+            // ==========================================
+            // Lấy khoảng cách thực tế chia cho tầm đánh tối đa (maxRange) của chiêu đó.
+            // Ví dụ: Đứng cách 5m, maxRange của chiêu Lunge là 10m -> normalizedDistance = 0.5 (Tức là 50% trục X)
+            // Mathf.Clamp01 đảm bảo giá trị không bao giờ vượt quá 1 (đề phòng quái đứng quá xa)
+            // Mathf.Max(0.1f, ...) dùng để chống lỗi chia cho 0 nếu sếp quên setup maxRange
+            float normalizedDistance = Mathf.Clamp01(distanceToTarget / Mathf.Max(0.1f, skill.data.maxRange));
+
+            // Đọc điểm số từ đồ thị tại vị trí % đã tính
+            float score = skill.data.distanceScoreCurve.Evaluate(normalizedDistance);
+
+            // Quán tính quyết định (Ưu tiên dùng tiếp chiêu đang dùng nếu điểm bằng nhau)
+            if (skill == lastSelected) score += momentumBonus;
+
+            if (score > highestScore)
+            {
+                highestScore = score;
+                bestSkill = skill;
+            }
+        }
+
+        return bestSkill;
+    }
+}
+
+// [FILE_END]: AIUtilityEvaluator.cs
+// ==========================================
+
+
+// [FILE_START]: AIWeaponPart.cs
+// PATH: AIWeaponPart.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+
+public class AIWeaponPart : MonoBehaviour, IDamageable
+{
+    [Header("--- WEAPON STATS ---")]
+    public float maxHealth = 100f;
+    private float _currentHealth;
+    private bool _isBroken = false;
+
+    [Header("--- AI INTEGRATION ---")]
+    public AIHealth mainHealth;
+    public AISkillController skillController;
+    public AISkillData assignedSkill;
+
+    [Header("--- EFFECTS ---")]
+    public float tearOffForce = 15f;
+    public GameObject breakVFX;
+
+    private void Start()
+    {
+        _currentHealth = maxHealth;
+        if (skillController != null && assignedSkill != null)
+            skillController.AddSkill(assignedSkill);
+    }
+
+    public void TakeDamage(float damage, Vector3 hitPoint, Vector3 hitNormal = default)
+    {
+        ApplyDamage(damage, hitPoint, hitNormal);
+    }
+
+    private void ApplyDamage(float damage, Vector3 hitPoint, Vector3 hitNormal)
+    {
+        if (_isBroken) return;
+        _currentHealth -= damage;
+        if (_currentHealth <= 0) BreakWeapon(hitNormal);
+    }
+
+    private void BreakWeapon(Vector3 hitNormal)
+    {
+        _isBroken = true;
+        if (breakVFX != null) Instantiate(breakVFX, transform.position, Quaternion.identity);
+
+        if (skillController != null && assignedSkill != null)
+            skillController.RemoveSkill(assignedSkill);
+
+        // [VI] ĐÃ XÓA LOGIC GỌI STAGGER LÊN MAIN HEALTH
+        // [EN] REMOVED STAGGER LOGIC CALL TO MAIN HEALTH
+
+        transform.SetParent(null);
+        Rigidbody rb = gameObject.GetComponent<Rigidbody>();
+        if (rb == null) rb = gameObject.AddComponent<Rigidbody>();
+
+        rb.isKinematic = false;
+        rb.mass = 100f;
+        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+
+        Vector3 forceDir = (hitNormal + Vector3.up * 0.5f).normalized;
+        rb.AddForce(forceDir * tearOffForce, ForceMode.Impulse);
+        rb.AddTorque(Random.insideUnitSphere * tearOffForce, ForceMode.Impulse);
+
+        Destroy(rb.gameObject, 10f);
+        gameObject.layer = LayerMask.NameToLayer("Default");
+        this.enabled = false;
+    }
+}
+
+// [FILE_END]: AIWeaponPart.cs
+// ==========================================
+
+
+// [FILE_START]: AIWorldState.cs
+// PATH: AIWorldState.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+
+public enum AIWorldState
+{
+    HasTarget,              // 0
+    IsAlerted,              // 1
+    HasSuspectedLocation,   // 2
+    IsTargetInStealthGrass, // 3
+    HasCombatToken,         // 4
+    IsLightStaggered,       // 5: Khựng nhẹ (Vỡ Giáp)
+    IsHardStaggered,        // 6: Gục ngã (Nổ Core)
+    HasInvestigateToken,    // 7
+    IsSearching             // 8
+}
+
+// [FILE_END]: AIWorldState.cs
+// ==========================================
+
+
+// [FILE_START]: GreyboxDomain.cs
+// PATH: GreyboxDomain.cs
+// ------------------------------------------
+
+﻿using System;
+using FluidHTN;
+using FluidHTN.Operators;
+
+public static class GreyboxDomain
+{
+    public static Domain<AiContext> Build()
+    {
+        return new DomainBuilder<AiContext>("Greybox Monster Domain", new FluidHTN.Factory.DefaultFactory())
+            .Select("Main Behavior")
+                // ========================================================
+                // NHÁNH 1 (ƯU TIÊN CAO NHẤT): COMBAT ĐỘNG (DYNAMIC COMBAT)
+                // ========================================================
+                .Select("Combat State")
+                    .Condition("Has Target", ctx => ctx.HasState(AIWorldState.HasTarget))
+
+                    // NÚT THẮT QUYẾT ĐỊNH: ĐÁNH HAY VÂY RÁP?
+                    .Select("Attack Or Prowl")
+
+                        // LỰA CHỌN 1: LAO VÀO TẤN CÔNG
+                        .Sequence("Engage")
+                            .Condition("Has Combat Token", ctx => ctx.HasState(AIWorldState.HasCombatToken))
+
+                            // [ĐÃ FIX]: Chỉ dùng 1 Operator duy nhất để gọi Controller thực thi!
+                            .Action("Evaluate And Execute Best Skill")
+                                .DoOperator(new UtilityCombatOperator())
+                            .End()
+
+                            .Action("Cooldown").DoOperator(new WaitOperator(ctx => ctx.Agent.TacticalSettings.tauntDuration))
+                                .Effect("Return Token", EffectType.PlanAndExecute, (ctx, type) => ctx.SetState(AIWorldState.HasCombatToken, false, type))
+                            .End()
+                        .End()
+
+                        // LỰA CHỌN 2: LƯỢN LỜ UY HIẾP (PROWL)
+                        .Sequence("Prowl & Wait")
+                            .Action("Circle Player").DoOperator(new CircleTargetOperator(ctx => ctx.Agent.TacticalSettings.circleRadius)).End()
+                        .End()
+
+                    .End()
+                .End() // Đóng nhánh Combat
+
+                // ========================================================
+                // NHÁNH 2: SEARCH (HÙNG HỤC SỤC SẠO KHI MẤT DẤU)
+                // ========================================================
+                .Sequence("Search Lost Target")
+                    .Condition("Is Searching", ctx => ctx.HasState(AIWorldState.IsSearching))
+
+                    .Action("Run To Last Known Position").DoOperator(new MoveToVectorDestinationOperator(true, ctx => ctx.Agent.TacticalSettings.approachDistance)).End()
+                    .Action("Search Area Aggressively")
+                        .DoOperator(new ScanAreaOperator(ctx => ctx.Agent.TacticalSettings.searchDuration))
+                        .Effect("Cooldown To Patrol", EffectType.PlanAndExecute, (ctx, type) =>
+                        {
+                            ctx.SetState(AIWorldState.IsSearching, false, type);
+                            ctx.SetState(AIWorldState.HasSuspectedLocation, false, type);
+                        })
+                    .End()
+                .End()
+
+                // ========================================================
+                // NHÁNH 3: INVESTIGATE (CÓ TIẾNG ĐỘNG + ĐƯỢC PHÁT VÉ ĐIỀU TRA)
+                // ========================================================
+                .Sequence("Investigate - Leader")
+                    .Condition("Has Suspicion", ctx => ctx.HasState(AIWorldState.HasSuspectedLocation))
+                    .Condition("Has Investigate Token", ctx => ctx.HasState(AIWorldState.HasInvestigateToken))
+
+                    .Action("Telegraph Suspicion").DoOperator(new TelegraphOperator(true, ctx => ctx.Agent.TacticalSettings.windUpTime)).End()
+                    .Action("Turn Body").DoOperator(new TurnToFaceOperator(true, ctx => ctx.Agent.TacticalSettings.turnSpeed)).End()
+                    .Action("Tactical Approach").DoOperator(new MoveToVectorDestinationOperator(true, ctx => ctx.Agent.TacticalSettings.approachDistance)).End()
+                    .Action("Search Area")
+                        .DoOperator(new ScanAreaOperator(ctx => ctx.Agent.TacticalSettings.scanDuration))
+                        .Effect("Return Token", EffectType.PlanAndExecute, (ctx, type) =>
+                        {
+                            ctx.SetState(AIWorldState.HasSuspectedLocation, false, type);
+                            ctx.SetState(AIWorldState.HasInvestigateToken, false, type);
+                        })
+                    .End()
+                .End()
+
+                // ========================================================
+                // NHÁNH 4: ALERT / OVERWATCH (CÓ BIẾN NHƯNG BỊ TỪ CHỐI VÉ - ĐỨNG NHÌN)
+                // ========================================================
+                .Sequence("Investigate - Bystander")
+                    .Condition("Has Suspicion", ctx => ctx.HasState(AIWorldState.HasSuspectedLocation))
+                    .Condition("No Investigate Token", ctx => !ctx.HasState(AIWorldState.HasInvestigateToken))
+
+                    .Action("Look At Disturbance").DoOperator(new TelegraphOperator(true, ctx => ctx.Agent.TacticalSettings.windUpTime)).End()
+                    .Action("Turn To Face").DoOperator(new TurnToFaceOperator(true, ctx => ctx.Agent.TacticalSettings.turnSpeed)).End()
+
+                    .Action("Hold Position & Watch")
+                        .DoOperator(new TelegraphOperator(true, ctx => ctx.Agent.TacticalSettings.overwatchTime))
+                        .Effect("Clear Local Suspicion", EffectType.PlanAndExecute, (ctx, type) =>
+                        {
+                            ctx.SetState(AIWorldState.HasSuspectedLocation, false, type);
+                        })
+                    .End()
+                .End()
+
+                // ========================================================
+                // NHÁNH 5 (ƯU TIÊN THẤP NHẤT): PATROL (FALLBACK ĐI TUẦN)
+                // ========================================================
+                .Sequence("Patrol Methodically")
+                    .Action("Get Next Waypoint").DoOperator(new GetNextWaypointOperator()).End()
+                    .Action("Look At Waypoint").DoOperator(new TelegraphOperator(false, ctx => ctx.Agent.TacticalSettings.tauntDuration)).End()
+                    .Action("Turn To Waypoint").DoOperator(new TurnToFaceOperator(false, ctx => ctx.Agent.TacticalSettings.turnSpeed)).End()
+                    .Action("Move To Waypoint").DoOperator(new MoveToVectorDestinationOperator(false, ctx => 0.5f)).End()
+                    .Action("Rest And Scan").DoOperator(new ScanAreaOperator(ctx => 3f)).End()
+                .End()
+
+            .End()
+            .Build();
+    }
+}
+
+public static class DomainBuilderExtensions
+{
+    public static DomainBuilder<AiContext> DoOperator(this DomainBuilder<AiContext> builder, IOperator op)
+    {
+        if (builder.Pointer is FluidHTN.PrimitiveTasks.IPrimitiveTask task)
+        {
+            task.SetOperator(op);
+        }
+        return builder;
+    }
+}
+
+// [FILE_END]: GreyboxDomain.cs
+// ==========================================
+
+
+// [FILE_START]: GroupAgent.cs
+// PATH: GroupAgent.cs
+// ------------------------------------------
+
+﻿using System.Collections.Generic;
+using UnityEngine;
+using FluidHTN;
+using System.Linq;
+
+public class GroupAgent : MonoBehaviour
+{
+    [Header("Herd Members")]
+    public List<AIAgent> Members = new List<AIAgent>();
+
+    [Header("Combat Management")]
+    public int MaxSimultaneousAttacks = 2; // Số quái tối đa được cấp quyền đánh
+
+    private AIAgent _currentInvestigator = null;
+
+    public void RegisterAgent(AIAgent agent)
+    {
+        if (!Members.Contains(agent))
+        {
+            Members.Add(agent);
+            agent.Context.Group = this;
+        }
+    }
+
+    void Update()
+    {
+        ManageCombatTokens();
+    }
+
+    private void ManageCombatTokens()
+    {
+        Members.RemoveAll(a => a == null || a.Equals(null) || a.gameObject == null || !a.gameObject.activeInHierarchy);
+        if (Members.Count == 0) return;
+
+        var combatAgents = Members.Where(a => a != null && a.Context.HasState(AIWorldState.HasTarget)).ToList();
+        if (combatAgents.Count == 0) return;
+
+        // Đếm số vé đang lưu hành
+        int activeCombatTokens = combatAgents.Count(a => a.Context.HasState(AIWorldState.HasCombatToken));
+
+        // NẾU CÒN DƯ VÉ -> Phát cho đứa thèm khát nhất (Tạm tính là đứa gần nhất)
+        if (activeCombatTokens < MaxSimultaneousAttacks)
+        {
+            var candidate = combatAgents
+                .Where(a => !a.Context.HasState(AIWorldState.HasCombatToken))
+                .OrderBy(a => Vector3.Distance(a.transform.position, a.Context.Target.position))
+                .FirstOrDefault();
+
+            if (candidate != null)
+            {
+                candidate.Context.SetState(AIWorldState.HasCombatToken, true, EffectType.Permanent);
+            }
+        }
+    }
+
+    public void BroadcastPlayerLocation(Vector3 location)
+    {
+        foreach (var agent in Members)
+        {
+            if (agent == null) continue;
+            agent.Context.LastKnownPosition = location;
+
+            // Xóa vé điều tra cũ, thu hồi vé combat cũ để phân chia lại
+            agent.Context.SetState(AIWorldState.HasInvestigateToken, false, EffectType.Permanent);
+            agent.Context.SetState(AIWorldState.HasCombatToken, false, EffectType.Permanent);
+
+            if (!agent.Context.HasState(AIWorldState.HasTarget))
+            {
+                agent.Context.SuspectedLocation = location;
+                agent.Context.SetState(AIWorldState.HasSuspectedLocation, true, EffectType.Permanent);
+            }
+        }
+    }
+
+    public void ReportDisturbance(Vector3 disturbanceLocation, AIAgent reporter)
+    {
+        if (_currentInvestigator != null && _currentInvestigator.Context.HasState(AIWorldState.HasInvestigateToken)) return;
+
+        AIAgent bestCandidate = reporter;
+        float minDistance = float.MaxValue;
+
+        foreach (var agent in Members)
+        {
+            if (agent == null || agent.Context.HasState(AIWorldState.HasTarget)) continue;
+            float dist = Vector3.Distance(agent.transform.position, disturbanceLocation);
+            if (dist < minDistance)
+            {
+                minDistance = dist;
+                bestCandidate = agent;
+            }
+        }
+
+        _currentInvestigator = bestCandidate;
+        foreach (var agent in Members)
+        {
+            if (agent == null) continue;
+            bool isInvestigator = (agent == _currentInvestigator);
+            agent.Context.SetState(AIWorldState.HasInvestigateToken, isInvestigator, EffectType.Permanent);
+            agent.Context.SuspectedLocation = disturbanceLocation;
+            agent.Context.SetState(AIWorldState.HasSuspectedLocation, true, EffectType.Permanent);
+        }
+    }
+}
+
+// [FILE_END]: GroupAgent.cs
+// ==========================================
+
+
+// [FILE_START]: HearingSensor.cs
+// PATH: HearingSensor.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+using FluidHTN;
+
+[RequireComponent(typeof(AIAgent))]
+public class HearingSensor : MonoBehaviour
+{
+    [Header("Hearing Settings")]
+    public float hearingSensitivityRadius = 15f;
+    private AIAgent _agent;
+
+    void Awake()
+    {
+        _agent = GetComponent<AIAgent>();
+    }
+
+    void OnEnable()
+    {
+        AIAuditorySystem.OnSoundReported += OnHeardSound;
+    }
+
+    void OnDisable()
+    {
+        AIAuditorySystem.OnSoundReported -= OnHeardSound;
+    }
+
+    private void OnHeardSound(Vector3 soundPosition, float radius)
+    {
+        if (_agent == null || _agent.Context == null) return;
+
+        float sqrDist = (transform.position - soundPosition).sqrMagnitude;
+        // Logic cộng dồn bán kính âm thanh của sếp
+        float effectiveRadius = hearingSensitivityRadius + radius;
+        float sensitivitySqr = effectiveRadius * effectiveRadius;
+
+        if (sqrDist <= sensitivitySqr)
+        {
+            if (_agent.Context.Group != null)
+            {
+                // [CHUẨN AAA TẦNG 1]: Tuyệt đối không tự xử lý! Chỉ báo cáo tọa độ lên Bộ Chỉ Huy
+                _agent.Context.Group.ReportDisturbance(soundPosition, _agent);
+            }
+            else
+            {
+                // Fallback: Trong trường hợp sếp test 1 con lẻ chưa có Group
+                _agent.Context.SuspectedLocation = soundPosition;
+                _agent.Context.SetState(AIWorldState.HasSuspectedLocation, true, EffectType.Permanent);
+                _agent.Context.SetState(AIWorldState.HasInvestigateToken, true, EffectType.Permanent);
+            }
+        }
+    }
+}
+
+// [FILE_END]: HearingSensor.cs
+// ==========================================
+
+
+// [FILE_START]: HTNOperators.cs
+// PATH: HTNOperators.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+using UnityEngine.AI;
+using FluidHTN;
+using FluidHTN.Operators;
+using System;
+
+// ==========================================================
+// 1. CHỌN ĐIỂM TUẦN TRA 
+// ==========================================================
+public class GetNextWaypointOperator : IOperator
+{
+    public TaskStatus Start(IContext ctx)
+    {
+        AiContext context = (AiContext)ctx;
+        if (context.PatrolPath == null || context.PatrolPath.WaypointCount == 0) return TaskStatus.Failure;
+
+        context.CurrentMoveDestination = context.PatrolPath.GetWaypointPosition(context.CurrentWaypointIndex);
+        context.CurrentWaypointIndex = (context.CurrentWaypointIndex + 1) % context.PatrolPath.WaypointCount;
+
+        return TaskStatus.Success;
+    }
+
+    public TaskStatus Update(IContext ctx) => TaskStatus.Success;
+    public void Stop(IContext ctx) { }
+    public void Abort(IContext ctx) { }
+}
+
+// ==========================================================
+// 2. XOAY THÂN NGƯỜI (CÓ CẦU CHÌ BẢO VỆ CỔ)
+// ==========================================================
+public class TurnToFaceOperator : IOperator
+{
+    private bool _isInvestigateMode;
+    private Func<AiContext, float> _getTurnSpeed;
+
+    public TurnToFaceOperator(bool isInvestigateMode, Func<AiContext, float> getTurnSpeed)
+    {
+        _isInvestigateMode = isInvestigateMode;
+        _getTurnSpeed = getTurnSpeed;
+    }
+
+    public TaskStatus Start(IContext ctx)
+    {
+        AiContext context = (AiContext)ctx;
+        if (context.Agent?.NavAgent != null && context.Agent.NavAgent.isActiveAndEnabled && context.Agent.NavAgent.isOnNavMesh)
+        {
+            context.Agent.NavAgent.ResetPath();
+            context.Agent.NavAgent.updateRotation = false;
+        }
+        return TaskStatus.Continue;
+    }
+
+    public TaskStatus Update(IContext ctx)
+    {
+        AiContext context = (AiContext)ctx;
+        Vector3 targetPos = context.CurrentMoveDestination;
+
+        if (_isInvestigateMode)
+        {
+            targetPos = (context.HasState(AIWorldState.HasTarget) && context.Target != null)
+                ? context.Target.position : context.SuspectedLocation;
+        }
+
+        // Cầu chì: Đứng quá gần thì không khóa mắt để chống gập cổ
+        if (Vector3.Distance(context.Agent.transform.position, targetPos) > 1.5f)
+            context.LookFocusOverride = targetPos + Vector3.up * 1.2f;
+        else
+            context.LookFocusOverride = null;
+
+        Vector3 dir = (targetPos - context.Agent.transform.position).normalized;
+        dir.y = 0;
+        if (dir == Vector3.zero)
+        {
+            context.LookFocusOverride = null;
+            return TaskStatus.Success;
+        }
+
+        Quaternion lookRot = Quaternion.LookRotation(dir);
+        context.Agent.transform.rotation = Quaternion.Slerp(context.Agent.transform.rotation, lookRot, Time.deltaTime * _getTurnSpeed(context));
+
+        if (Quaternion.Angle(context.Agent.transform.rotation, lookRot) <= 5f)
+        {
+            context.LookFocusOverride = null;
+            return TaskStatus.Success;
+        }
+        return TaskStatus.Continue;
+    }
+
+    public void Stop(IContext ctx)
+    {
+        AiContext context = (AiContext)ctx;
+        context.LookFocusOverride = null;
+        if (context.Agent?.NavAgent != null) context.Agent.NavAgent.updateRotation = true;
+    }
+    public void Abort(IContext ctx) => Stop(ctx);
+}
+
+// ==========================================================
+// 3. DI CHUYỂN CÓ MỤC ĐÍCH
+// ==========================================================
+public class MoveToVectorDestinationOperator : IOperator
+{
+    private bool _isInvestigateMode;
+    private Func<AiContext, float> _getStoppingDistance;
+    private bool _isDestinationSet = false;
+
+    public MoveToVectorDestinationOperator(bool isInvestigateMode, Func<AiContext, float> getStoppingDistance)
+    {
+        _isInvestigateMode = isInvestigateMode;
+        _getStoppingDistance = getStoppingDistance;
+    }
+
+    public TaskStatus Start(IContext ctx)
+    {
+        _isDestinationSet = false;
+        AiContext context = (AiContext)ctx;
+        if (context.Agent?.NavAgent != null) context.Agent.NavAgent.updateRotation = true;
+        return TaskStatus.Continue;
+    }
+
+    public TaskStatus Update(IContext ctx)
+    {
+        AiContext context = (AiContext)ctx;
+        if (context.Agent == null || context.Agent.NavAgent == null) return TaskStatus.Failure;
+
+        if (!_isDestinationSet)
+        {
+            Vector3 targetTarget = _isInvestigateMode ?
+                ((context.HasState(AIWorldState.HasTarget) && context.Target != null) ? context.Target.position : context.SuspectedLocation)
+                : context.CurrentMoveDestination;
+            context.Agent.NavAgent.stoppingDistance = _getStoppingDistance(context);
+            context.Agent.NavAgent.SetDestination(targetTarget);
+            _isDestinationSet = true;
+        }
+
+        if (!context.Agent.NavAgent.pathPending && context.Agent.NavAgent.remainingDistance <= context.Agent.NavAgent.stoppingDistance)
+        {
+            _isDestinationSet = false;
+            return TaskStatus.Success;
+        }
+        return TaskStatus.Continue;
+    }
+
+    public void Stop(IContext ctx)
+    {
+        AiContext context = (AiContext)ctx;
+        if (context.Agent?.NavAgent != null && context.Agent.NavAgent.isActiveAndEnabled && context.Agent.NavAgent.isOnNavMesh)
+        {
+            context.Agent.NavAgent.ResetPath();
+        }
+        _isDestinationSet = false;
+    }
+    public void Abort(IContext ctx) => Stop(ctx);
+}
+
+// ==========================================================
+// 4. CHỜ ĐỢI
+// ==========================================================
+public class WaitOperator : IOperator
+{
+    private Func<AiContext, float> _getWaitTime;
+    private float _timer;
+    public WaitOperator(Func<AiContext, float> getWaitTime) { _getWaitTime = getWaitTime; }
+    public TaskStatus Start(IContext ctx) { _timer = 0f; return TaskStatus.Continue; }
+    public TaskStatus Update(IContext ctx)
+    {
+        _timer += Time.deltaTime;
+        return _timer >= _getWaitTime((AiContext)ctx) ? TaskStatus.Success : TaskStatus.Continue;
+    }
+    public void Stop(IContext ctx) { }
+    public void Abort(IContext ctx) => Stop(ctx);
+}
+
+// ==========================================================
+// 5. TELEGRAPH (ĐỨNG NHÌN)
+// ==========================================================
+public class TelegraphOperator : IOperator
+{
+    private bool _isInvestigateMode;
+    private Func<AiContext, float> _getTelegraphTime;
+    private float _timer;
+
+    public TelegraphOperator(bool isInvestigateMode, Func<AiContext, float> getTelegraphTime)
+    {
+        _isInvestigateMode = isInvestigateMode;
+        _getTelegraphTime = getTelegraphTime;
+    }
+
+    public TaskStatus Start(IContext ctx)
+    {
+        AiContext context = (AiContext)ctx;
+        _timer = 0f;
+
+        if (context.Agent?.NavAgent != null && context.Agent.NavAgent.isActiveAndEnabled && context.Agent.NavAgent.isOnNavMesh)
+        {
+            context.Agent.NavAgent.ResetPath();
+        }
+
+        Vector3 targetPos = _isInvestigateMode ?
+            ((context.HasState(AIWorldState.HasTarget) && context.Target != null) ? context.Target.position : context.SuspectedLocation)
+            : context.CurrentMoveDestination;
+
+        // Cầu chì an toàn
+        if (Vector3.Distance(context.Agent.transform.position, targetPos) > 1.5f)
+            context.LookFocusOverride = targetPos + Vector3.up * 1.2f;
+        else
+            context.LookFocusOverride = null;
+
+        return TaskStatus.Continue;
+    }
+
+    public TaskStatus Update(IContext ctx)
+    {
+        _timer += Time.deltaTime;
+        if (_timer >= _getTelegraphTime((AiContext)ctx))
+        {
+            ((AiContext)ctx).LookFocusOverride = null;
+            return TaskStatus.Success;
+        }
+        return TaskStatus.Continue;
+    }
+
+    public void Stop(IContext ctx) { ((AiContext)ctx).LookFocusOverride = null; }
+    public void Abort(IContext ctx) => Stop(ctx);
+}
+
+// ==========================================================
+// 6. RÀ QUÉT KHU VỰC (SẠCH SẼ, KHÔNG HACK TỌA ĐỘ)
+// ==========================================================
+public class ScanAreaOperator : IOperator
+{
+    private System.Func<AiContext, float> _getDuration;
+    private float _timer;
+
+    public ScanAreaOperator(System.Func<AiContext, float> getDuration)
+    {
+        _getDuration = getDuration;
+    }
+
+    public TaskStatus Start(IContext ctx)
+    {
+        var context = (AiContext)ctx;
+        _timer = 0f;
+
+        if (context.Agent.NavAgent != null && context.Agent.NavAgent.isOnNavMesh)
+        {
+            context.Agent.NavAgent.ResetPath();
+            context.Agent.NavAgent.isStopped = true;
+        }
+
+        // CHỈ set IsScanning = true. AILookController sẽ tự động đảo mắt radar!
+        context.IsScanning = true;
+
+        return TaskStatus.Continue;
+    }
+
+    public TaskStatus Update(IContext ctx)
+    {
+        _timer += Time.deltaTime;
+
+        if (_timer >= _getDuration((AiContext)ctx))
+        {
+            CleanUp((AiContext)ctx);
+            return TaskStatus.Success;
+        }
+        return TaskStatus.Continue;
+    }
+
+    public void Stop(IContext ctx) => CleanUp((AiContext)ctx);
+    public void Abort(IContext ctx) => CleanUp((AiContext)ctx);
+
+    private void CleanUp(AiContext context)
+    {
+        context.IsScanning = false;
+
+        if (context.Agent.NavAgent != null && context.Agent.NavAgent.isOnNavMesh)
+        {
+            context.Agent.NavAgent.isStopped = false;
+        }
+    }
+}
+
+// ==========================================================
+// 7. [COMBAT] VÂY RÁP MỤC TIÊU 
+// ==========================================================
+public class CircleTargetOperator : IOperator
+{
+    private Func<AiContext, float> _getRadius;
+    private bool _isMoving;
+    private float _waitTimer;
+
+    public CircleTargetOperator(Func<AiContext, float> getRadius) { _getRadius = getRadius; }
+
+    public TaskStatus Start(IContext ctx)
+    {
+        AiContext context = (AiContext)ctx;
+        if (context.Target == null) return TaskStatus.Failure;
+
+        if (context.Agent?.NavAgent != null && context.Agent.NavAgent.isOnNavMesh)
+        {
+            context.Agent.NavAgent.isStopped = false;
+            context.Agent.NavAgent.stoppingDistance = 0f;
+            context.Agent.NavAgent.speed = context.Agent.TacticalSettings.prowlSpeed;
+        }
+
+        FindNewCirclePoint(context);
+        return TaskStatus.Continue;
+    }
+
+    public TaskStatus Update(IContext ctx)
+    {
+        AiContext context = (AiContext)ctx;
+        if (context.Target == null || context.Agent?.NavAgent == null) return TaskStatus.Failure;
+
+        context.LookFocusOverride = context.Target.position + Vector3.up * 1.2f;
+
+        if (_isMoving)
+        {
+            context.Agent.NavAgent.updateRotation = true;
+            if (!context.Agent.NavAgent.pathPending && context.Agent.NavAgent.remainingDistance <= 1f)
+            {
+                _isMoving = false;
+                _waitTimer = UnityEngine.Random.Range(0.2f, 0.6f);
+
+                if (context.Agent.NavAgent.isActiveAndEnabled && context.Agent.NavAgent.isOnNavMesh)
+                {
+                    context.Agent.NavAgent.ResetPath();
+                }
+            }
+        }
+        // ...
+        else
+        {
+            context.Agent.NavAgent.updateRotation = false;
+            Vector3 dir = (context.Target.position - context.Agent.transform.position).normalized;
+            dir.y = 0;
+            if (dir != Vector3.zero)
+            {
+                Quaternion lookRot = Quaternion.LookRotation(dir);
+                context.Agent.transform.rotation = Quaternion.Slerp(context.Agent.transform.rotation, lookRot, Time.deltaTime * context.Agent.TacticalSettings.combatTurnSpeed);
+            }
+
+            _waitTimer -= Time.deltaTime;
+            if (_waitTimer <= 0f) FindNewCirclePoint(context);
+        }
+        return TaskStatus.Continue;
+    }
+
+    private void FindNewCirclePoint(AiContext context)
+    {
+        Vector3 dirFromPlayer = (context.Agent.transform.position - context.Target.position).normalized;
+        float randomAngle = UnityEngine.Random.Range(45f, 90f) * (UnityEngine.Random.value > 0.5f ? 1f : -1f);
+        Vector3 rotatedDir = Quaternion.Euler(0, randomAngle, 0) * dirFromPlayer;
+        Vector3 targetPoint = context.Target.position + (rotatedDir * _getRadius(context));
+
+        if (NavMesh.SamplePosition(targetPoint, out NavMeshHit hit, 5f, NavMesh.AllAreas))
+        {
+            context.Agent.NavAgent.isStopped = false;
+            context.Agent.NavAgent.SetDestination(hit.position);
+            _isMoving = true;
+        }
+        else
+        {
+            _isMoving = false;
+            _waitTimer = 1f;
+        }
+    }
+
+    public void Stop(IContext ctx)
+    {
+        AiContext context = (AiContext)ctx;
+        context.LookFocusOverride = null;
+        if (context.Agent?.NavAgent != null && context.Agent.NavAgent.isOnNavMesh)
+        {
+            context.Agent.NavAgent.ResetPath();
+            context.Agent.NavAgent.updateRotation = true;
+        }
+    }
+    public void Abort(IContext ctx) => Stop(ctx);
+}
+
+// ==========================================================
+// 8. [COMBAT] KHUNG SƯỜN TUNG ĐÒN UTILITY AI (GIAO TIẾP VỚI CONTROLLER)
+// ==========================================================
+public class UtilityCombatOperator : IOperator
+{
+    private AISkillController _skillController;
+
+    public TaskStatus Start(IContext ctx)
+    {
+        AiContext context = (AiContext)ctx;
+        if (context.Target == null) return TaskStatus.Failure;
+
+        _skillController = context.Agent.GetComponent<AISkillController>();
+        if (_skillController == null) return TaskStatus.Failure;
+
+        // Ra lệnh cho Controller thực thi chiêu tốt nhất
+        _skillController.StartBestSkill(context.Target);
+
+        // Đọc trạng thái (Nếu StartBestSkill trả về Failure ngay lập tức vì kẹt FOV/hết đạn)
+        return _skillController.CurrentSkillStatus;
+    }
+
+    public TaskStatus Update(IContext ctx)
+    {
+        // HTN chỉ ngồi chơi xơi nước và lắng nghe Controller báo cáo
+        return _skillController.CurrentSkillStatus;
+    }
+
+    public void Stop(IContext ctx)
+    {
+        // Bị ngắt ngang (Do Stagger) -> Ép Controller dọn dẹp
+        if (_skillController != null) _skillController.AbortExecution(TaskStatus.Failure);
+    }
+
+    public void Abort(IContext ctx) => Stop(ctx);
+}
+
+// [FILE_END]: HTNOperators.cs
+// ==========================================
+
+
+// [FILE_START]: ProximitySensor.cs
+// PATH: ProximitySensor.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+using FluidHTN;
+
+[RequireComponent(typeof(AIAgent))]
+public class ProximitySensor : MonoBehaviour
+{
+    [Header("Proximity Settings")]
+    public float meleeRadius = 2.5f;
+    public LayerMask playerLayerMask;
+
+    private AIAgent _agent;
+    private Collider[] _hitColliders = new Collider[5];
+    private float _scanInterval = 0.25f;
+    private float _timer = 0f;
+
+    void Awake()
+    {
+        _agent = GetComponent<AIAgent>();
+    }
+
+    void Update()
+    {
+        _timer += Time.deltaTime;
+        if (_timer >= _scanInterval)
+        {
+            _timer = 0f;
+
+            int hits = Physics.OverlapSphereNonAlloc(transform.position, meleeRadius, _hitColliders, playerLayerMask);
+            if (hits > 0)
+            {
+                // SỬA LỖI BIÊN DỊCH: Truy xuất phần tử [0] của mảng thay vì gọi thẳng mảng!
+                Transform player = _hitColliders[0].transform;
+
+                _agent.Context.Target = player;
+                _agent.Context.SetState(AIWorldState.HasTarget, true, EffectType.Permanent);
+                _agent.Context.SetState(AIWorldState.IsAlerted, true, EffectType.Permanent);
+
+                // Kích hoạt Hive Mind cho cả bầy đàn vây bắt
+                if (_agent.Context.Group != null)
+                {
+                    _agent.Context.Group.BroadcastPlayerLocation(player.position);
+                }
+            }
+        }
+    }
+}
+
+// [FILE_END]: ProximitySensor.cs
+// ==========================================
+
+
+// [FILE_START]: VisionSensor.cs
+// PATH: VisionSensor.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+using FluidHTN;
+
+[RequireComponent(typeof(AIAgent))]
+public class VisionSensor : MonoBehaviour
+{
+    [Header("--- EYE SOURCE (AAA) ---")]
+    public Transform eyeSource;
+    [Space]
+
+    [Header("Vision Settings")]
+    public float viewRadius = 30f;
+    [Range(0, 360)] public float viewAngle = 90f;
+    public LayerMask playerLayerMask;
+    public LayerMask obstacleLayerMask;
+
+    [Header("--- AWARENESS METER (STEALTH) ---")]
+    public float timeToDetect = 1.5f;
+    public float timeToLose = 4.0f;
+    private float _detectionLevel = 0f;
+
+    private AIAgent _agent;
+    private Collider[] _hitColliders = new Collider[8];
+    private float _scanInterval = 0.1f; // Tăng tốc độ quét lên 10 lần/s để làm mượt thanh nhận thức
+    private float _timer = 0f;
+
+    void Awake()
+    {
+        _agent = GetComponent<AIAgent>();
+        if (eyeSource == null) eyeSource = transform;
+    }
+
+    void Update()
+    {
+        _timer += Time.deltaTime;
+        if (_timer >= _scanInterval)
+        {
+            _timer = 0f;
+            ProcessVisionEscalation();
+        }
+    }
+
+    private void ProcessVisionEscalation()
+    {
+        bool isSeeingPlayer = CheckLineOfSight(out Transform playerTarget);
+
+        if (isSeeingPlayer)
+        {
+            _detectionLevel += _scanInterval / timeToDetect;
+            if (_detectionLevel > 1f) _detectionLevel = 1f;
+
+            // MỨC 1 (MẮT VÀNG): Thấy lờ mờ -> Đẩy lên Group xin vé điều tra tập trung
+            if (_detectionLevel > 0f && _detectionLevel < 1f && !_agent.Context.HasState(AIWorldState.HasTarget))
+            {
+                if (_agent.Context.Group != null)
+                {
+                    _agent.Context.Group.ReportDisturbance(playerTarget.position, _agent);
+                }
+            }
+
+            // MỨC 2 (MẮT ĐỎ): Xác nhận 100% -> Vào Combat -> Hét gọi bầy
+            if (_detectionLevel >= 1f && !_agent.Context.HasState(AIWorldState.HasTarget))
+            {
+                _agent.Context.SetTarget(playerTarget);
+
+                if (_agent.Context.Group != null)
+                {
+                    _agent.Context.Group.BroadcastPlayerLocation(playerTarget.position);
+                }
+            }
+        }
+        else
+        {
+            // MẤT DẤU (Cool-down)
+            if (_detectionLevel > 0f)
+            {
+                _detectionLevel -= _scanInterval / timeToLose;
+                if (_detectionLevel <= 0f)
+                {
+                    _detectionLevel = 0f;
+                    // Nếu đang trong giao tranh mà thanh nhận diện về 0 -> Kích hoạt Sục sạo
+                    if (_agent.Context.HasState(AIWorldState.HasTarget))
+                    {
+                        // [THÊM MỚI DÒNG NÀY CHÍNH XÁC Ở ĐÂY]: 
+                        // Bơm vị trí cuối cùng của Player vào bộ nhớ trước khi xóa Target!
+                        if (_agent.Context.Target != null)
+                            _agent.Context.SuspectedLocation = _agent.Context.Target.position;
+
+                        _agent.Context.SetTarget(null);
+                        _agent.Context.SetState(AIWorldState.IsSearching, true, EffectType.Permanent);
+                    }
+                }
+            }
+        }
+    }
+
+    private bool CheckLineOfSight(out Transform foundPlayer)
+    {
+        foundPlayer = null;
+        int hits = Physics.OverlapSphereNonAlloc(eyeSource.position, viewRadius, _hitColliders, playerLayerMask);
+
+        for (int i = 0; i < hits; i++)
+        {
+            Transform target = _hitColliders[i].transform;
+            Vector3 dirToTarget = (target.position - eyeSource.position).normalized;
+
+            if (Vector3.Dot(eyeSource.forward, dirToTarget) > Mathf.Cos(viewAngle * 0.5f * Mathf.Deg2Rad))
+            {
+                Vector3 eyePos = eyeSource.position;
+                Vector3 targetPos = target.position + Vector3.up * 1.0f;
+
+                if (!Physics.Linecast(eyePos, targetPos, obstacleLayerMask))
+                {
+                    PlayerStealth stealth = target.GetComponent<PlayerStealth>();
+                    bool isPlayerInGrass = stealth != null && stealth.IsHidingInGrass;
+
+                    if (isPlayerInGrass && _detectionLevel < 1f)
+                    {
+                        continue;
+                    }
+
+                    foundPlayer = target;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+}
+
+// [FILE_END]: VisionSensor.cs
+// ==========================================
+
+
+// [FILE_START]: SoundTester.cs
+// PATH: Test\SoundTester.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+
+public class SoundTester : MonoBehaviour
+{
+    [Header("--- THÔNG SỐ TIẾNG ĐỘNG TỰ ĐỘNG ---")]
+    [Tooltip("Bán kính lan truyền của tiếng động (mét)")]
+    public float soundRadius = 12f;
+
+    [Tooltip("Cứ sau bao nhiêu giây thì tự phát ra tiếng động 1 lần")]
+    public float intervalTime = 5f;
+
+    [Header("--- VÙNG PHÁT TIẾNG ĐỘNG NGẪU NHIÊN ---")]
+    [Tooltip("Bán kính vùng ngẫu nhiên xung quanh vị trí của Object này để tạo tiếng động")]
+    public float spawnRange = 10f;
+
+    private float _nextSoundTime;
+
+    void Start()
+    {
+        // Khởi tạo nhịp thời gian phát đầu tiên
+        _nextSoundTime = Time.time + intervalTime;
+    }
+
+    void Update()
+    {
+        // TUYỆT ĐỐI KHÔNG DÙNG INPUT GET MOUSE / GET KEY CHỐNG LỖI XUNG ĐỘT INPUT SYSTEM
+        if (Time.time >= _nextSoundTime)
+        {
+            _nextSoundTime = Time.time + intervalTime;
+            TriggerAutomatedSound();
+        }
+    }
+
+    private void TriggerAutomatedSound()
+    {
+        // Tính toán một tọa độ ngẫu nhiên trên mặt phẳng XZ xung quanh Object này
+        Vector2 randomCircle = Random.insideUnitCircle * spawnRange;
+        Vector3 soundPosition = new Vector3(
+            transform.position.x + randomCircle.x,
+            transform.position.y,
+            transform.position.z + randomCircle.y
+        );
+
+        // Bắn sự kiện âm thanh tĩnh ngầm vào bộ não AI của toàn bầy đàn
+        AIAuditorySystem.ReportSound(soundPosition, soundRadius);
+
+        // Vẽ vòng tròn giả lập tia màu đỏ trong Scene view để Designer quan sát cự ly âm thanh
+        DrawVisualSoundCircle(soundPosition, soundRadius);
+
+        Debug.Log($"<color=yellow>[AUTO SOUND]</color> Đã tự động kích hoạt tiếng ồn {soundRadius}m tại tọa độ: {soundPosition}");
+    }
+
+    // Hàm phụ trợ vẽ vòng tròn bằng Debug.DrawLine để sếp dễ căn cự ly trên Scene
+    private void DrawVisualSoundCircle(Vector3 center, float radius)
+    {
+        int segments = 20;
+        float angleStep = 360f / segments;
+        Vector3 prevPoint = center + new Vector3(radius, 0, 0);
+
+        for (int i = 1; i <= segments; i++)
+        {
+            float angle = i * angleStep * Mathf.Deg2Rad;
+            Vector3 nextPoint = center + new Vector3(Mathf.Cos(angle) * radius, 0, Mathf.Sin(angle) * radius);
+
+            // Vẽ đường nối trong 3 giây rồi biến mất
+            Debug.DrawLine(prevPoint, nextPoint, Color.red, 3f);
+            prevPoint = nextPoint;
+        }
+    }
+}
+
+// [FILE_END]: SoundTester.cs
+// ==========================================
