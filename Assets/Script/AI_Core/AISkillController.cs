@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 using FluidHTN;
-using DG.Tweening;
 using TaskStatus = FluidHTN.TaskStatus;
 
 [System.Serializable]
@@ -21,23 +19,22 @@ public class AISkillController : MonoBehaviour
     public float momentumBonus = 0.2f;
 
     [Header("--- RANGED COMBAT REFS ---")]
-    public GunController aiGunController;
-    public Transform bodyMesh; // VI: Để tạo hiệu ứng giật lùi (recoil) nếu cần / EN: For recoil effects if needed
+    [Tooltip("VI: Gắn script AIGunController mới vào đây.\nEN: Attach the new AIGunController script here.")]
+    public AIGunController aiGunController;
 
     public TaskStatus CurrentSkillStatus { get; private set; } = TaskStatus.Success;
 
     private AIAgent _agent;
     private ActiveSkill _currentSkill;
     private ActiveSkill _lastSelectedSkill;
+
     private int _phase = 0;
     private float _timer = 0f;
-    private Sequence _currentSkillSeq;
-    private Vector3 _originalBodyPos;
+    private int _strafeDir = 1;
 
     void Awake()
     {
         _agent = GetComponent<AIAgent>();
-        if (bodyMesh != null) _originalBodyPos = bodyMesh.localPosition;
     }
 
     public void StartBestSkill(Transform target)
@@ -55,14 +52,20 @@ public class AISkillController : MonoBehaviour
         _phase = 0;
         _timer = 0f;
 
-        if (_agent.NavAgent != null)
+        // VI: Chọn ngẫu nhiên hướng trượt ngang cho lượt bắn này
+        // EN: Randomly choose a strafing direction for this firing sequence
+        _strafeDir = UnityEngine.Random.value > 0.5f ? 1 : -1;
+
+        if (_agent.NavAgent != null && _agent.NavAgent.isOnNavMesh)
         {
             _agent.NavAgent.ResetPath();
-            _agent.NavAgent.updateRotation = false; // VI: Tự xoay tay / EN: Manual rotation
+            // VI: Ép vận tốc về 0 để dừng di chuyển theo path, KHÔNG DÙNG isStopped để NavAgent vẫn tính toán di chuyển trượt!
+            // EN: Force velocity to 0 to stop pathing, DO NOT USE isStopped so NavAgent still calculates strafing!
+            _agent.NavAgent.velocity = Vector3.zero;
+            _agent.NavAgent.updateRotation = false;
         }
 
         _agent.Context.CurrentExecutingSkill = _currentSkill.data;
-        _agent.Context.LookFocusOverride = target.position + Vector3.up * 1.2f;
     }
 
     void Update()
@@ -71,6 +74,15 @@ public class AISkillController : MonoBehaviour
 
         _timer += Time.deltaTime;
 
+        // VI: Luôn luôn xoay dìm mặt về phía Player một cách đầm chắc
+        // EN: Always ponderously rotate to face the Player
+        _agent.FaceTargetLazy(_agent.Context.Target.position, _agent.TacticalSettings.combatTurnSpeed, 0f, 0f);
+
+        // ==========================================
+        // CỖ MÁY TRẠNG THÁI / STATE MACHINE
+        // ==========================================
+
+        // PHASE 0: CHỜ GÓC NGẮM (FOV CHECK)
         if (_phase == 0)
         {
             Vector3 dirToTarget = (_agent.Context.Target.position - transform.position).normalized;
@@ -79,92 +91,68 @@ public class AISkillController : MonoBehaviour
 
             if (angleToTarget <= _currentSkill.data.weaponFOV / 2f)
             {
-                _phase = 1;
-                ExecuteRangedChoreography();
+                _phase = 1; _timer = 0f;
             }
-            else
+            else if (_timer > 4f)
             {
-                _agent.FaceTargetLazy(_agent.Context.Target.position, _agent.TacticalSettings.combatTurnSpeed);
-                if (_timer > 3f) AbortExecution(TaskStatus.Failure);
+                AbortExecution(TaskStatus.Failure);
             }
         }
-    }
-
-    private void ExecuteRangedChoreography()
-    {
-        _agent.Context.LookFocusOverride = null;
-
-        if (_currentSkillSeq != null && _currentSkillSeq.IsActive()) _currentSkillSeq.Kill();
-        _currentSkillSeq = DOTween.Sequence();
-
-        // VI: Animation nạp đạn/ngắm bắn (WindUp)
-        // EN: Reload/Aiming animation (WindUp)
-        _currentSkillSeq.AppendInterval(_currentSkill.data.windUpTime);
-
-        int strafeDir = UnityEngine.Random.value > 0.5f ? 1 : -1;
-
-        // VI: Giai đoạn xả đạn (Execute)
-        // EN: Firing phase (Execute)
-        _currentSkillSeq.AppendInterval(_currentSkill.data.executeTime)
-            .OnUpdate(() =>
-            {
-                if (_agent != null && _agent.Context.Target != null)
-                {
-                    // VI: Giữ cơ thể xoay về phía Player
-                    // EN: Keep body rotated towards Player
-                    _agent.FaceTargetLazy(_agent.Context.Target.position, _agent.TacticalSettings.combatTurnSpeed);
-
-                    if (aiGunController != null)
-                    {
-                        Vector3 aimTarget = _agent.Context.Target.position + (Vector3.up * 1.2f);
-                        aiGunController.ShootAtAI(aimTarget);
-                    }
-
-                    // VI: Trượt ngang (Strafe) né đạn trong lúc bắn
-                    // EN: Strafe sideways to dodge bullets while shooting
-                    if (_agent.NavAgent != null && _agent.NavAgent.isOnNavMesh)
-                    {
-                        Vector3 dirToTarget = (_agent.Context.Target.position - transform.position).normalized;
-                        Vector3 rightDir = Vector3.Cross(dirToTarget, Vector3.up) * strafeDir;
-                        _agent.NavAgent.Move(rightDir * _agent.TacticalSettings.prowlSpeed * Time.deltaTime);
-                    }
-                }
-            });
-
-        // VI: Thời gian hồi chiêu/thu súng (Recovery)
-        // EN: Cooldown/Holster time (Recovery)
-        _currentSkillSeq.AppendInterval(_currentSkill.data.recoveryTime);
-
-        _currentSkillSeq.OnComplete(() =>
+        // PHASE 1: ĐỨNG YÊN NGẮM (WIND-UP)
+        else if (_phase == 1)
         {
-            _currentSkill.RecordCastTime();
-            AbortExecution(TaskStatus.Success);
-        });
+            if (_timer >= _currentSkill.data.windUpTime)
+            {
+                _phase = 2; _timer = 0f;
+            }
+        }
+        // PHASE 2: XẢ ĐẠN & TRƯỢT NGANG (EXECUTE & STRAFE)
+        else if (_phase == 2)
+        {
+            if (aiGunController != null)
+            {
+                Vector3 aimTarget = _agent.Context.Target.position + (Vector3.up * 1.2f);
+                aiGunController.ShootAt(aimTarget);
+            }
+
+            // VI: Logic trượt ngang liên tục không dùng Tween
+            // EN: Continuous strafing logic without using Tween
+            if (_agent.NavAgent != null && _agent.NavAgent.isOnNavMesh)
+            {
+                Vector3 dirToTarget = (_agent.Context.Target.position - transform.position).normalized;
+                Vector3 rightDir = Vector3.Cross(dirToTarget, Vector3.up) * _strafeDir;
+                _agent.NavAgent.Move(rightDir * _agent.TacticalSettings.prowlSpeed * Time.deltaTime);
+            }
+
+            if (_timer >= _currentSkill.data.executeTime)
+            {
+                _phase = 3; _timer = 0f;
+            }
+        }
+        // PHASE 3: THU SÚNG (RECOVERY)
+        else if (_phase == 3)
+        {
+            if (_timer >= _currentSkill.data.recoveryTime)
+            {
+                _currentSkill.RecordCastTime();
+                AbortExecution(TaskStatus.Success);
+            }
+        }
     }
 
     public void AbortExecution(TaskStatus finalStatus = TaskStatus.Failure)
     {
         CurrentSkillStatus = finalStatus;
 
-        if (_currentSkillSeq != null && _currentSkillSeq.IsActive()) _currentSkillSeq.Kill();
-        if (bodyMesh != null) bodyMesh.localPosition = _originalBodyPos;
-
-        if (_agent != null && _agent.NavAgent != null)
+        if (_agent != null && _agent.NavAgent != null && _agent.NavAgent.isOnNavMesh)
         {
-            _agent.NavAgent.enabled = true;
-            _agent.NavAgent.updatePosition = true;
             _agent.NavAgent.updateRotation = true;
-            if (_agent.NavAgent.isOnNavMesh) _agent.NavAgent.Warp(transform.position);
         }
-
-        // VI: ĐÃ DỌN SẠCH CÁC THAM CHIẾU LỖI ĐẾN PROCEDURAL BODY TẠI ĐÂY!
-        // EN: COMPLETELY CLEARED ERRONEOUS REFERENCES TO PROCEDURAL BODY HERE!
 
         _currentSkill = null;
         if (_agent != null && _agent.Context != null)
         {
             _agent.Context.CurrentExecutingSkill = null;
-            _agent.Context.LookFocusOverride = null;
         }
     }
 

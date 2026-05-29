@@ -135,46 +135,4 @@ public class GunData : ScriptableObject
 
         return trail;
     }
-
-
-
-    //AI
-    public void ShootAtAI(Vector3 startPoint, Vector3 targetPoint, MonoBehaviour activeMono)
-    {
-        if (Time.time > fireRate + LastShootTime)
-        {
-            LastShootTime = Time.time;
-
-            // Nếu có tia lửa thì bật, không có thì bỏ qua (KHÔNG CRASH)
-            if (ShootSystem != null) ShootSystem.Play();
-
-            // [VI] SỬA Ở ĐÂY: Dùng startPoint thay vì ShootSystem.transform.position
-            // [EN] FIX HERE: Use startPoint instead of ShootSystem.transform.position
-            Vector3 baseDirection = (targetPoint - startPoint).normalized;
-
-            Vector3 spreadVector = new Vector3(
-                Random.Range(-Spread.x, Spread.x),
-                Random.Range(-Spread.y, Spread.y),
-                Random.Range(-Spread.z, Spread.z)
-            );
-            Vector3 finalDirection = (baseDirection + spreadVector).normalized;
-            Ray finalRay = new Ray(startPoint, finalDirection);
-
-            if (Physics.Raycast(finalRay, out RaycastHit hit, float.MaxValue, hitMask))
-            {
-                IDamageable target = hit.collider.GetComponent<IDamageable>();
-                if (target != null) target.TakeDamage(damage, hit.point);
-                if (SurfaceManager.Instance != null)
-                {
-                    SurfaceManager.Instance.PlayImpact(hit.point, hit.normal, hit.collider.tag);
-                }
-                activeMono.StartCoroutine(PlayTrail(startPoint, hit.point, hit));
-            }
-            else
-            {
-                Vector3 missTarget = finalRay.origin + (finalDirection * trailConfig.MissDisstance);
-                activeMono.StartCoroutine(PlayTrail(startPoint, missTarget, new RaycastHit()));
-            }
-        }
-    }
 }

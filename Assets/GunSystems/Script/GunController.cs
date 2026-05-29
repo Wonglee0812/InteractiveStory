@@ -33,12 +33,4 @@ public class GunController : MonoBehaviour
         }    
     }
 
-    //AI
-    public void ShootAtAI(Vector3 targetPosition)
-    {
-        if (activeGun != null)
-        {
-            activeGun.ShootAtAI(GunParent.position, targetPosition, this);
-        }
-    }
 }

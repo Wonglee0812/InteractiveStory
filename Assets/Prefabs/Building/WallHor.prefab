@@ -370,7 +370,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8efa5d9fec4dc740a3d634e25bc552f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DestructionBuild
-  maxHealth: 100
+  maxHealth: 10000
   fracturedPrefab: {fileID: 886731318526125536, guid: a8158446c7b32f84aa823d421b00648c,
     type: 3}
   cleanupTime: Infinity

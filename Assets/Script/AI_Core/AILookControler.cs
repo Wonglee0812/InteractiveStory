@@ -12,6 +12,12 @@ public class AILookController : MonoBehaviour
     public float lookSmoothTime = 0.15f;
     public float virtualLookDistance = 10f;
 
+    [Tooltip("VI: Góc ngắm ngóc lên tối đa (Độ).\nEN: Maximum elevation angle (Degrees).")]
+    public float maxLookUpAngle = 45f;
+
+    [Tooltip("VI: Góc ngắm hạ xuống tối đa (Độ). NHỚ ĐỂ SỐ ÂM!\nEN: Maximum depression angle (Degrees). KEEP AS NEGATIVE!")]
+    public float maxLookDownAngle = -25f;
+
     [Header("--- RADAR SCANNING (QUÉT TÌM KIẾM) ---")]
     public float lookHoldTime = 2.0f;
     public float lookTransitionSpeed = 4f;
@@ -29,6 +35,7 @@ public class AILookController : MonoBehaviour
     private void Awake()
     {
         _agent = GetComponent<AIAgent>();
+
         if (turretBase != null)
             _smoothedTargetPos = turretBase.position + transform.forward * virtualLookDistance;
     }
@@ -43,10 +50,37 @@ public class AILookController : MonoBehaviour
         bool isEngaged = _agent.Context.HasState(AIWorldState.HasTarget) || _agent.Context.LookFocusOverride.HasValue;
         if (!isEngaged)
         {
-            // VI: Dùng transform.up (Trục Y cục bộ của Mech) để quét radar nghiêng theo sườn dốc thay vì nhìn lên trời
-            // EN: Use transform.up (Mech's local Y axis) to scan radar tilted along the slope instead of looking at the sky
             rawTargetPos += transform.right * _currentVisualOffset.x + transform.up * _currentVisualOffset.y;
         }
+
+        // ==========================================
+        // [MỚI] GIỚI HẠN GÓC NGẮM LÊN/XUỐNG (PITCH CLAMP)
+        // [NEW] UP/DOWN AIM PITCH CLAMP
+        // ==========================================
+        Vector3 dirToTarget = rawTargetPos - turretBase.position;
+
+        // VI: Chuyển hướng nhìn sang Không gian cục bộ của Mech để không bị lỗi khi đứng trên dốc
+        // EN: Convert look direction to Mech's Local Space to avoid errors when standing on slopes
+        Vector3 localDir = transform.InverseTransformDirection(dirToTarget);
+
+        // VI: Tính khoảng cách trên mặt phẳng ngang (X-Z)
+        // EN: Calculate distance on the horizontal plane (X-Z)
+        float flatDist = new Vector2(localDir.x, localDir.z).magnitude;
+
+        // VI: Dùng lượng giác (Tan) để tìm ra chiều cao Y tối đa/tối thiểu cho phép
+        // EN: Use trigonometry (Tan) to find the maximum/minimum allowed Y height
+        float maxY = flatDist * Mathf.Tan(maxLookUpAngle * Mathf.Deg2Rad);
+        float minY = flatDist * Mathf.Tan(maxLookDownAngle * Mathf.Deg2Rad);
+
+        // VI: Kẹp (Clamp) trục Y cục bộ lại
+        // EN: Clamp the local Y axis
+        localDir.y = Mathf.Clamp(localDir.y, minY, maxY);
+
+        // VI: Trả ngược hướng nhìn về Không gian thế giới và áp dụng
+        // EN: Convert look direction back to World Space and apply
+        dirToTarget = transform.TransformDirection(localDir);
+        rawTargetPos = turretBase.position + dirToTarget;
+        // ==========================================
 
         _smoothedTargetPos = Vector3.SmoothDamp(_smoothedTargetPos, rawTargetPos, ref _targetPosVel, lookSmoothTime);
         turretAimTarget.position = _smoothedTargetPos;
@@ -72,7 +106,6 @@ public class AILookController : MonoBehaviour
             float currentMaxX = (isScanning || hasSuspicion) ? scanHorizontalRange : (scanHorizontalRange * 0.3f);
             float currentMaxY = (isScanning || hasSuspicion) ? scanVerticalRange : 0.1f;
 
-            // Lấy Offset nội bộ, chưa áp dụng ngay để tránh lỗi tọa độ
             _targetVisualOffset = new Vector3(Random.Range(-currentMaxX, currentMaxX), Random.Range(-currentMaxY, currentMaxY), 0f);
         }
         _currentVisualOffset = Vector3.Lerp(_currentVisualOffset, _targetVisualOffset, Time.deltaTime * lookTransitionSpeed);
@@ -80,30 +113,25 @@ public class AILookController : MonoBehaviour
 
     private Vector3 GetPointOfInterest()
     {
-        // 1. COMBAT: Nhìn thẳng vào ngực/đầu Player (Đã bù Y chuẩn)
         if (_agent.Context.HasState(AIWorldState.HasTarget) && _agent.Context.Target != null)
             return _agent.Context.Target.position + Vector3.up * 1.2f;
 
-        // 2. OVERRIDE: Điểm ép buộc nhìn (Đã được tính toán chuẩn từ trước)
         if (_agent.Context.LookFocusOverride.HasValue)
             return _agent.Context.LookFocusOverride.Value;
 
-        // 3. INVESTIGATE: Vị trí nghi ngờ
         if (_agent.Context.HasState(AIWorldState.HasSuspectedLocation))
             return _agent.Context.SuspectedLocation + Vector3.up * 1.2f;
 
-        // 4. PATROL (ĐANG ĐI): Phóng tầm nhìn thẳng về phía trước theo hướng đi, GIỮ NGUYÊN độ cao của tháp pháo!
         if (_agent.NavAgent.hasPath && _agent.NavAgent.remainingDistance > 0.5f)
         {
             Vector3 dirToSteering = (_agent.NavAgent.steeringTarget - turretBase.position);
-            dirToSteering.y = 0; // Chặn đứng việc nhìn xuống đất
+            dirToSteering.y = 0;
             if (dirToSteering != Vector3.zero)
             {
                 return turretBase.position + dirToSteering.normalized * virtualLookDistance;
             }
         }
 
-        // 5. PATROL (ĐỨNG YÊN): Nhìn thẳng phía trước thân hình
         return turretBase.position + transform.forward * virtualLookDistance;
     }
 }
