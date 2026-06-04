@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Armory_1
   m_EditorClassIdentifier: Assembly-CSharp::DialogueData3D
   lines:
-  - Destroy the machine using the explosives and terrain. Clear the path.
-  typingSpeed: 0.01
-  delayBetweenLines: 1
+  - "V\u1EABn c\xF2n kh\xE1 nhi\u1EC1u l\xEDnh canh n\xEAn t\u1ED1t nh\u1EA5t v\u1EABn
+    n\xEAn c\u1EA9n th\u1EADn"
+  - "H\xE3y l\xEAn n\xF3c t\xF2a nh\xE0 n\xE0y \u0111i, tr\xEAn \u0111\xF3 c\xF3
+    v\u1EADt t\u01B0 v\xE0 t\u1EA7m nh\xECn quan s\xE1t t\u1ED1t h\u01A1n"
+  typingSpeed: 0.03
+  delayBetweenLines: 0.5
   isLock: 0

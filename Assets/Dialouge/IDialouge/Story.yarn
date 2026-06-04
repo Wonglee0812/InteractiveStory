@@ -1,42 +1,60 @@
-﻿//Player độc thoại khi đứng trước cửa amory
-title: Armory_PlayerCC_1
+﻿title: Armory_PlayerCC_1
 tags: 
 ---
-Player: There is a star conduit.
+Player: Có một đường hầm ở đây sao?
 ===
 
-//Player đọc tài liệu về pháo từ trường và thông tin về Mammoutech
 title: Armory_PlayerCC_2
 tags: 
 ---
-// [VI] Pháo từ trường... Đây là thứ vũ khí duy nhất để chống lại cỗ máy chiến tranh đó sao? Mammoutech.
-Player: Electromagnetic artillery... Is this the only weapon meant to fight against their war machine? Mammoutech.
-
-// [VI] Nhưng sao chúng biết trước được? Bọn chúng đã chuẩn bị sẵn cho một cuộc chiến tranh toàn diện...
-Player: But how did they know? They've been preparing for an all-out war...
-
-<<jump Armory_01>>
+Player: Hình như ở dưới góc cây bên phải có thứ gì đó, là vũ khí sao?
 ===
 
-//Player phát hiện ra thông tin về buster call và 
 title: Armory_PlayerCC_3
 tags: 
 ---
-Player: What's this radar doing here?
-Player: Player: What's this radar doing here?
-Player: What exactly is a buster call, and why have I never heard of it?
-<<jump Monitor_01>>>>
+Player: Đúng là nó rồi, ta nên đến để xem thử có gì.
+Player: Có lẽ sẽ có gì đó dùng được.
 ===
 
-
-//Player phát hiện ra thông tin về buster call và 
 title: Armory_PlayerCC_4
 tags: 
 ---
-Player: What's this radar doing here?
-Player: Player: What's this radar doing here?
-Player: What exactly is a buster call, and why have I never heard of it?
-<<jump Monitor_01>>>>
+Player: Có vẻ còn khá nhiều lính canh gác ở đây, khu này có vẻ là kho vũ khí rồi
+===
+
+title: Armory_PlayerCC_5
+tags: 
+---
+Player: Bên phía đó có vẻ vẫn còn 1 căn cứ nữa
+Player: Nhưng không nhiều lính canh như phía này nhỉ.
+===
+
+title: Armory_PlayerCC_6
+tags: 
+---
+Player: Chỗ này cũng khá tốt để có thể quan sát đấy chứ
+===
+
+title: Armory_PlayerCC_7
+tags: 
+---
+Player: Bên trong có vẻ còn khá nhiều kẻ địch, vẫn nên cẩn thận chút thì hơn.
+===
+
+title: Armory_PlayerCC_8
+tags: 
+---
+Player: Bên trong lại không quá đông lính gác nhỉ.
+Player: Vẫn còn 1 tầng trên, cứ lên đó thử xem sao.
+===
+
+title: Armory_PlayerCC_9
+tags: 
+---
+Player: Đây có vẻ là kho vũ khí của chúng.
+Player: Nhưng tại sao bọn chúng lại chuẩn bị sẵn sàng những thứ này
+Player: Không lẽ vị trí của mình đã bị lộ rồi sao?
 ===
 
 //Đoạn hội thoại khi vào nhánh Armory, chạy cùng timeline

@@ -13,11 +13,13 @@ MonoBehaviour:
   m_Name: Node_01_Start
   m_EditorClassIdentifier: Assembly-CSharp::DialogueData3D
   lines:
-  - Connecting.....
-  - Listen closly
-  - Your drop is at the perimeter of the Zenisth research facility
-  - 'Your sole purpose is to extract the Core Tech data. Do not fail '
-  - 'And do not alert the biological sentinels '
+  - "K\u1EBFt n\u1ED1i....."
+  - "Nghe r\xF5 kh\xF4ng?"
+  - "Hi\u1EC7n t\u1EA1i anh \u0111ang \u1EDF b\xEAn ngo\xE0i khu nghi\xEAn c\u1EE9u
+    c\u1EE7a Zenisth"
+  - "Nhi\u1EC7m v\u1EE5 l\xE0 \u0111\xE1nh c\u1EAFp \u0111\u01B0\u1EE3c C\xF4ng ngh\u1EC7
+    l\xF5i c\u1EE7a h\u1ECD v\xE0 r\xFAt lui "
+  - "H\xE3y ki\u1EBFm \u0111\u01B0\u1EDDng x\xE2m nh\u1EADp v\xE0o \u0111i"
   typingSpeed: 0.03
   delayBetweenLines: 0.5
-  isLock: 1
+  isLock: 0

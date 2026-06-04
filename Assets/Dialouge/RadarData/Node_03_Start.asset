@@ -13,15 +13,11 @@ MonoBehaviour:
   m_Name: Node_03_Start
   m_EditorClassIdentifier: Assembly-CSharp::DialogueData3D
   lines:
-  - ' Halt. Sentinels ahead. Hide in the tall grass, it can help you hide before
-    them. '
-  - Scavenge the supply crates for ammo and meds. Survive long enough to finish the
-    job
-  - Raptorechs before. Thick armor. Shoot the glowing Core on their bodies. One piercing
-    shot is enough
-  - One piercing shot is enough
-  - 'Use [Tab] to switch arrows: Explosive for armor, Smoke for evasion, Warhead
-    for groups. Execute them efficiently.'
-  typingSpeed: 0.01
-  delayBetweenLines: 1
+  - "H\xE3y c\u1EA9n th\u1EADn ch\xFAt "
+  - "Khi v\xE0o b\xEAn trong th\xEC nhanh ch\xF3ng t\xECm ch\u1ED7 \u0111\u1EC3 \u1EA9n
+    n\u1EA5p ngay "
+  - "\u0110i t\u1EDBi nh\u1EEFng b\u1EE5i c\u1ECF v\xE0 c\xFAi ng\u01B0\u1EDDi xu\u1ED1ng
+    \u0111\u1EC3 tr\xE1nh b\u1ECB ph\xE1t hi\u1EC7n"
+  typingSpeed: 0.03
+  delayBetweenLines: 0.5
   isLock: 0

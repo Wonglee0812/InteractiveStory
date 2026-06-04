@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Armory_2
   m_EditorClassIdentifier: Assembly-CSharp::DialogueData3D
   lines:
-  - Don't hesitate anymore
-  - They are preparing for something.
-  - Hurry up!
-  typingSpeed: 0.01
-  delayBetweenLines: 1
+  - "C\xF2n v\xE0i t\xEAn l\xEDnh canh th\xF4i"
+  - "Nhanh ch\xF3ng h\u1EA1 g\u1EE5c ch\xFAng \u0111i"
+  - "B\u1EAFn v\xE0o \u0111\u1EA7u s\u1EBD t\u1EA1o ra nhi\u1EC1u s\xE1t th\u01B0\u01A1ng
+    h\u01A1n"
+  - "Ta kh\xF4ng c\xF2n nhi\u1EC1u th\u1EDDi gian \u0111\xE2u"
+  typingSpeed: 0.03
+  delayBetweenLines: 0.5
   isLock: 0
