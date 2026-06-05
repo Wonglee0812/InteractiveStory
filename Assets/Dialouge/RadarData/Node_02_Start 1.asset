@@ -17,6 +17,6 @@ MonoBehaviour:
     1 khu v\u1EF1c c\u1ED1ng ng\u1EA7m \u0111ang s\u1EEDa ch\u1EEFa "
   - "H\xE3y t\xECm n\xF3 \u0111\u1EC3 \u0111i v\xE0o \u0111i\n"
   - "B\u1EA5m n\xFAt Q \u0111\u1EC3 c\xF3 th\u1EC3 c\xFAi ng\u01B0\u1EDDi\n"
-  typingSpeed: 0.03
-  delayBetweenLines: 0.5
+  typingSpeed: 0.01
+  delayBetweenLines: 0.3
   isLock: 0

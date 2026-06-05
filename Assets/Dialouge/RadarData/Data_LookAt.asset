@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueData3D
   lines:
   - "M\u1ED9t b\u1EA3n thi\u1EBFt k\u1EBF Mammoutech?"
-  typingSpeed: 0.05
-  delayBetweenLines: 1
+  typingSpeed: 0.01
+  delayBetweenLines: 0.3
   isLock: 0

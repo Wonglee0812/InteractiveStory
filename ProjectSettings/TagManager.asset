@@ -17,6 +17,7 @@ TagManager:
   - Dirt (Static)
   - Wood
   - StealthGrass
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -29,7 +30,7 @@ TagManager:
   - Debris
   - StealthGrass
   - Hitbox
-  - 
+  - LookAt
   - 
   - 
   - 

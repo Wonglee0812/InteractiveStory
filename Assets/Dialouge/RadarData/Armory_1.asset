@@ -17,6 +17,6 @@ MonoBehaviour:
     n\xEAn c\u1EA9n th\u1EADn"
   - "H\xE3y l\xEAn n\xF3c t\xF2a nh\xE0 n\xE0y \u0111i, tr\xEAn \u0111\xF3 c\xF3
     v\u1EADt t\u01B0 v\xE0 t\u1EA7m nh\xECn quan s\xE1t t\u1ED1t h\u01A1n"
-  typingSpeed: 0.03
-  delayBetweenLines: 0.5
+  typingSpeed: 0.01
+  delayBetweenLines: 0.3
   isLock: 0

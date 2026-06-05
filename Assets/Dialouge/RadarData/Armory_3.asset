@@ -15,6 +15,6 @@ MonoBehaviour:
   lines:
   - "T\u1ED1t l\u1EAFm "
   - "Nhanh ch\xF3ng ti\u1EBFn v\xE0o trong \u0111i "
-  typingSpeed: 0.03
-  delayBetweenLines: 0.5
+  typingSpeed: 0.01
+  delayBetweenLines: 0.3
   isLock: 0

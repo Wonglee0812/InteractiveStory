@@ -17,6 +17,6 @@ MonoBehaviour:
   - "H\xE3y b\u1EA5m Shift \u0111\u1EC3 ch\u1EA1y nhanh "
   - "Trong l\xFAc ch\u1EA1y c\xF3 th\u1EC3 ng\u1ED3i \u0111\u1EC3 tr\u01B0\u1EE3t
     \u0111i m\u1ED9t kho\u1EA3ng "
-  typingSpeed: 0.03
-  delayBetweenLines: 0.5
+  typingSpeed: 0.01
+  delayBetweenLines: 0.3
   isLock: 0

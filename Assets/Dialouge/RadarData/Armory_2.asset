@@ -18,6 +18,6 @@ MonoBehaviour:
   - "B\u1EAFn v\xE0o \u0111\u1EA7u s\u1EBD t\u1EA1o ra nhi\u1EC1u s\xE1t th\u01B0\u01A1ng
     h\u01A1n"
   - "Ta kh\xF4ng c\xF2n nhi\u1EC1u th\u1EDDi gian \u0111\xE2u"
-  typingSpeed: 0.03
-  delayBetweenLines: 0.5
+  typingSpeed: 0.01
+  delayBetweenLines: 0.3
   isLock: 0

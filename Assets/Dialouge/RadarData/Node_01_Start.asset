@@ -19,7 +19,9 @@ MonoBehaviour:
     c\u1EE7a Zenisth"
   - "Nhi\u1EC7m v\u1EE5 l\xE0 \u0111\xE1nh c\u1EAFp \u0111\u01B0\u1EE3c C\xF4ng ngh\u1EC7
     l\xF5i c\u1EE7a h\u1ECD v\xE0 r\xFAt lui "
-  - "H\xE3y ki\u1EBFm \u0111\u01B0\u1EDDng x\xE2m nh\u1EADp v\xE0o \u0111i"
-  typingSpeed: 0.03
-  delayBetweenLines: 0.5
-  isLock: 0
+  - "H\xE3y ki\u1EBFm \u0111\u01B0\u1EDDng x\xE2m nh\u1EADp v\xE0o \u0111i, "
+  - "C\xF3 m\u1ED9t \u0111\u01B0\u1EDDng c\u1ED1ng \u0111ang s\u1EEDa ch\u1EEFa,
+    h\xE3y x\xE2m nh\u1EADp v\xE0o qua \u0111\u01B0\u1EDDng \u0111\xF3"
+  typingSpeed: 0.01
+  delayBetweenLines: 0.3
+  isLock: 1

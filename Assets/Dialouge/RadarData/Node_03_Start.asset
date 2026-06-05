@@ -18,6 +18,6 @@ MonoBehaviour:
     n\u1EA5p ngay "
   - "\u0110i t\u1EDBi nh\u1EEFng b\u1EE5i c\u1ECF v\xE0 c\xFAi ng\u01B0\u1EDDi xu\u1ED1ng
     \u0111\u1EC3 tr\xE1nh b\u1ECB ph\xE1t hi\u1EC7n"
-  typingSpeed: 0.03
-  delayBetweenLines: 0.5
+  typingSpeed: 0.01
+  delayBetweenLines: 0.3
   isLock: 0

@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueData3D
   lines:
   - "S\u1EA1ch s\u1EBD r\u1ED3i. M\xECnh c\u1EA7n t\xECm t\xE0i li\u1EC7u"
-  typingSpeed: 0.05
-  delayBetweenLines: 2
+  typingSpeed: 0.01
+  delayBetweenLines: 0.3
   isLock: 0

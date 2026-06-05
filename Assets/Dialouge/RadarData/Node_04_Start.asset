@@ -21,6 +21,6 @@ MonoBehaviour:
     \u0111\u1ED9ng thu h\xFAt ch\xFAng "
   - "H\xE3y c\xFAi ng\u01B0\u1EDDi xu\u1ED1ng \u0111\u1EC3 di chuy\u1EC3n th\u1EADt
     im l\u1EB7ng "
-  typingSpeed: 0.03
-  delayBetweenLines: 0.5
+  typingSpeed: 0.01
+  delayBetweenLines: 0.3
   isLock: 0

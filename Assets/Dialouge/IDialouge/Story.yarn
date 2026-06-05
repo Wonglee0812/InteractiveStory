@@ -2,19 +2,20 @@
 tags: 
 ---
 Player: Có một đường hầm ở đây sao?
+Player: Đường hầm hơi nhỏ, ta phải cúi-Q xuống mới qua được
 ===
 
 title: Armory_PlayerCC_2
 tags: 
 ---
 Player: Hình như ở dưới góc cây bên phải có thứ gì đó, là vũ khí sao?
+Player: Có lẽ ta có thể dùng được
 ===
 
 title: Armory_PlayerCC_3
 tags: 
 ---
-Player: Đúng là nó rồi, ta nên đến để xem thử có gì.
-Player: Có lẽ sẽ có gì đó dùng được.
+Player: Có vẻ còn khá nhiều lính canh gác ở đây, khu này có vẻ là kho vũ khí rồi
 ===
 
 title: Armory_PlayerCC_4
@@ -26,35 +27,63 @@ Player: Có vẻ còn khá nhiều lính canh gác ở đây, khu này có vẻ 
 title: Armory_PlayerCC_5
 tags: 
 ---
-Player: Bên phía đó có vẻ vẫn còn 1 căn cứ nữa
-Player: Nhưng không nhiều lính canh như phía này nhỉ.
+Player: Bên trong có vẻ còn khá nhiều kẻ địch, vẫn nên cẩn thận chút thì hơn.
 ===
 
 title: Armory_PlayerCC_6
 tags: 
 ---
-Player: Chỗ này cũng khá tốt để có thể quan sát đấy chứ
+Player: Đây có vẻ là kho vũ khí của chúng.
+Player: Có khá nhiều thứ ta có thể dùng được đây
+Player: Hình như vẫn còn một tầng phía trên, lên đó xem sao
 ===
 
 title: Armory_PlayerCC_7
 tags: 
 ---
-Player: Bên trong có vẻ còn khá nhiều kẻ địch, vẫn nên cẩn thận chút thì hơn.
+Player: Đây có lẽ là thông tin thiết kế của những cổ máy kia.
+Player: Nhưng sao...., trông nó lại kỳ lạ thế này
+Player: Bọn chúng đã làm gì với những cổ máy này đây
 ===
 
 title: Armory_PlayerCC_8
 tags: 
 ---
-Player: Bên trong lại không quá đông lính gác nhỉ.
-Player: Vẫn còn 1 tầng trên, cứ lên đó thử xem sao.
+Player: Đây...đây là gì thế này...
+Player: Hình như là..... não người mà, chúng chúng...
+Player: Dùng bộ não để điều khiển những cổ máy này sao
+Player: Ra vậy đó là lý do vì sao những cổ máy này lại thông minh đến vậy, ra là....
+Player: Thật là vô đạo đức đi
 ===
 
 title: Armory_PlayerCC_9
 tags: 
 ---
-Player: Đây có vẻ là kho vũ khí của chúng.
-Player: Nhưng tại sao bọn chúng lại chuẩn bị sẵn sàng những thứ này
-Player: Không lẽ vị trí của mình đã bị lộ rồi sao?
+Player: Có khá nhiều thứ ta có thể dùng được đây
+===
+
+title: Armory_PlayerCC_10
+tags: 
+---
+Player: Đây có lẽ là thông tin thiết kế của những cổ máy kia.
+Player: Nhưng sao...., trông nó lại kỳ lạ thế này
+Player: Bọn chúng đã làm gì với những cổ máy này đây
+===
+title: Armory_PlayerCC_11
+tags: 
+---
+Player: Đây...đây là gì thế này...
+Player: Hình như là..... não người mà, chúng chúng...
+Player: Dùng bộ não để điều khiển những cổ máy này sao
+Player: Ra vậy đó là lý do vì sao những cổ máy này lại thông minh đến vậy, ra là....
+Player: Thật là vô đạo đức đi
+===
+
+title: Armory_00
+tags: 
+---
+Stranger: Khá khen cho ngươi khi có thể đến tận đây
+Stranger: Nói chuyện chút chứ?
 ===
 
 //Đoạn hội thoại khi vào nhánh Armory, chạy cùng timeline
