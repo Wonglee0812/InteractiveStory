@@ -82,8 +82,11 @@ Player: Thật là vô đạo đức đi
 title: Armory_00
 tags: 
 ---
+<<switch_camera vcam_GeneralFace>>
 Stranger: Khá khen cho ngươi khi có thể đến tận đây
 Stranger: Nói chuyện chút chứ?
+<<reset_camera>>
+
 ===
 
 title: Armory_General_Meet
@@ -95,16 +98,27 @@ title: Armory_General_Meet
 
 <<switch_camera vcam_GeneralFace>>
 Zenith General: Ngươi cũng đã thấy hết rồi nên có lẽ ta không thể biện hộ được nữa nhỉ, nhưng mà ta cũng rất có tình người.
+// Zenith General: You've seen everything, so I suppose I can no longer make excuses, but I am quite humane.
+
 Zenith General: Thay vì giờ giết ngươi ở đây thì cũng thật phí phạm một nhân tài, hay là....
+// Zenith General: Killing you here right now would be a waste of talent, so how about....
+
 Zenith General: Hợp tác chứ?
+// Zenith General: A partnership?
 
 <<switch_camera vcam_PlayerFace>>
-Player: Hợp tác với những kẻ như ngươi, tao không nghỉ bản thân mình có thể ngu ngốc đến thế.
+Player: Hợp tác với những kẻ như ngươi, tao không nghĩ bản thân mình có thể ngu ngốc đến thế.
+// Player: Partnering with people like you, I don't think I could be that stupid.
 
 <<switch_camera vcam_GeneralFace>>
-Zenith General: Ngu ngốc hay không là việc của ngươi, ta chỉ đề nghị thôi, nghỉ thử xem
+Zenith General: Ngu ngốc hay không là việc của ngươi, ta chỉ đề nghị thôi, nghĩ thử xem.
+// Zenith General: Whether it's stupid or not is your business, I'm just offering, think about it.
+
 Zenith General: Đằng nào ngươi cũng sẽ phải chết, không dưới tay ta,... thì cũng là dưới tay Apex..
-Zenith General: Nên là,..... cứ suy nghỉ cho kỹ
+// Zenith General: You're going to die anyway, if not by my hands,... then by Apex's..
+
+Zenith General: Nên là,..... cứ suy nghĩ cho kỹ.
+// Zenith General: So,..... think carefully.
 
 <<jump Armory_General_Hub>>
 ===
@@ -114,15 +128,16 @@ title: Armory_General_Hub
 <<switch_camera vcam_PlayerFace>>
 
 -> Ý ngươi muốn nói là gì, Apex thì sao? <<if $asked_purpose == false>>
+   // -> What do you mean, what about Apex?
    <<jump Ask_Purpose>>
-
--> Những cổ máy cũng như thí nghiệm ở đây là sao? <<if $asked_lore == false>>
+-> Những cỗ máy cũng như thí nghiệm ở đây là sao? <<if $asked_lore == false>>
+   // -> What is the deal with these machines and experiments here?
    <<jump Ask_Lore>>
-
--> Sao ngươi biết ta ở đây, ta đã nhớ rõ mình đâu làm gì lỗ liễu <<if $asked_pawn == false>>
+-> Sao ngươi biết ta ở đây, ta nhớ rõ mình đâu làm gì lộ liễu. <<if $asked_pawn == false>>
+   // -> How did you know I was here, I clearly didn't do anything to expose myself.
    <<jump Ask_Pawn>>
-
--> Đủ rồi. Tao đã có sự lựa chọn của mình <<if $asked_count >= 2>>
+-> Đủ rồi. Tao đã có sự lựa chọn của mình. <<if $asked_count >= 2>>
+   // -> Enough. I have made my choice.
    <<jump Armory_General_Decision>>
 ===
 
@@ -132,10 +147,18 @@ title: Ask_Purpose
 <<set $asked_count = $asked_count + 1>>
 <<switch_camera vcam_GeneralFace>>
 
-Zenith General: Haizz ta không biết là ngươi thực sự ngu ngốc hay giả vờ ngu ngốc
-Zenith General: Nhìn thử xem, ngươi thì 1 thân 1 mình, còn bọn tả thì vũ trang đầy đủ...
-Zenith General: Ngươi nghỉ xem, đi làm nhiệm vụ,.... hay là
+Zenith General: Haizz ta không biết là ngươi thực sự ngu ngốc hay giả vờ ngu ngốc.
+// Zenith General: *Sigh* I don't know if you are truly stupid or just pretending to be.
+
+Zenith General: Nhìn thử xem, ngươi thì 1 thân 1 mình, còn bọn ta thì vũ trang đầy đủ...
+// Zenith General: Look around, you are all alone, while we are heavily armed...
+
+Zenith General: Ngươi nghĩ xem, đi làm nhiệm vụ,.... hay là
+// Zenith General: Think about it, going on a mission,.... or
+
 Zenith General: Đi thí mạng?
+// Zenith General: Going to be a sacrifice?
+
 <<jump Armory_General_Hub>>
 ===
 
@@ -145,22 +168,45 @@ title: Ask_Lore
 <<set $asked_count = $asked_count + 1>>
 <<switch_camera vcam_GeneralFace>>
 
-Zenith General: Hahaa, những thí nghiệm ở đây sao
+Zenith General: Hahaa, những thí nghiệm ở đây sao.
+// Zenith General: Hahaa, the experiments here.
+
 Zenith General: Không lẽ ngươi bị dọa sợ à..
+// Zenith General: Don't tell me you're scared..
+
 <<switch_camera vcam_PlayerFace>>
+Player: Đừng nói nhảm nữa, vào vấn đề chính đi, những cỗ máy này là sao.
+// Player: Cut the nonsense, get to the point, what's with these machines.
 
-Player: Đừng nói nhảm nữa, vào vấn đề chính đi, những cổ máy này là sao.
 <<switch_camera vcam_GeneralFace>>
-
 Zenith General: Ngươi cũng biết rõ là một cỗ máy dù thông minh đến mấy, cũng vẫn thiếu một thứ mà không một thuật toán nào có thể thay thế được.
+// Zenith General: You know perfectly well that no matter how smart a machine is, it still lacks something no algorithm can replace.
+
 Zenith General: Ngươi biết đó là gì chứ?
+// Zenith General: Do you know what that is?
+
 Zenith General: Đó là,.... cảm xúc đó.
-Zenith General: Nhưng ý ta không phải là những thứ cảm xúc đồng cảm hay sợ hãi vô vị
-Zenith General: Thứ bọn ta tìm kiếm,..... là sự điên cuồng, sự giận dữ, đó là những thứ có thể giúp một cổ máy vô tri vô giác,..
-Zenith General: Trở thành một cổ máy chiến đấu thực sự đấy.
-Zenith General: thì tất nhiên việc dễ nhất để mô phỏng thứ cảm xúc đó, ngươi nghĩ đi, dùng đồ thật không phải tốt hơn sao
-Player: Thật đúng là lũ man rợ
+// Zenith General: It is,.... emotion.
+
+Zenith General: Nhưng ý ta không phải là những thứ cảm xúc đồng cảm hay sợ hãi vô vị.
+// Zenith General: But I don't mean trivial emotions like empathy or fear.
+
+Zenith General: Thứ bọn ta tìm kiếm,..... là sự điên cuồng, sự giận dữ, đó là những thứ có thể giúp một cỗ máy vô tri vô giác,..
+// Zenith General: What we seek,..... is madness, anger, those are the things that can help a mindless machine,..
+
+Zenith General: Trở thành một cỗ máy chiến đấu thực sự đấy.
+// Zenith General: Become a true war machine.
+
+Zenith General: Thì tất nhiên việc dễ nhất để mô phỏng thứ cảm xúc đó, ngươi nghĩ đi, dùng đồ thật không phải tốt hơn sao.
+// Zenith General: And of course, the easiest way to simulate that emotion, think about it, isn't it better to use the real thing.
+
+<<switch_camera vcam_PlayerFace>>
+Player: Thật đúng là lũ man rợ.
+// Player: What an absolute bunch of savages.
+
+<<switch_camera vcam_GeneralFace>>
 Zenith General: Hahaha, cảm ơn vì lời khen.
+// Zenith General: Hahaha, thanks for the compliment.
 
 <<jump Armory_General_Hub>>
 ===
@@ -172,39 +218,52 @@ title: Ask_Pawn
 <<switch_camera vcam_GeneralFace>>
 
 Zenith General: Haizzz thật sự có thể hỏi những thứ ngớ ngẩn như vậy sao.
+// Zenith General: *Sigh* Can you really ask such silly things.
+
 Zenith General: Đúng là ngươi rất cẩn thận nhưng, phe của ngươi thì có vẻ không muốn cẩn thận như thế.
+// Zenith General: You are indeed very careful, but your faction doesn't seem to want to be as careful.
+
 Zenith General: Bọn ta đã nhận được thông tin từ Khu giám sát, có vẻ là cảnh báo cấp đỏ.
+// Zenith General: We received information from the Surveillance Area, looks like a red alert.
+
 <<switch_camera vcam_PlayerFace>>
-
 Player: Cảnh báo cấp đỏ?
-<<switch_camera vcam_GeneralFace>>
+// Player: Red alert?
 
+<<switch_camera vcam_GeneralFace>>
 Zenith General: Dễ hiểu thì ở cấp cảnh báo này hòn đảo này sẽ có nguy cơ,...
+// Zenith General: To put it simply, at this alert level, this island is at risk of,...
+
 Zenith General: Bị san phẳng, cũng đồng nghĩa với việc,... không một ai có thể sống sót, kể cả tao, hay là mày.
-<<switch_camera vcam_PlayerlFace>>
+// Zenith General: Being leveled, which also means,... no one will survive, not me, and not you.
 
+<<switch_camera vcam_PlayerFace>>
 Player: Nhưng mối đe dọa này,.. không lẽ đến từ...
-<<switch_camera vcam_GeneralFace>>
+// Player: But this threat,.. could it be from...
 
+<<switch_camera vcam_GeneralFace>>
 Zenith General: Còn ai vào đây, là tập đoàn Apex.
+// Zenith General: Who else, it's the Apex corporation.
 
 <<jump Armory_General_Hub>>
 ===
-
 
 title: Armory_General_Decision
 ---
 <<switch_camera vcam_GeneralFace>>
 Zenith General: Haha, rất tốt, ta mong ngươi sẽ đưa ra lựa chọn thật sáng suốt.
+// Zenith General: Haha, very good, I hope you make a very wise choice.
 
 <<switch_camera vcam_PlayerFace>>
 -> Ta chấp nhận lời đề nghị. Bắt đầu thôi.
+   // -> I accept the offer. Let's begin.
    <<reset_camera>>
    <<armory_trust_zenith>>
-
 -> Ngươi nằm mơ đi thì ta sẽ đi theo ngươi!
+   // -> You're dreaming if you think I'll follow you!
    <<switch_camera vcam_GeneralFace>>
    Zenith General: Là do mày chọn thôi, chúc may mắn.
+   // Zenith General: It's your choice, good luck.
    <<reset_camera>>
    <<armory_betray_zenith>>
 ===

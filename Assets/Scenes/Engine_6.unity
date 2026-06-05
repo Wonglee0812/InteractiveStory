@@ -188160,7 +188160,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: Armory_01
+          m_StringArgument: Armory_General_Meet
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!65 &359415711
@@ -402070,7 +402070,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCMoveToPoint
   targetPoint: {fileID: 1497897619}
-  moveSpeed: 2.5
+  moveSpeed: 4
   turnSpeed: 5
   onDestinationReached:
     m_PersistentCalls:
