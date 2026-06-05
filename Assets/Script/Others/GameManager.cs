@@ -130,20 +130,34 @@ public class GameManager : MonoBehaviour
     }
 
     // ==========================================
-    // HÀM KÍCH HOẠT ENDING TỪ SENSOR
-    // ENDING TRIGGER FUNCTION FOR SENSOR
+    // HÀM KÍCH HOẠT ENDING TỪ MÁY BAY
+    // ENDING TRIGGER FUNCTIONS FROM HELICOPTER
     // ==========================================
-    public void TriggerEnding()
+    public void EndingGiveCore()
     {
+        Debug.Log("<color=magenta>[ACTION]</color> Player đã chạy vào vùng sáng và NỘP LÕI!");
         if (isTrustingZenith)
         {
-            Debug.Log("<color=magenta>[ENDING]</color> Kích hoạt Ending: THEO ZENITH (Trốn thoát).");
+            Debug.Log("<color=green>=> Kết quả:</color> THEO ZENITH (Lên máy bay thoát khỏi hòn đảo).");
             if (onEndingTrustZenith != null) onEndingTrustZenith.Invoke();
         }
         else
         {
-            Debug.Log("<color=magenta>[ENDING]</color> Kích hoạt Ending: THEO APEX (Bị phản bội/Tử thủ).");
+            Debug.Log("<color=red>=> Kết quả:</color> THEO APEX (Giao nộp lõi nhưng bị tẩu tán/tiêu diệt).");
             if (onEndingTrustApex != null) onEndingTrustApex.Invoke();
+        }
+    }
+
+    public void EndingShootHelicopter()
+    {
+        Debug.Log("<color=magenta>[ACTION]</color> Player đã BẮN RƠI máy bay Apex!");
+        if (isTrustingZenith)
+        {
+            Debug.Log("<color=orange>=> Kết quả:</color> THEO ZENITH (Zenith thả quân ra, kích hoạt Escape Run).");
+        }
+        else
+        {
+            Debug.Log("<color=orange>=> Kết quả:</color> THEO APEX (Bắn rụng mồi nhử, kẹt lại đảo tử chiến).");
         }
     }
 }
