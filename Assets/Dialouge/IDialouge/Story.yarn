@@ -86,70 +86,127 @@ Stranger: Khá khen cho ngươi khi có thể đến tận đây
 Stranger: Nói chuyện chút chứ?
 ===
 
-//Đoạn hội thoại khi vào nhánh Armory, chạy cùng timeline
-title: Armory_01
-tags: 
+title: Armory_General_Meet
 ---
-// [VI] "Nhưng sao chúng biết trước được?" Hahaha... Ngươi đang đặt nhầm câu hỏi rồi, lính đánh thuê.
-Zenith General: "How did they know?" Hahaha... You are asking the wrong questions, mercenary.
+<<declare $asked_count = 0>>
+<<declare $asked_purpose = false>>
+<<declare $asked_lore = false>>
+<<declare $asked_pawn = false>>
 
-// [VI] Lộ diện đi. Mày là kẻ quái nào?
-Player: Who the hell are you?
+<<switch_camera vcam_GeneralFace>>
+Zenith General: Ngươi cũng đã thấy hết rồi nên có lẽ ta không thể biện hộ được nữa nhỉ, nhưng mà ta cũng rất có tình người.
+Zenith General: Thay vì giờ giết ngươi ở đây thì cũng thật phí phạm một nhân tài, hay là....
+Zenith General: Hợp tác chứ?
 
-// [VI] Ta là ai không quan trọng. Ta cũng giống như ngươi... chỉ là một con tốt trên một bàn cờ rất lớn.
-Zenith General: Who I am is irrelevant. I am just like you... merely a pawn on a very large board.
+<<switch_camera vcam_PlayerFace>>
+Player: Hợp tác với những kẻ như ngươi, tao không nghỉ bản thân mình có thể ngu ngốc đến thế.
 
-// [VI] Đừng đánh đồng tao với mày.
-Player: Don't compare me to you.
+<<switch_camera vcam_GeneralFace>>
+Zenith General: Ngu ngốc hay không là việc của ngươi, ta chỉ đề nghị thôi, nghỉ thử xem
+Zenith General: Đằng nào ngươi cũng sẽ phải chết, không dưới tay ta,... thì cũng là dưới tay Apex..
+Zenith General: Nên là,..... cứ suy nghỉ cho kỹ
 
-// [VI] Hỏa lực vũ trang đầy mình, nhưng lại ngây thơ đến kinh ngạc. Nhìn quanh đi.
-Zenith General: Heavily armed, yet remarkably naive. Look around you.
+<<jump Armory_General_Hub>>
+===
 
-// [VI] Một cỗ máy chiến tranh đủ sức san phẳng một quốc gia. Pháo từ trường. Hệ thống giám sát dày đặc. Còn ngươi? Bị vứt vào đây hoàn toàn đơn độc.
-Zenith General: A war machine capable of leveling a nation. Electromagnetic artillery. Surveillance everywhere. And you? Sent in completely alone.
+title: Armory_General_Hub
+---
+<<switch_camera vcam_PlayerFace>>
 
-// [VI] Đây là một nhiệm vụ tự sát. Ngươi được gửi đến đây để chết.
-Zenith General: It's a suicide mission. You were sent here to die.
+-> Ý ngươi muốn nói là gì, Apex thì sao? <<if $asked_purpose == false>>
+   <<jump Ask_Purpose>>
 
-// [VI] Bớt nói nhảm đi. Mày muốn cái gì?
-Player: Cut the nonsense. What do you want?
+-> Những cổ máy cũng như thí nghiệm ở đây là sao? <<if $asked_lore == false>>
+   <<jump Ask_Lore>>
 
-// [VI] Ta muốn cái gì à? Ta nên hỏi ngươi câu đó mới đúng! Ngươi có muốn biết vì sao bọn ta chuẩn bị ngần này hỏa lực không?
-Zenith General: What do *I* want? I should be asking you! Do you want to know why we prepared all this firepower?
+-> Sao ngươi biết ta ở đây, ta đã nhớ rõ mình đâu làm gì lỗ liễu <<if $asked_pawn == false>>
+   <<jump Ask_Pawn>>
 
-// [VI] Không phải để dành cho ngươi. Nếu chỉ đối phó với một con chuột sa hũ nếp, bọn ta đã không cất công đến vậy.
-Zenith General: It's not just for you. If it were just one rat in the maze, we wouldn't need all this.
+-> Đủ rồi. Tao đã có sự lựa chọn của mình <<if $asked_count >= 2>>
+   <<jump Armory_General_Decision>>
+===
 
-// [VI] Ý mày là... Apex chuẩn bị tuyên chiến?
-Player: You mean... Apex is declaring war?
+title: Ask_Purpose
+---
+<<set $asked_purpose to true>>
+<<set $asked_count = $asked_count + 1>>
+<<switch_camera vcam_GeneralFace>>
 
-// [VI] Chúng đã làm rồi. Từ khoảnh khắc ngươi đặt chân lên hòn đảo này, hồng tâm đã bị khóa lại.
-Zenith General: They already did. From the moment you set foot on this island, the crosshairs were locked.
+Zenith General: Haizz ta không biết là ngươi thực sự ngu ngốc hay giả vờ ngu ngốc
+Zenith General: Nhìn thử xem, ngươi thì 1 thân 1 mình, còn bọn tả thì vũ trang đầy đủ...
+Zenith General: Ngươi nghỉ xem, đi làm nhiệm vụ,.... hay là
+Zenith General: Đi thí mạng?
+<<jump Armory_General_Hub>>
+===
 
-// [VI] Ngay giây phút ngươi hoàn thành nhiệm vụ, ngươi, ta, và toàn bộ cơ sở này sẽ biến thành tro bụi.
-Zenith General: The second you complete your mission, you, I, and this entire facility will be reduced to ash.
+title: Ask_Lore
+---
+<<set $asked_lore to true>>
+<<set $asked_count = $asked_count + 1>>
+<<switch_camera vcam_GeneralFace>>
 
-// [VI] Đừng ngu ngốc nghĩ rằng chúng có kế hoạch rút lui cho ngươi. Nhưng... chúng ta có thể viết lại cái kết này. Ngươi và ta.
-Zenith General: Don't be foolish enough to think they have an extraction plan for you. But... we could rewrite the ending. You and I.
+Zenith General: Hahaa, những thí nghiệm ở đây sao
+Zenith General: Không lẽ ngươi bị dọa sợ à..
+<<switch_camera vcam_PlayerFace>>
 
-// [VI] Vì cái thá gì tao phải tin mày?
-Player: Why the hell should I believe you?
+Player: Đừng nói nhảm nữa, vào vấn đề chính đi, những cổ máy này là sao.
+<<switch_camera vcam_GeneralFace>>
 
-// [VI] Vì cùng nhau sống sót là sự thật duy nhất còn sót lại. Đứng về phía bọn ta, cả hai cùng sống. Chống lại bọn ta... và chết như một công cụ trung thành. Chọn đi!
-Zenith General: Because mutual survival is the only truth left. Stand with us, and we both live. Stand against us... and die a loyal tool. Choose!
+Zenith General: Ngươi cũng biết rõ là một cỗ máy dù thông minh đến mấy, cũng vẫn thiếu một thứ mà không một thuật toán nào có thể thay thế được.
+Zenith General: Ngươi biết đó là gì chứ?
+Zenith General: Đó là,.... cảm xúc đó.
+Zenith General: Nhưng ý ta không phải là những thứ cảm xúc đồng cảm hay sợ hãi vô vị
+Zenith General: Thứ bọn ta tìm kiếm,..... là sự điên cuồng, sự giận dữ, đó là những thứ có thể giúp một cổ máy vô tri vô giác,..
+Zenith General: Trở thành một cổ máy chiến đấu thực sự đấy.
+Zenith General: thì tất nhiên việc dễ nhất để mô phỏng thứ cảm xúc đó, ngươi nghĩ đi, dùng đồ thật không phải tốt hơn sao
+Player: Thật đúng là lũ man rợ
+Zenith General: Hahaha, cảm ơn vì lời khen.
 
--> Okay, I'll trust you this time.
-    // [VI] Quyết định thông minh đấy. Ngươi không mù quáng như ta tưởng.
-    Zenith General: A smart decision. You're not as blind as I thought.
-    // [VI] Để hoàn toàn lật lọng Apex, ngươi vẫn phải hoàn thành mục tiêu của mình. Khi thời cơ đến, chúng ta sẽ làm nên lịch sử.
-    Zenith General: To completely outsmart Apex, you must finish your objective. When the time is right, we make history.
-    <<trust_zenith>> 
--> Don't even try to fool me. Die!
-    // [VI] Có vẻ như ngươi thực sự chỉ là một con chó dại bị xích cổ.
-    Zenith General: It seems you truly are just a rabid dog on a leash.
-    // [VI] Chết cho những kẻ chủ nhân thậm chí còn chả biết tên ngươi đi!
-    Zenith General: Die for masters who don't even know your name!
-    <<execute_general>> 
+<<jump Armory_General_Hub>>
+===
+
+title: Ask_Pawn
+---
+<<set $asked_pawn to true>>
+<<set $asked_count = $asked_count + 1>>
+<<switch_camera vcam_GeneralFace>>
+
+Zenith General: Haizzz thật sự có thể hỏi những thứ ngớ ngẩn như vậy sao.
+Zenith General: Đúng là ngươi rất cẩn thận nhưng, phe của ngươi thì có vẻ không muốn cẩn thận như thế.
+Zenith General: Bọn ta đã nhận được thông tin từ Khu giám sát, có vẻ là cảnh báo cấp đỏ.
+<<switch_camera vcam_PlayerFace>>
+
+Player: Cảnh báo cấp đỏ?
+<<switch_camera vcam_GeneralFace>>
+
+Zenith General: Dễ hiểu thì ở cấp cảnh báo này hòn đảo này sẽ có nguy cơ,...
+Zenith General: Bị san phẳng, cũng đồng nghĩa với việc,... không một ai có thể sống sót, kể cả tao, hay là mày.
+<<switch_camera vcam_PlayerlFace>>
+
+Player: Nhưng mối đe dọa này,.. không lẽ đến từ...
+<<switch_camera vcam_GeneralFace>>
+
+Zenith General: Còn ai vào đây, là tập đoàn Apex.
+
+<<jump Armory_General_Hub>>
+===
+
+
+title: Armory_General_Decision
+---
+<<switch_camera vcam_GeneralFace>>
+Zenith General: Haha, rất tốt, ta mong ngươi sẽ đưa ra lựa chọn thật sáng suốt.
+
+<<switch_camera vcam_PlayerFace>>
+-> Ta chấp nhận lời đề nghị. Bắt đầu thôi.
+   <<reset_camera>>
+   <<armory_trust_zenith>>
+
+-> Ngươi nằm mơ đi thì ta sẽ đi theo ngươi!
+   <<switch_camera vcam_GeneralFace>>
+   Zenith General: Là do mày chọn thôi, chúc may mắn.
+   <<reset_camera>>
+   <<armory_betray_zenith>>
 ===
 
 
