@@ -257,6 +257,13 @@ Zenith General: Haha, rất tốt, ta mong ngươi sẽ đưa ra lựa chọn th
 <<switch_camera vcam_PlayerFace>>
 -> Ta chấp nhận lời đề nghị. Bắt đầu thôi.
    // -> I accept the offer. Let's begin.
+   <<switch_camera vcam_GeneralFace>>
+   Zenith General: Haha, ngươi thông minh hơn ta nghĩ, được thôi, nhưng hiện tại ngươi vẫn đang bị theo dõi khá sát sao
+   Zenith General: Cái bộ đàm trên người ngươi là từ Apex đúng chứ?
+   Zenith General: Nãy giờ nó hoàn toàn im lặng là vì ở trong đây sóng vô tuyến đã bị vô hiệu nên cuộc trò chuyện của chúng ta, chúng không biết
+   Zenith General: Giờ chúng ta vẫn phải tiếp tục vỡ kịch này nên ngươi cứ tiếp tục nhiệm vụ, bọn ta sẽ hỗ trợ ngươi nhưng sau đó..
+   Zenith General: Chính ngươi sẽ cần quay lại để tiêu diệt toàn bộ bọn chúng, hahahaha.
+   Zenith General: Chúc may mắn
    <<reset_camera>>
    <<armory_trust_zenith>>
 -> Ngươi nằm mơ đi thì ta sẽ đi theo ngươi!
@@ -267,6 +274,16 @@ Zenith General: Haha, rất tốt, ta mong ngươi sẽ đưa ra lựa chọn th
    <<reset_camera>>
    <<armory_betray_zenith>>
 ===
+
+title: Armory_01
+---
+Player: Ở đây chắc xong rồi, nhanh chóng tiến vào trong thôi
+===
+
+
+
+
+
 
 
 title: Monitor_01

@@ -15,23 +15,27 @@ public class GameManager : MonoBehaviour
     [Header("--- STORY STATES (Sổ tay cốt truyện) ---")]
     public bool isArmoryCleared = false;
 
+    [Tooltip("VI: Biến ghi nhớ lựa chọn của Player. True = Theo Zenith, False = Theo Apex.\nEN: Variable remembering Player's choice. True = Trust Zenith, False = Trust Apex.")]
+    public bool isTrustingZenith = false;
+
     [Header("--- QUEST UI ---")]
     public GameObject questPanel;
     public TextMeshProUGUI questTextUI;
 
     [Header("--- NARRATIVE BRANCHES: ARMORY ---")]
-    [Tooltip("VI: Kích hoạt khi Player chọn THEO Zenith tại Armory.\nEN: Triggered when Player TRUSTS Zenith at the Armory.")]
     public UnityEvent onArmoryTrustZenith;
-
-    [Tooltip("VI: Kích hoạt khi Player chọn KHÔNG THEO Zenith tại Armory (Tắt General, Bật Quái).\nEN: Triggered when Player BETRAYS Zenith at the Armory (Disable General, Enable Enemies).")]
     public UnityEvent onArmoryBetrayZenith;
 
     [Header("--- NARRATIVE BRANCHES: MONITOR ---")]
-    [Tooltip("VI: Kích hoạt khi Player chọn THEO Zenith tại Monitor.\nEN: Triggered when Player TRUSTS Zenith at the Monitor.")]
     public UnityEvent onMonitorTrustZenith;
-
-    [Tooltip("VI: Kích hoạt khi Player chọn KHÔNG THEO Zenith tại Monitor.\nEN: Triggered when Player BETRAYS Zenith at the Monitor.")]
     public UnityEvent onMonitorBetrayZenith;
+
+    [Header("--- NARRATIVE BRANCHES: ENDING ---")]
+    [Tooltip("VI: Kích hoạt khi chạy đến điểm cuối và Player đã chọn THEO Zenith.\nEN: Triggered at the end point if Player TRUSTED Zenith.")]
+    public UnityEvent onEndingTrustZenith;
+
+    [Tooltip("VI: Kích hoạt khi chạy đến điểm cuối và Player đã chọn THEO Apex (Phản Zenith).\nEN: Triggered at the end point if Player TRUSTED Apex (Betrayed Zenith).")]
+    public UnityEvent onEndingTrustApex;
 
     private void Awake()
     {
@@ -100,24 +104,46 @@ public class GameManager : MonoBehaviour
     private void ArmoryTrustZenith()
     {
         Debug.Log("<color=yellow>[STORY]</color> Armory Branch: Trust Zenith");
+        isTrustingZenith = true; // Lưu lựa chọn / Save choice
         if (onArmoryTrustZenith != null) onArmoryTrustZenith.Invoke();
     }
 
     private void ArmoryBetrayZenith()
     {
         Debug.Log("<color=yellow>[STORY]</color> Armory Branch: Betray Zenith");
+        isTrustingZenith = false; // Lưu lựa chọn / Save choice
         if (onArmoryBetrayZenith != null) onArmoryBetrayZenith.Invoke();
     }
 
     private void MonitorTrustZenith()
     {
         Debug.Log("<color=yellow>[STORY]</color> Monitor Branch: Trust Zenith");
+        isTrustingZenith = true; // Lưu lựa chọn / Save choice
         if (onMonitorTrustZenith != null) onMonitorTrustZenith.Invoke();
     }
 
     private void MonitorBetrayZenith()
     {
         Debug.Log("<color=yellow>[STORY]</color> Monitor Branch: Betray Zenith");
+        isTrustingZenith = false; // Lưu lựa chọn / Save choice
         if (onMonitorBetrayZenith != null) onMonitorBetrayZenith.Invoke();
+    }
+
+    // ==========================================
+    // HÀM KÍCH HOẠT ENDING TỪ SENSOR
+    // ENDING TRIGGER FUNCTION FOR SENSOR
+    // ==========================================
+    public void TriggerEnding()
+    {
+        if (isTrustingZenith)
+        {
+            Debug.Log("<color=magenta>[ENDING]</color> Kích hoạt Ending: THEO ZENITH (Trốn thoát).");
+            if (onEndingTrustZenith != null) onEndingTrustZenith.Invoke();
+        }
+        else
+        {
+            Debug.Log("<color=magenta>[ENDING]</color> Kích hoạt Ending: THEO APEX (Bị phản bội/Tử thủ).");
+            if (onEndingTrustApex != null) onEndingTrustApex.Invoke();
+        }
     }
 }
