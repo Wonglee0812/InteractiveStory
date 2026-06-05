@@ -22364,6 +22364,30 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 41744600}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: CompleteQuest
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 41744600}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: SetQuest
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: "Ti\xEAu di\u1EC7t qu\xE1i v\u1EADt"
+          m_BoolArgument: 0
+        m_CallState: 2
   onMonitorTrustZenith:
     m_PersistentCalls:
       m_Calls: []
@@ -558816,6 +558840,109 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1053469555}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1053824724
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1053824725}
+  - component: {fileID: 1053824727}
+  - component: {fileID: 1053824726}
+  m_Layer: 0
+  m_Name: Encounter_3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1053824725
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053824724}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 390.6, y: 22.5, z: 538.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1820442408}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1053824726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053824724}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7360f14d33f96f428706b6ca23bfa42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AutoDelaySensor
+  delayTime: 0
+  onDelayFinished:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 41744600}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: CompleteQuest
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Armory_PlayerCC_6
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 41744600}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: SetQuest
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: "Ti\u1EBFp t\u1EE5c nhi\u1EC7m v\u1EE5"
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &1053824727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053824724}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e127b64b16733cb45bff2197d9fe514a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EncounterManager
+  enemiesInRoom:
+  - {fileID: 1942709347}
+  delayAfterClear: 1
+  onRoomCleared:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1053824726}
+        m_TargetAssemblyTypeName: AutoDelaySensor, Assembly-CSharp
+        m_MethodName: StartDelayTimer
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!43 &1053891694
 Mesh:
   m_ObjectHideFlags: 0
@@ -953998,6 +954125,7 @@ Transform:
   - {fileID: 359415713}
   - {fileID: 398014038}
   - {fileID: 613717266}
+  - {fileID: 1053824725}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1820556321
@@ -1020849,6 +1020977,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1942426526}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1942709347 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7151466201141771178, guid: e2aff85e8e3710e4594b7d1af1e2358e,
+    type: 3}
+  m_PrefabInstance: {fileID: 961011614}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c6cc582d7f78b3449c95d5c13a5ae03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AIHealth
 --- !u!1001 &1942759281
 PrefabInstance:
   m_ObjectHideFlags: 0
