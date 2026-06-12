@@ -13,7 +13,7 @@ ScriptedImporter:
   variablesClassNamespace: 
   variablesClassParent: Yarn.Unity.InMemoryVariableStorage
   useAddressableAssets: 0
-  unityLocalisationStringTableCollectionGUID: 
-  UseUnityLocalisationSystem: 0
+  unityLocalisationStringTableCollectionGUID: dd6186cfbf02c374b9b6e833c826e38f
+  UseUnityLocalisationSystem: 1
   useCustomLineTagger: 0
   lineTaggerClass: 

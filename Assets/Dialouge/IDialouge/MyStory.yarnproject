@@ -7,8 +7,12 @@
     "**/*~/*",
     "./Samples/Yarn Spinner*/*"
   ],
-  "localisation": {},
-  "baseLanguage": "en",
+  "localisation": {
+    "en": {
+      "strings": "..\\Localization\\MyStory - MyStory.csv.csv"
+    }
+  },
+  "baseLanguage": "vi",
   "compilerOptions": {
     "diagnosticsSeverity": {}
   }

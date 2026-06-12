@@ -109,8 +109,6 @@ public class Player : MonoBehaviour
         isInputLocked = state;
         if (isInputLocked)
         {
-            // Tắt Slow-motion phòng hờ / Turn off Slow-mo just in case
-            TimeManager.Instance.RequestSlowMotion(false);
         }
     }
 

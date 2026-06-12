@@ -1,0 +1,865 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Dialouge_en
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 3f107cef2cb2f3643a370e954cd4564d, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 235526291456
+    m_Localized: 'Player: Is there a tunnel here?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400320
+    m_Localized: 'Player: The tunnel is a bit small.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400321
+    m_Localized: 'Player: We have to duck down (Q) to get past.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400322
+    m_Localized: 'Player: It looks like there''s something under the tree on the
+      right.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400323
+    m_Localized: 'Player: Is it a weapon?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400324
+    m_Localized: 'Player: Perhaps we can use it.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400325
+    m_Localized: 'Player: It seems there are still quite a few guards here.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400326
+    m_Localized: 'Player: This area looks like an arms depot.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400327
+    m_Localized: 'Player: It seems there are still quite a few guards here.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400328
+    m_Localized: 'Player: This area looks like an arms depot.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400329
+    m_Localized: 'Player: There seem to be quite a few enemies inside.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400330
+    m_Localized: 'Player: It''s still better to be a little careful.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400331
+    m_Localized: 'Player: This looks like their arsenal.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400332
+    m_Localized: 'Player: There are quite a few things we can use here.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400333
+    m_Localized: 'Player: It seems there''s still a floor above.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400334
+    m_Localized: 'Player: Let''s go up there and see.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400335
+    m_Localized: 'Player: This is probably the design information for those machines.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400336
+    m_Localized: 'Player: But why..., does it look so strange?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400337
+    m_Localized: 'Player: What have they done with these machines?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400338
+    m_Localized: 'Player: What...what is this...?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400339
+    m_Localized: 'Player: It seems like... a human brain,'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400340
+    m_Localized: 'Player: We...'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400341
+    m_Localized: 'Player: Do you use your brain to control these machines?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400342
+    m_Localized: 'Player: Ah, so that''s why these machines are so intelligent.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400343
+    m_Localized: 'Player: So that''s it....'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400344
+    m_Localized: 'Player: That''s really immoral!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400345
+    m_Localized: 'Player: There are quite a few things we can use here.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400346
+    m_Localized: 'Player: This is probably the design information for those machines.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400347
+    m_Localized: 'Player: But why..., does it look so strange?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400348
+    m_Localized: 'Player: What have they done with these machines?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400349
+    m_Localized: 'Player: What...what is this...?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400350
+    m_Localized: 'Player: It seems like... a human brain,'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400351
+    m_Localized: 'Player: We...'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400352
+    m_Localized: 'Player: Do you use your brain to control these machines?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400353
+    m_Localized: 'Player: Ah, so that''s why these machines are so intelligent.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400354
+    m_Localized: 'Player: So that''s it....'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400355
+    m_Localized: 'Player: That''s really immoral!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400356
+    m_Localized: 'Stranger: You''re quite capable of making it this far.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400357
+    m_Localized: 'Stranger: Shall we chat for a bit?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400358
+    m_Localized: 'Zenith General: You''ve seen it all, so perhaps I can''t defend
+      myself anymore, can I?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400359
+    m_Localized: 'Zenith General: But I also have a lot of humanity.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400360
+    m_Localized: 'Zenith General: It would be a waste of a talented person to kill
+      you here instead of killing you now.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400361
+    m_Localized: 'Zenith General: Or maybe...'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400362
+    m_Localized: 'Zenith General: Shall we collaborate?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400363
+    m_Localized: 'Player: Cooperating with people like you,'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400364
+    m_Localized: 'Player: I didn''t think I could be that stupid.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400365
+    m_Localized: 'Zenith General: Whether you''re stupid or not is up to you.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400366
+    m_Localized: 'Zenith General: I''m just suggesting it, think about it.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400367
+    m_Localized: 'Zenith General: You''re going to die anyway.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400368
+    m_Localized: 'Zenith General: If not under my command, then under Apex''s command...'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400369
+    m_Localized: 'Zenith General: Well,... think carefully about it.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400370
+    m_Localized: What do you mean, Apex?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594624
+    m_Localized: What are these machines and experiments for here?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594625
+    m_Localized: How did you know I was here? I clearly remember not doing anything
+      conspicuous.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594626
+    m_Localized: That's enough. I've made my choice.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594627
+    m_Localized: 'Zenith General: *Sigh* I don''t know if you''re genuinely stupid
+      or just pretending to be.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594628
+    m_Localized: 'Zenith General: Look at you, all alone!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594629
+    m_Localized: 'Zenith General: As for us, we are fully armed...'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594630
+    m_Localized: 'Zenith General: What do you think, going on a mission,...?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594631
+    m_Localized: 'Zenith General: or'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594632
+    m_Localized: 'Zenith General: Is he going to risk his life?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594633
+    m_Localized: 'Zenith General: Hahaa, so these are the experiments being conducted
+      here.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594634
+    m_Localized: 'Zenith General: Are you perhaps frightened...?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594635
+    m_Localized: 'Player: Stop talking nonsense, let''s get to the point.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594636
+    m_Localized: 'Player: What are these machines?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594637
+    m_Localized: 'Zenith General: You know very well that even the most intelligent
+      machine,'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594638
+    m_Localized: 'Zenith General: It still lacks one thing that no algorithm can
+      replace.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594639
+    m_Localized: 'Zenith General: Do you know what that is?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594640
+    m_Localized: 'Zenith General: That is,... that feeling.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594641
+    m_Localized: 'Zenith General: But I''m not talking about those meaningless feelings
+      of empathy or fear.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594642
+    m_Localized: 'Zenith General: What we seek,..... is madness, rage.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594643
+    m_Localized: 'Zenith General: These are things that can help an inanimate machine...'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594644
+    m_Localized: 'Zenith General: Become a true fighting machine.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594645
+    m_Localized: 'Zenith General: Well, of course, the easiest thing to emulate is,'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594646
+    m_Localized: 'Zenith General: Think about it, wouldn''t it be better to use the
+      real thing?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594647
+    m_Localized: 'Player: They''re truly barbaric.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594648
+    m_Localized: 'Zenith General: Hahaha, thanks for the compliment.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594649
+    m_Localized: 'Zenith General: *Sigh* How can you actually ask such silly questions?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594650
+    m_Localized: 'Zenith General: You are indeed very careful, but...'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594651
+    m_Localized: 'Zenith General: Your side doesn''t seem to want to be so cautious.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594652
+    m_Localized: 'Zenith General: We have received information from the Surveillance
+      Zone,'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594653
+    m_Localized: 'Zenith General: appears to be a red alert.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594654
+    m_Localized: 'Player: Red alert?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594655
+    m_Localized: 'Zenith General: To put it simply, at this alert level, this island
+      is at risk,...'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594656
+    m_Localized: 'Zenith General: Being flattened also means...'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594657
+    m_Localized: 'Zenith General: No one can survive, not me, not you.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594658
+    m_Localized: 'Player: But this threat... could it be coming from...?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594659
+    m_Localized: 'Zenith General: Who else could it be but Apex Corporation?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594660
+    m_Localized: 'Zenith General: Haha, very good, I hope you will make a wise choice.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594661
+    m_Localized: We accept the offer. Let's begin.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594662
+    m_Localized: 'Zenith General: Haha, you''re smarter than I thought.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594663
+    m_Localized: 'Zenith General: Alright, but you''re still being watched quite
+      closely right now.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594664
+    m_Localized: 'Zenith General: That walkie-talkie you''re wearing is from Apex,
+      right?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594665
+    m_Localized: 'Zenith General: It''s been completely silent until now because
+      radio waves have been disabled inside.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594666
+    m_Localized: 'Zenith General: So, in our conversation, they don''t know.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594667
+    m_Localized: 'Zenith General: We still have to continue this charade, so you
+      continue with your mission.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594668
+    m_Localized: 'Zenith General: We will support you, but after that...'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594669
+    m_Localized: 'Zenith General: You''ll need to come back and wipe them all out,
+      hahahaha.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594670
+    m_Localized: 'Zenith General: Good luck!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594671
+    m_Localized: If you're dreaming, I'll follow you!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594672
+    m_Localized: 'Zenith General: It''s your choice, good luck.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594673
+    m_Localized: 'Player: I think we''re done here.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594674
+    m_Localized: 'Player: Let''s quickly go inside!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594675
+    m_Localized: 'Player: This is probably the central control panel.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594676
+    m_Localized: 'Player: But why is there a warning?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594677
+    m_Localized: 'Player: Is there anything around here?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594678
+    m_Localized: 'Player: This is....'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594679
+    m_Localized: 'Player: Is this island under threat?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594680
+    m_Localized: 'Player: Because... Buster Call?,... what is this anyway?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594681
+    m_Localized: 'Player: But who is preparing to attack this island?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594682
+    m_Localized: 'Player: Besides Apex, Zenisth clearly has no other competitors,
+      man.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594683
+    m_Localized: 'Player: But if this island is actually attacked, I''ll be in danger
+      too.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594684
+    m_Localized: 'Player: It''s still better to quickly complete the mission and
+      then retreat.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594685
+    m_Localized: 'Zenith General: Hahaha, leaving, huh?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594686
+    m_Localized: 'Zenith General: You talk as if you can come and go as you please.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594687
+    m_Localized: 'Player: Who are you...?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594688
+    m_Localized: 'Zenith General: Hey, hey, calm down, I don''t mean any harm.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594689
+    m_Localized: 'Zenith General: Let''s chat a bit.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594690
+    m_Localized: 'Player: This must be the surveillance area.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594691
+    m_Localized: 'Player: It seems there are fewer guards here.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594692
+    m_Localized: 'Player: There don''t seem to be too many guards here.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594693
+    m_Localized: 'Player: There are quite a lot of machines here.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594694
+    m_Localized: 'Player: Maybe there''s some useful information here.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594695
+    m_Localized: 'Player: I think everything is finished here.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594696
+    m_Localized: 'Player: Let''s quickly get back to the mission.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594697
+    m_Localized: 'Player: The next passage seems to be on the upper floor.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594698
+    m_Localized: 'Zenith General: As you can see.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594699
+    m_Localized: 'Zenith General: Right now, both you and I are in a life-or-death
+      situation.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594700
+    m_Localized: 'Zenith General: That would be better than continuing the tension.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594701
+    m_Localized: 'Zenith General: Shall we collaborate?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594702
+    m_Localized: 'Player: Do you think I''m so stupid as to cooperate with the enemy
+      and betray my allies?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594703
+    m_Localized: 'Zenith General: *Sigh*, whether you''re stupid or not is your business.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594704
+    m_Localized: 'Zenith General: I''m just making a suggestion.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594705
+    m_Localized: 'Zenith General: Because your end is inevitable anyway, it''s all
+      just death.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594706
+    m_Localized: 'Zenith General: If not under Zenith''s command, then under Apex''s
+      command...'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594707
+    m_Localized: 'Zenith General: You should think carefully about this.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594708
+    m_Localized: What do you mean? What does Apex have to do with this?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594709
+    m_Localized: But what is that Buster Call threat notification?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594710
+    m_Localized: How did you know I was here, and why are you suggesting cooperation?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594711
+    m_Localized: That's enough. I've decided on my next step.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594712
+    m_Localized: 'Zenith General: What does Apex have to do with this?... Let''s
+      see.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594713
+    m_Localized: 'Zenith General: You still haven''t realized it by now?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594714
+    m_Localized: 'Player: Realize what? What do you mean? Explain clearly.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594715
+    m_Localized: 'Zenith General: I don''t know whether to call you a loyal dog...'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594716
+    m_Localized: 'Zenith General: or rather, a stupid pawn.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594717
+    m_Localized: 'Zenith General: Think about it, you alone, unarmed, charging into
+      the territory of a fully armed enemy.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594718
+    m_Localized: 'Zenith General: It was basically a suicide mission.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594719
+    m_Localized: 'Zenith General: Not to mention, even if you complete the mission,
+      you''ve already seen the consequences.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594720
+    m_Localized: 'Zenith General: This island has been placed on a red threat level.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594721
+    m_Localized: 'Zenith General: Red is the highest level for a threat that could
+      wipe out the entire island.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594722
+    m_Localized: 'Zenith General: And it is now the Buster Call.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594723
+    m_Localized: 'Zenith General: So no matter what you do, they will wipe out you,
+      me, and this entire island.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594724
+    m_Localized: 'Zenith General: Hmm..., you really don''t know about it?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594725
+    m_Localized: 'Player: Hurry up, if I knew the answer, why would I be asking you?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594726
+    m_Localized: 'Zenith General: Basically, it''s a weapon setup.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594727
+    m_Localized: 'Zenith General: This is also confidential information that we have
+      stolen.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594728
+    m_Localized: 'Zenith General: Buster Call is actually a technology that has been
+      around for quite some time.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594729
+    m_Localized: 'Zenith General: but in the past, the technology was too difficult
+      to control,'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594730
+    m_Localized: 'Zenith General: it is prone to errors when used.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594731
+    m_Localized: 'Zenith General: It uses nuclear power as its detonator.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594732
+    m_Localized: 'Zenith General: when activated, it creates an explosion with immense
+      force.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594733
+    m_Localized: 'Zenith General: capable of blowing up an entire city.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594734
+    m_Localized: 'Zenith General: Not only that, the explosion area will almost certainly
+      become a dead zone for a very long time.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594735
+    m_Localized: 'Zenith General: because the radiation levels are very high.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594736
+    m_Localized: 'Zenith General: It''s as simple as that.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594737
+    m_Localized: 'Zenith General: Now that you understand it, have you finished thinking
+      about it?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594738
+    m_Localized: 'Player: Take your time, you don''t need to rush.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594739
+    m_Localized: 'Zenith General: Wow, I didn''t expect you to ask that question.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594740
+    m_Localized: 'Zenith General: Even though this entire island is a testing ground,
+      I know every fly and every mosquito like the back of my hand.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594741
+    m_Localized: 'Zenith General: The radar system on the island is state-of-the-art,
+      so we knew you were there the moment you arrived.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594742
+    m_Localized: 'Player: So modern, huh? Then why don''t you deal with us yourself?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594743
+    m_Localized: 'Player: And yet you went to all the trouble of coming here to invite
+      me.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594744
+    m_Localized: 'Player: I didn''t think you''d be so kind considering the disgusting
+      things you''ve done.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594745
+    m_Localized: 'Zenith General: Disgusting, you mean the robots?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594746
+    m_Localized: 'Zenith General: Oh, that''s normal, it''s just a sacrifice for
+      science.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594747
+    m_Localized: 'Zenith General: As for why we went to all this trouble...'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594748
+    m_Localized: 'Zenith General: Just consider it simply that we''re regretting
+      losing a talent like you.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594749
+    m_Localized: 'Zenith General: Destroying a living war machine like this with
+      my own hands is a bit regrettable.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594750
+    m_Localized: 'Zenith General: You should consider yourself lucky.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594751
+    m_Localized: 'Player: Hmph, you certainly have a glib tongue.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594752
+    m_Localized: 'Player: But aren''t you afraid my men are eavesdropping on this
+      conversation?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594753
+    m_Localized: 'Zenith General: Oh, you don''t need to worry about that.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594754
+    m_Localized: 'Zenith General: You have a walkie-talkie on your ear, don''t you?
+      We cut off the signal when you came in here.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594755
+    m_Localized: 'Zenith General: So, this conversation here is known only to you
+      and me.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594756
+    m_Localized: 'Zenith General: That''s why it''s been so quiet until now.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594757
+    m_Localized: 'Zenith General: So, have you made your decision yet?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594758
+    m_Localized: 'Zenith General: Alright, make your decision.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594759
+    m_Localized: 'Zenith General: But I hope you will make a wise decision.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594760
+    m_Localized: I accept the offer, let's begin.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594761
+    m_Localized: 'Zenith General: A smart decision.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594762
+    m_Localized: 'Zenith General: You are not as blindly and foolishly loyal as I
+      thought.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594763
+    m_Localized: 'Zenith General: To completely fool Apex,'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594764
+    m_Localized: 'Zenith General: You must continue to pretend to be carrying out
+      your mission.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594765
+    m_Localized: 'Zenith General: When the time comes, you will personally turn the
+      tables on this game, hahaha'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594766
+    m_Localized: 'Zenith General: Good luck!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594767
+    m_Localized: Dream on, I will never follow you.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594768
+    m_Localized: 'Zenith General: It is truly disappointing and regrettable that
+      a talented person like you must meet your end here.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594769
+    m_Localized: 'Zenith General: Then die for those masters who don''t even remember
+      your name!'
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

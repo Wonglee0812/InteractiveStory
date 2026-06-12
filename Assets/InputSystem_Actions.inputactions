@@ -97,7 +97,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Inventory",
+                    "name": "Menu",
                     "type": "Button",
                     "id": "5e2a3efb-7f7a-44e0-b8f7-ddb0e24e291f",
                     "expectedControlType": "",
@@ -506,11 +506,11 @@
                 {
                     "name": "",
                     "id": "fc2ecde6-a514-4a9b-a192-057652edcb38",
-                    "path": "<Keyboard>/tab",
+                    "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Inventory",
+                    "action": "Menu",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

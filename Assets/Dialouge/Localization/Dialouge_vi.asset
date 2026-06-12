@@ -1,0 +1,983 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Dialouge_vi
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: vi
+  m_SharedData: {fileID: 11400000, guid: 3f107cef2cb2f3643a370e954cd4564d, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 235526291456
+    m_Localized: "Player: C\xF3 m\u1ED9t \u0111\u01B0\u1EDDng h\u1EA7m \u1EDF \u0111\xE2y
+      sao?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400320
+    m_Localized: "Player: \u0110\u01B0\u1EDDng h\u1EA7m h\u01A1i nh\u1ECF,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400321
+    m_Localized: "Player: ta ph\u1EA3i c\xFAi-Q xu\u1ED1ng m\u1EDBi qua \u0111\u01B0\u1EE3c"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400322
+    m_Localized: "Player: H\xECnh nh\u01B0 \u1EDF d\u01B0\u1EDBi g\xF3c c\xE2y b\xEAn
+      ph\u1EA3i c\xF3 th\u1EE9 g\xEC \u0111\xF3,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400323
+    m_Localized: "Player: l\xE0 v\u0169 kh\xED sao?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400324
+    m_Localized: "Player: C\xF3 l\u1EBD ta c\xF3 th\u1EC3 d\xF9ng \u0111\u01B0\u1EE3c"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400325
+    m_Localized: "Player: C\xF3 v\u1EBB c\xF2n kh\xE1 nhi\u1EC1u l\xEDnh canh g\xE1c
+      \u1EDF \u0111\xE2y,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400326
+    m_Localized: "Player: khu n\xE0y c\xF3 v\u1EBB l\xE0 kho v\u0169 kh\xED r\u1ED3i"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400327
+    m_Localized: "Player: C\xF3 v\u1EBB c\xF2n kh\xE1 nhi\u1EC1u l\xEDnh canh g\xE1c
+      \u1EDF \u0111\xE2y,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400328
+    m_Localized: "Player: khu n\xE0y c\xF3 v\u1EBB l\xE0 kho v\u0169 kh\xED r\u1ED3i"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400329
+    m_Localized: "Player: B\xEAn trong c\xF3 v\u1EBB c\xF2n kh\xE1 nhi\u1EC1u k\u1EBB
+      \u0111\u1ECBch,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400330
+    m_Localized: "Player: v\u1EABn n\xEAn c\u1EA9n th\u1EADn ch\xFAt th\xEC h\u01A1n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400331
+    m_Localized: "Player: \u0110\xE2y c\xF3 v\u1EBB l\xE0 kho v\u0169 kh\xED c\u1EE7a
+      ch\xFAng."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400332
+    m_Localized: "Player: C\xF3 kh\xE1 nhi\u1EC1u th\u1EE9 ta c\xF3 th\u1EC3 d\xF9ng
+      \u0111\u01B0\u1EE3c \u0111\xE2y"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400333
+    m_Localized: "Player: H\xECnh nh\u01B0 v\u1EABn c\xF2n m\u1ED9t t\u1EA7ng ph\xEDa
+      tr\xEAn,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400334
+    m_Localized: "Player: l\xEAn \u0111\xF3 xem sao"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400335
+    m_Localized: "Player: \u0110\xE2y c\xF3 l\u1EBD l\xE0 th\xF4ng tin thi\u1EBFt
+      k\u1EBF c\u1EE7a nh\u1EEFng c\u1ED5 m\xE1y kia."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400336
+    m_Localized: "Player: Nh\u01B0ng sao...., tr\xF4ng n\xF3 l\u1EA1i k\u1EF3 l\u1EA1
+      th\u1EBF n\xE0y"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400337
+    m_Localized: "Player: B\u1ECDn ch\xFAng \u0111\xE3 l\xE0m g\xEC v\u1EDBi nh\u1EEFng
+      c\u1ED5 m\xE1y n\xE0y \u0111\xE2y"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400338
+    m_Localized: "Player: \u0110\xE2y...\u0111\xE2y l\xE0 g\xEC th\u1EBF n\xE0y..."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400339
+    m_Localized: "Player: H\xECnh nh\u01B0 l\xE0..... n\xE3o ng\u01B0\u1EDDi m\xE0,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400340
+    m_Localized: "Player: ch\xFAng ch\xFAng..."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400341
+    m_Localized: "Player: D\xF9ng b\u1ED9 n\xE3o \u0111\u1EC3 \u0111i\u1EC1u khi\u1EC3n
+      nh\u1EEFng c\u1ED5 m\xE1y n\xE0y sao"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400342
+    m_Localized: "Player: Ra v\u1EADy \u0111\xF3 l\xE0 l\xFD do v\xEC sao nh\u1EEFng
+      c\u1ED5 m\xE1y n\xE0y l\u1EA1i th\xF4ng minh \u0111\u1EBFn v\u1EADy,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400343
+    m_Localized: "Player: ra l\xE0...."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400344
+    m_Localized: "Player: Th\u1EADt l\xE0 v\xF4 \u0111\u1EA1o \u0111\u1EE9c \u0111i"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400345
+    m_Localized: "Player: C\xF3 kh\xE1 nhi\u1EC1u th\u1EE9 ta c\xF3 th\u1EC3 d\xF9ng
+      \u0111\u01B0\u1EE3c \u0111\xE2y"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400346
+    m_Localized: "Player: \u0110\xE2y c\xF3 l\u1EBD l\xE0 th\xF4ng tin thi\u1EBFt
+      k\u1EBF c\u1EE7a nh\u1EEFng c\u1ED5 m\xE1y kia."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400347
+    m_Localized: "Player: Nh\u01B0ng sao...., tr\xF4ng n\xF3 l\u1EA1i k\u1EF3 l\u1EA1
+      th\u1EBF n\xE0y"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400348
+    m_Localized: "Player: B\u1ECDn ch\xFAng \u0111\xE3 l\xE0m g\xEC v\u1EDBi nh\u1EEFng
+      c\u1ED5 m\xE1y n\xE0y \u0111\xE2y"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400349
+    m_Localized: "Player: \u0110\xE2y...\u0111\xE2y l\xE0 g\xEC th\u1EBF n\xE0y..."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400350
+    m_Localized: "Player: H\xECnh nh\u01B0 l\xE0..... n\xE3o ng\u01B0\u1EDDi m\xE0,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400351
+    m_Localized: "Player: ch\xFAng ch\xFAng..."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400352
+    m_Localized: "Player: D\xF9ng b\u1ED9 n\xE3o \u0111\u1EC3 \u0111i\u1EC1u khi\u1EC3n
+      nh\u1EEFng c\u1ED5 m\xE1y n\xE0y sao"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400353
+    m_Localized: "Player: Ra v\u1EADy \u0111\xF3 l\xE0 l\xFD do v\xEC sao nh\u1EEFng
+      c\u1ED5 m\xE1y n\xE0y l\u1EA1i th\xF4ng minh \u0111\u1EBFn v\u1EADy,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400354
+    m_Localized: "Player: ra l\xE0...."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400355
+    m_Localized: "Player: Th\u1EADt l\xE0 v\xF4 \u0111\u1EA1o \u0111\u1EE9c \u0111i"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400356
+    m_Localized: "Stranger: Kh\xE1 khen cho ng\u01B0\u01A1i khi c\xF3 th\u1EC3 \u0111\u1EBFn
+      t\u1EADn \u0111\xE2y"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400357
+    m_Localized: "Stranger: N\xF3i chuy\u1EC7n ch\xFAt ch\u1EE9?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400358
+    m_Localized: "Zenith General: Ng\u01B0\u01A1i c\u0169ng \u0111\xE3 th\u1EA5y
+      h\u1EBFt r\u1ED3i n\xEAn c\xF3 l\u1EBD ta kh\xF4ng th\u1EC3 bi\u1EC7n h\u1ED9
+      \u0111\u01B0\u1EE3c n\u1EEFa nh\u1EC9,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400359
+    m_Localized: "Zenith General: nh\u01B0ng m\xE0 ta c\u0169ng r\u1EA5t c\xF3 t\xECnh
+      ng\u01B0\u1EDDi."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400360
+    m_Localized: "Zenith General: Thay v\xEC gi\u1EDD gi\u1EBFt ng\u01B0\u01A1i \u1EDF
+      \u0111\xE2y th\xEC c\u0169ng th\u1EADt ph\xED ph\u1EA1m m\u1ED9t nh\xE2n t\xE0i,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400361
+    m_Localized: "Zenith General: hay l\xE0...."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400362
+    m_Localized: "Zenith General: H\u1EE3p t\xE1c ch\u1EE9?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400363
+    m_Localized: "Player: H\u1EE3p t\xE1c v\u1EDBi nh\u1EEFng k\u1EBB nh\u01B0 ng\u01B0\u01A1i,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400364
+    m_Localized: "Player: tao kh\xF4ng ngh\u0129 b\u1EA3n th\xE2n m\xECnh c\xF3 th\u1EC3
+      ngu ng\u1ED1c \u0111\u1EBFn th\u1EBF."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400365
+    m_Localized: "Zenith General: Ngu ng\u1ED1c hay kh\xF4ng l\xE0 vi\u1EC7c c\u1EE7a
+      ng\u01B0\u01A1i,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400366
+    m_Localized: "Zenith General: ta ch\u1EC9 \u0111\u1EC1 ngh\u1ECB th\xF4i, ngh\u0129
+      th\u1EED xem."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400367
+    m_Localized: "Zenith General: \u0110\u1EB1ng n\xE0o ng\u01B0\u01A1i c\u0169ng
+      s\u1EBD ph\u1EA3i ch\u1EBFt,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400368
+    m_Localized: "Zenith General: kh\xF4ng d\u01B0\u1EDBi tay ta,... th\xEC c\u0169ng
+      l\xE0 d\u01B0\u1EDBi tay Apex.."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400369
+    m_Localized: "Zenith General: N\xEAn l\xE0,..... c\u1EE9 suy ngh\u0129 cho k\u1EF9."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235593400370
+    m_Localized: "\xDD ng\u01B0\u01A1i mu\u1ED1n n\xF3i l\xE0 g\xEC, Apex th\xEC
+      sao?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594624
+    m_Localized: "Nh\u1EEFng c\u1ED7 m\xE1y c\u0169ng nh\u01B0 th\xED nghi\u1EC7m
+      \u1EDF \u0111\xE2y l\xE0 sao?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594625
+    m_Localized: "Sao ng\u01B0\u01A1i bi\u1EBFt ta \u1EDF \u0111\xE2y, ta nh\u1EDB
+      r\xF5 m\xECnh \u0111\xE2u l\xE0m g\xEC l\u1ED9 li\u1EC5u."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594626
+    m_Localized: "\u0110\u1EE7 r\u1ED3i. Tao \u0111\xE3 c\xF3 s\u1EF1 l\u1EF1a ch\u1ECDn
+      c\u1EE7a m\xECnh."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594627
+    m_Localized: "Zenith General: Haizz ta kh\xF4ng bi\u1EBFt l\xE0 ng\u01B0\u01A1i
+      th\u1EF1c s\u1EF1 ngu ng\u1ED1c hay gi\u1EA3 v\u1EDD ngu ng\u1ED1c."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594628
+    m_Localized: "Zenith General: Nh\xECn th\u1EED xem, ng\u01B0\u01A1i th\xEC 1
+      th\xE2n 1 m\xECnh,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594629
+    m_Localized: "Zenith General: c\xF2n b\u1ECDn ta th\xEC v\u0169 trang \u0111\u1EA7y
+      \u0111\u1EE7..."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594630
+    m_Localized: "Zenith General: Ng\u01B0\u01A1i ngh\u0129 xem, \u0111i l\xE0m nhi\u1EC7m
+      v\u1EE5,...."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594631
+    m_Localized: "Zenith General: hay l\xE0"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594632
+    m_Localized: "Zenith General: \u0110i th\xED m\u1EA1ng?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594633
+    m_Localized: "Zenith General: Hahaa, nh\u1EEFng th\xED nghi\u1EC7m \u1EDF \u0111\xE2y
+      sao."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594634
+    m_Localized: "Zenith General: Kh\xF4ng l\u1EBD ng\u01B0\u01A1i b\u1ECB d\u1ECDa
+      s\u1EE3 \xE0.."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594635
+    m_Localized: "Player: \u0110\u1EEBng n\xF3i nh\u1EA3m n\u1EEFa, v\xE0o v\u1EA5n
+      \u0111\u1EC1 ch\xEDnh \u0111i,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594636
+    m_Localized: "Player: nh\u1EEFng c\u1ED7 m\xE1y n\xE0y l\xE0 sao."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594637
+    m_Localized: "Zenith General: Ng\u01B0\u01A1i c\u0169ng bi\u1EBFt r\xF5 l\xE0
+      m\u1ED9t c\u1ED7 m\xE1y d\xF9 th\xF4ng minh \u0111\u1EBFn m\u1EA5y,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594638
+    m_Localized: "Zenith General: c\u0169ng v\u1EABn thi\u1EBFu m\u1ED9t th\u1EE9
+      m\xE0 kh\xF4ng m\u1ED9t thu\u1EADt to\xE1n n\xE0o c\xF3 th\u1EC3 thay th\u1EBF
+      \u0111\u01B0\u1EE3c."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594639
+    m_Localized: "Zenith General: Ng\u01B0\u01A1i bi\u1EBFt \u0111\xF3 l\xE0 g\xEC
+      ch\u1EE9?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594640
+    m_Localized: "Zenith General: \u0110\xF3 l\xE0,.... c\u1EA3m x\xFAc \u0111\xF3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594641
+    m_Localized: "Zenith General: Nh\u01B0ng \xFD ta kh\xF4ng ph\u1EA3i l\xE0 nh\u1EEFng
+      th\u1EE9 c\u1EA3m x\xFAc \u0111\u1ED3ng c\u1EA3m hay s\u1EE3 h\xE3i v\xF4 v\u1ECB."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594642
+    m_Localized: "Zenith General: Th\u1EE9 b\u1ECDn ta t\xECm ki\u1EBFm,..... l\xE0
+      s\u1EF1 \u0111i\xEAn cu\u1ED3ng, s\u1EF1 gi\u1EADn d\u1EEF,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594643
+    m_Localized: "Zenith General: \u0111\xF3 l\xE0 nh\u1EEFng th\u1EE9 c\xF3 th\u1EC3
+      gi\xFAp m\u1ED9t c\u1ED7 m\xE1y v\xF4 tri v\xF4 gi\xE1c,.."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594644
+    m_Localized: "Zenith General: Tr\u1EDF th\xE0nh m\u1ED9t c\u1ED7 m\xE1y chi\u1EBFn
+      \u0111\u1EA5u th\u1EF1c s\u1EF1 \u0111\u1EA5y."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594645
+    m_Localized: "Zenith General: Th\xEC t\u1EA5t nhi\xEAn vi\u1EC7c d\u1EC5 nh\u1EA5t
+      \u0111\u1EC3 m\xF4 ph\u1ECFng th\u1EE9 c\u1EA3m x\xFAc \u0111\xF3,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594646
+    m_Localized: "Zenith General: ng\u01B0\u01A1i ngh\u0129 \u0111i, d\xF9ng \u0111\u1ED3
+      th\u1EADt kh\xF4ng ph\u1EA3i t\u1ED1t h\u01A1n sao."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594647
+    m_Localized: "Player: Th\u1EADt \u0111\xFAng l\xE0 l\u0169 man r\u1EE3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594648
+    m_Localized: "Zenith General: Hahaha, c\u1EA3m \u01A1n v\xEC l\u1EDDi khen."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594649
+    m_Localized: "Zenith General: Haizzz th\u1EADt s\u1EF1 c\xF3 th\u1EC3 h\u1ECFi
+      nh\u1EEFng th\u1EE9 ng\u1EDB ng\u1EA9n nh\u01B0 v\u1EADy sao."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594650
+    m_Localized: "Zenith General: \u0110\xFAng l\xE0 ng\u01B0\u01A1i r\u1EA5t c\u1EA9n
+      th\u1EADn nh\u01B0ng,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594651
+    m_Localized: "Zenith General: phe c\u1EE7a ng\u01B0\u01A1i th\xEC c\xF3 v\u1EBB
+      kh\xF4ng mu\u1ED1n c\u1EA9n th\u1EADn nh\u01B0 th\u1EBF."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594652
+    m_Localized: "Zenith General: B\u1ECDn ta \u0111\xE3 nh\u1EADn \u0111\u01B0\u1EE3c
+      th\xF4ng tin t\u1EEB Khu gi\xE1m s\xE1t,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594653
+    m_Localized: "Zenith General: c\xF3 v\u1EBB l\xE0 c\u1EA3nh b\xE1o c\u1EA5p \u0111\u1ECF."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594654
+    m_Localized: "Player: C\u1EA3nh b\xE1o c\u1EA5p \u0111\u1ECF?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594655
+    m_Localized: "Zenith General: D\u1EC5 hi\u1EC3u th\xEC \u1EDF c\u1EA5p c\u1EA3nh
+      b\xE1o n\xE0y h\xF2n \u0111\u1EA3o n\xE0y s\u1EBD c\xF3 nguy c\u01A1,..."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594656
+    m_Localized: "Zenith General: B\u1ECB san ph\u1EB3ng, c\u0169ng \u0111\u1ED3ng
+      ngh\u0129a v\u1EDBi vi\u1EC7c,..."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594657
+    m_Localized: "Zenith General: kh\xF4ng m\u1ED9t ai c\xF3 th\u1EC3 s\u1ED1ng s\xF3t,
+      k\u1EC3 c\u1EA3 tao, hay l\xE0 m\xE0y."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594658
+    m_Localized: "Player: Nh\u01B0ng m\u1ED1i \u0111e d\u1ECDa n\xE0y,.. kh\xF4ng
+      l\u1EBD \u0111\u1EBFn t\u1EEB..."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594659
+    m_Localized: "Zenith General: C\xF2n ai v\xE0o \u0111\xE2y, l\xE0 t\u1EADp \u0111o\xE0n
+      Apex."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594660
+    m_Localized: "Zenith General: Haha, r\u1EA5t t\u1ED1t, ta mong ng\u01B0\u01A1i
+      s\u1EBD \u0111\u01B0a ra l\u1EF1a ch\u1ECDn th\u1EADt s\xE1ng su\u1ED1t."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594661
+    m_Localized: "Ta ch\u1EA5p nh\u1EADn l\u1EDDi \u0111\u1EC1 ngh\u1ECB. B\u1EAFt
+      \u0111\u1EA7u th\xF4i."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594662
+    m_Localized: "Zenith General: Haha, ng\u01B0\u01A1i th\xF4ng minh h\u01A1n ta
+      ngh\u0129,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594663
+    m_Localized: "Zenith General: \u0111\u01B0\u1EE3c th\xF4i, nh\u01B0ng hi\u1EC7n
+      t\u1EA1i ng\u01B0\u01A1i v\u1EABn \u0111ang b\u1ECB theo d\xF5i kh\xE1 s\xE1t
+      sao"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594664
+    m_Localized: "Zenith General: C\xE1i b\u1ED9 \u0111\xE0m tr\xEAn ng\u01B0\u1EDDi
+      ng\u01B0\u01A1i l\xE0 t\u1EEB Apex \u0111\xFAng ch\u1EE9?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594665
+    m_Localized: "Zenith General: N\xE3y gi\u1EDD n\xF3 ho\xE0n to\xE0n im l\u1EB7ng
+      l\xE0 v\xEC \u1EDF trong \u0111\xE2y s\xF3ng v\xF4 tuy\u1EBFn \u0111\xE3 b\u1ECB
+      v\xF4 hi\u1EC7u"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594666
+    m_Localized: "Zenith General: n\xEAn cu\u1ED9c tr\xF2 chuy\u1EC7n c\u1EE7a ch\xFAng
+      ta, ch\xFAng kh\xF4ng bi\u1EBFt"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594667
+    m_Localized: "Zenith General: Gi\u1EDD ch\xFAng ta v\u1EABn ph\u1EA3i ti\u1EBFp
+      t\u1EE5c v\u1EE1 k\u1ECBch n\xE0y n\xEAn ng\u01B0\u01A1i c\u1EE9 ti\u1EBFp
+      t\u1EE5c nhi\u1EC7m v\u1EE5,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594668
+    m_Localized: "Zenith General: b\u1ECDn ta s\u1EBD h\u1ED7 tr\u1EE3 ng\u01B0\u01A1i
+      nh\u01B0ng sau \u0111\xF3.."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594669
+    m_Localized: "Zenith General: Ch\xEDnh ng\u01B0\u01A1i s\u1EBD c\u1EA7n quay
+      l\u1EA1i \u0111\u1EC3 ti\xEAu di\u1EC7t to\xE0n b\u1ED9 b\u1ECDn ch\xFAng,
+      hahahaha."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594670
+    m_Localized: "Zenith General: Ch\xFAc may m\u1EAFn"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594671
+    m_Localized: "Ng\u01B0\u01A1i n\u1EB1m m\u01A1 \u0111i th\xEC ta s\u1EBD \u0111i
+      theo ng\u01B0\u01A1i!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594672
+    m_Localized: "Zenith General: L\xE0 do m\xE0y ch\u1ECDn th\xF4i, ch\xFAc may
+      m\u1EAFn."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594673
+    m_Localized: "Player: \u1EDE \u0111\xE2y ch\u1EAFc xong r\u1ED3i,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594674
+    m_Localized: "Player: Nhanh ch\xF3ng ti\u1EBFn v\xE0o trong th\xF4i"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594675
+    m_Localized: "Player: C\xF3 l\u1EBD \u0111\xE2y l\xE0 b\u1EA3ng \u0111i\u1EC1u
+      khi\u1EC3n trung t\xE2m,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594676
+    m_Localized: "Player: nh\u01B0ng t\u1EA1i sao l\u1EA1i c\xF3 c\u1EA3nh b\xE1o
+      v\u1EADy ch\u1EE9,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594677
+    m_Localized: "Player: xung quanh \u0111\xE2y c\xF3 g\xEC sao?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594678
+    m_Localized: "Player: \u0110\xE2y l\xE0...."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594679
+    m_Localized: "Player: H\xF2n \u0111\u1EA3o n\xE0y \u0111ang b\u1ECB \u0111e d\u1ECDa
+      sao?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594680
+    m_Localized: "Player: B\u1EDFi.... Buster Call?,.... \u0111\xE2y l\xE0 g\xEC
+      c\u01A1 ch\u1EE9."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594681
+    m_Localized: "Player: Nh\u01B0ng ai l\xE0 ng\u01B0\u1EDDi \u0111ang chu\u1EA9n
+      b\u1ECB t\u1EA5n c\xF4ng h\xF2n \u0111\u1EA3o n\xE0y ch\u1EE9."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594682
+    m_Localized: "Player: Ngo\xE0i Apex th\xEC r\xF5 r\xE0ng Zenisth kh\xF4ng h\u1EC1
+      c\xF3 \u0111\u1ED1i th\u1EE7 c\u1EA1nh tranh kh\xE1c c\u01A1 m\xE0y"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594683
+    m_Localized: "Player: Nh\u01B0ng n\u1EBFu h\xF2n \u0111\u1EA3o n\xE0y th\u1EF1c
+      s\u1EF1 b\u1ECB t\u1EA5n c\xF4ng m\xECnh c\u0169ng s\u1EBD g\u1EB7p nguy hi\u1EC3m,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594684
+    m_Localized: "Player: V\u1EABn n\xEAn nhanh ch\xF3ng ho\xE0n th\xE0nh nhi\u1EC7m
+      v\u1EE5 r\u1ED3i r\xFAt lui th\xEC h\u01A1n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594685
+    m_Localized: "Zenith General: Hahaha, r\u1EDDi \u0111i sao,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594686
+    m_Localized: "Zenith General: ng\u01B0\u01A1i n\xF3i nh\u01B0 th\u1EC3 mu\u1ED1n
+      \u0111\u1EBFn l\xE0 \u0111\u1EBFn, \u0111i l\xE0 \u0111i nh\u1EC9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594687
+    m_Localized: "Player: Ng\u01B0\u01A1i l\xE0 ai..."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594688
+    m_Localized: "Zenith General: N\xE0y n\xE0y b\xECnh t\u0129nh, ta kh\xF4ng c\xF3
+      \xFD x\u1EA5u \u0111\xE2u,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594689
+    m_Localized: "Zenith General: tr\xF2 chuy\u1EC7n ch\xFAt \u0111i"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594690
+    m_Localized: "Player: \u1EDE \u0111\xE2y ch\u1EAFc l\xE0 khu v\u1EF1c gi\xE1m
+      s\xE1t r\u1ED3i."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594691
+    m_Localized: "Player: C\xF3 v\u1EBB \u1EDF \u0111\xE2y \xEDt l\xEDnh canh g\xE1c
+      h\u01A1n."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594692
+    m_Localized: "Player: \u1EDE \u0111\xE2y xem ra c\u0169ng kh\xF4ng c\xF3 qu\xE1
+      nhi\u1EC1u l\xEDnh canh."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594693
+    m_Localized: "Player: \u1EDE \u0111\xE2y c\xF3 kh\xE1 nhi\u1EC1u m\xE1y m\xF3c"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594694
+    m_Localized: "Player: Bi\u1EBFt \u0111\xE2u l\u1EA1i c\xF3 nh\u1EEFng th\xF4ng
+      tin d\xF9ng \u0111\u01B0\u1EE3c"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594695
+    m_Localized: "Player: C\xF3 l\u1EBB \u1EDF \u0111\xE2y \u0111\xE3 xong h\u1EBFt
+      r\u1ED3i."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594696
+    m_Localized: "Player: Nhanh ch\xF3ng ti\u1EBFp t\u1EE5c nhi\u1EC7m v\u1EE5 th\xF4i."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594697
+    m_Localized: "Player: L\u1ED1i \u0111i ti\u1EBFp theo h\xECnh nh\u01B0 \u1EDF
+      t\u1EA7ng tr\xEAn r\u1ED3i."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594698
+    m_Localized: "Zenith General: Nh\u01B0 nh\u1EEFng g\xEC ng\u01B0\u01A1i \u0111\xE3
+      th\u1EA5y r\u1ED3i \u0111\u1EA5y."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594699
+    m_Localized: "Zenith General: Hi\u1EC7n t\u1EA1i c\u1EA3 ta, hay ng\u01B0\u01A1i
+      \u0111\u1EC1u \u0111ang ng\xE0n c\xE2n treo s\u1EE3i t\xF3c \u0111\u1EA5y"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594700
+    m_Localized: "Zenith General: N\xEAn l\xE0 thay v\xEC ti\u1EBFp t\u1EE5c c\u0103ng
+      th\u1EB3ng."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594701
+    m_Localized: "Zenith General: H\u1EE3p t\xE1c ch\u1EE9?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594702
+    m_Localized: "Player: Ng\u01B0\u01A1i ngh\u0129 ta ngu ng\u1ED1c \u0111\u1EBFn
+      m\u1EE9c \u0111i h\u1EE3p t\xE1c v\u1EDBi k\u1EBB th\xF9 \u0111\u1EC3 ph\u1EA3n
+      l\u1EA1i \u0111\u1ED3ng minh sao"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594703
+    m_Localized: "Zenith General: Haizzz, ngu ng\u1ED1c hay kh\xF4ng l\xE0 vi\u1EC7c
+      c\u1EE7a ng\u01B0\u01A1i."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594704
+    m_Localized: "Zenith General: Ta ch\u1EC9 l\xE0 \u0111ang \u0111\u1EC1 ngh\u1ECB
+      th\xF4i."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594705
+    m_Localized: "Zenith General: V\xEC d\xF9 sao th\xEC k\u1EBFt c\u1EE5c c\u1EE7a
+      ng\u01B0\u01A1i c\u0169ng ch\u1EC9 c\xF3 c\xE1i ch\u1EBFt,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594706
+    m_Localized: "Zenith General: kh\xF4ng d\u01B0\u1EDBi tay Zenith,...th\xEC c\u0169ng
+      l\xE0 d\u01B0\u1EDBi tay Apex..."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594707
+    m_Localized: "Zenith General: N\xEAn suy ngh\u0129 cho th\u1EADt k\u1EF9 \u0111i."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594708
+    m_Localized: "Ng\u01B0\u01A1i c\xF3 \xFD g\xEC..Apex li\xEAn quan g\xEC \u1EDF
+      \u0111\xE2y"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594709
+    m_Localized: "Nh\u01B0ng c\xE1i th\xF4ng b\xE1o v\u1EC1 m\u1ED1i \u0111e d\u1ECDa
+      \u0111\xF3 Buster Call l\xE0 g\xEC?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594710
+    m_Localized: "Sao ng\u01B0\u01A1i bi\u1EBFt \u0111\u01B0\u1EE3c ta \u1EDF \u0111\xE2y,
+      v\xE0 t\u1EA1i sao l\u1EA1i \u0111\u1EC1 ngh\u1ECB h\u1EE3p t\xE1c?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594711
+    m_Localized: "\u0110\u1EE7 r\u1ED3i. Tao \u0111\xE3 quy\u1EBFt \u0111\u1ECBnh
+      xong b\u01B0\u1EDBc \u0111i ti\u1EBFp theo c\u1EE7a m\xECnh."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594712
+    m_Localized: "Zenith General: Apex li\xEAn quan g\xEC \u1EDF \u0111\xE2y sao....\u0111\u1EC3
+      xem"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594713
+    m_Localized: "Zenith General: T\u1EDBi hi\u1EC7n t\u1EA1i m\xE0 ng\u01B0\u01A1i
+      v\u1EABn ch\u01B0a nh\u1EADn ra sao."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594714
+    m_Localized: "Player: Nh\u1EADn ra \u0111i\u1EC1u g\xEC? \xFD ng\u01B0\u01A1i
+      l\xE0 sao n\xF3i r\xF5 ra \u0111i."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594715
+    m_Localized: "Zenith General: Ta kh\xF4ng bi\u1EBFt n\xEAn g\u1ECDi ng\u01B0\u01A1i
+      l\xE0 con ch\xF3 trung th\xE0nh.."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594716
+    m_Localized: "Zenith General: hay l\xE0 m\u1ED9t con t\u1ED1t ngu ng\u1ED1c."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594717
+    m_Localized: "Zenith General: Ngh\u0129 \u0111i, m\u1ED9t m\xECnh ng\u01B0\u01A1i,
+      tay kh\xF4ng t\u1EA5t s\u1EAFt x\xF4ng v\xE0o \u0111\u1ECBa b\xE0n c\u1EE7a
+      k\u1EBB th\xF9 v\u0169 trang \u0111\u1EA7y \u0111\u1EE7."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594718
+    m_Localized: "Zenith General: N\xF3 \u0111\xE3 c\u01A1 b\u1EA3n l\xE0 m\u1ED9t
+      chuy\u1EBFn \u0111i n\u1ED9p m\u1EA1ng r\u1ED3i."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594719
+    m_Localized: "Zenith General: Ch\u01B0a k\u1EC3 d\xF9 ng\u01B0\u01A1i c\xF3 ho\xE0n
+      th\xE0nh nhi\u1EC7m v\u1EE5 \u0111i n\u1EEFa th\xEC ng\u01B0\u01A1i c\u0169ng
+      th\u1EA5y r\u1ED3i \u0111\xF3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594720
+    m_Localized: "Zenith General: H\xF2n \u0111\u1EA3o n\xE0y \u0111\xE3 b\u1ECB
+      \u0111e d\u1ECDa m\u1EE9c \u0111\u1ECF,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594721
+    m_Localized: "Zenith General: m\u1EE9c \u0111\u1ECF l\xE0 m\u1EE9c cao nh\u1EA5t
+      cho 1 m\u1ED1i nguy h\u1EA1i c\xF3 th\u1EC3 x\xF3a s\u1ED5 c\u1EA3 h\xF2n \u0111\u1EA3o
+      n\xE0y."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594722
+    m_Localized: "Zenith General: V\xE0 n\xF3 hi\u1EC7n t\u1EA1i l\xE0 Buster Call."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594723
+    m_Localized: "Zenith General: N\xEAn d\xF9 ng\u01B0\u01A1i l\xE0m g\xEC \u0111i
+      n\u1EEFa th\xEC ta, ng\u01B0\u01A1i v\xE0 c\u1EA3 h\xF2n \u0111\u1EA3o n\xE0y
+      \u0111\u1EC1u s\u1EBD b\u1ECB ch\xFAng x\xF3a s\u1ED5."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594724
+    m_Localized: "Zenith General: H\u1EEDm..., ng\u01B0\u01A1i th\u1EADt s\u1EF1
+      kh\xF4ng bi\u1EBFt v\u1EC1 n\xF3 sao?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594725
+    m_Localized: "Player: Nhanh ch\xF3ng \u0111i, n\u1EBFu bi\u1EBFt th\xEC ta c\xF2n
+      h\u1ECFi ng\u01B0\u01A1i l\xE0m g\xEC."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594726
+    m_Localized: "Zenith General: V\u1EC1 c\u01A1 b\u1EA3n n\xF3 l\xE0 m\u1ED9t d\u1EA1ng
+      thi\u1EBFt l\u1EADp v\u0169 kh\xED,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594727
+    m_Localized: "Zenith General: \u0111\xE2y c\u0169ng l\xE0 th\xF4ng tin m\u1EADt
+      m\xE0 b\u1ECDn ta \u0111\xE3 \u0111\xE1nh c\u1EAFp \u0111\u01B0\u1EE3c."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594728
+    m_Localized: "Zenith General: Buster Call v\u1ED1n d\u0129 l\xE0 m\u1ED9t c\xF4ng
+      ngh\u1EC7 \u0111\xE3 t\u1ED3n t\u1EA1i kh\xE1 l\xE2u r\u1ED3i"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594729
+    m_Localized: "Zenith General: nh\u01B0ng trong qu\xE1 kh\u1EE9 do c\xF4ng ngh\u1EC7
+      qu\xE1 kh\xF3 \u0111\u1EC3 ki\u1EC3m so\xE1t,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594730
+    m_Localized: "Zenith General: n\xF3 d\u1EC5 d\u1EABn \u0111\u1EBFn sai s\xF3t
+      khi s\u1EED d\u1EE5ng."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594731
+    m_Localized: "Zenith General: N\xF3 s\u1EED d\u1EE5ng ngu\u1ED3n n\u0103ng l\u01B0\u1EE3ng
+      h\u1EA1t nh\xE2n \u0111\u1EC3 l\xE0m ng\xF2i n\u1ED5,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594732
+    m_Localized: "Zenith General: khi k\xEDch ho\u1EA1t n\xF3 s\u1EBD t\u1EA1o ra
+      m\u1ED9t v\u1EE5 n\u1ED5 v\u1EDBi xung l\u1EF1c c\u1EF1c l\u1EDBn,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594733
+    m_Localized: "Zenith General: c\xF3 kh\u1EA3 n\u0103ng th\u1ED5i bay m\u1ED9t
+      th\xE0nh ph\u1ED1."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594734
+    m_Localized: "Zenith General: Kh\xF4ng ch\u1EC9 v\u1EADy khu v\u1EF1c n\u1ED5
+      g\u1EA7n nh\u01B0 s\u1EBD tr\u1EDF th\xE0nh v\xF9ng \u0111\u1EA5t ch\u1EBFt
+      r\u1EA5t l\xE2u v\u1EC1 s\xE2u"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594735
+    m_Localized: "Zenith General: b\u1EDFi v\xEC n\u1ED3ng \u0111\u1ED9 ph\xF3ng
+      x\u1EA1 r\u1EA5t cao."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594736
+    m_Localized: "Zenith General: \u0110\u01A1n gi\u1EA3n l\xE0 v\u1EADy,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594737
+    m_Localized: "Zenith General: sao hi\u1EC3u r\xF5 v\u1EC1 n\xF3 r\u1ED3i th\xEC
+      ng\u01B0\u01A1i \u0111\xE3 suy ngh\u0129 xong ch\u01B0a."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594738
+    m_Localized: "Player: C\u1EE9 t\u1EEB t\u1EEB \u0111i, ng\u01B0\u01A1i kh\xF4ng
+      ph\u1EA3i g\u1EA5p"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594739
+    m_Localized: "Zenith General: Ai ch\xE0 kh\xF4ng ng\u1EDD ng\u01B0\u01A1i c\u0169ng
+      c\xF3 th\u1EC3 h\u1ECFi c\xE2u n\xE0y \u0111\u1EA5y,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594740
+    m_Localized: "Zenith General: C\u1EA3 h\xF2n \u0111\u1EA3o n\xE0y d\xF9 l\xE0
+      n\u01A1i th\xED nghi\u1EC7m nh\u01B0ng t\u1EEBng con ru\u1ED3i con m\u0169i
+      ta c\xF2n n\u1EAFm r\xF5 trong l\xF2ng b\xE0n tay"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594741
+    m_Localized: "Zenith General: H\u1EC7 th\u1ED1ng radar tr\xEAn \u0111\u1EA3o
+      l\xE0 lo\u1EA1i t\u1ED1i t\xE2n nh\u1EA5t n\xEAn t\u1EEB khi ng\u01B0\u01A1i
+      \u0111i v\xE0o l\xE0 b\u1ECDn ta \u0111\xE3 bi\u1EBFt r\u1ED3i."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594742
+    m_Localized: "Player: Hi\u1EC7n \u0111\u1EA1i th\u1EBF c\u01A1 \xE0, th\u1EBF
+      sao ng\u01B0\u01A1i kh\xF4ng t\u1EF1 x\u1EED l\xFD b\u1ECDn ta \u0111i"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594743
+    m_Localized: "Player: m\xE0 l\u1EA1i c\u1EA5t c\xF4ng \u0111\u1EBFn \u0111\xE2y
+      m\u1EDDi m\u1ED9c."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594744
+    m_Localized: "Player: Ta kh\xF4ng ngh\u0129 c\xE1c ng\u01B0\u01A1i t\u1ED1t \u0111\u1EBFn
+      th\u1EBF v\u1EDBi nh\u1EEFng vi\u1EC7c kinh t\u1EDFm m\xECnh \u0111\xE3 l\xE0m."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594745
+    m_Localized: "Zenith General: Kinh t\u1EDFm sao, \xFD ng\u01B0\u01A1i l\xE0 m\u1EA5y
+      con robot sao,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594746
+    m_Localized: "Zenith General: \u1ED3 c\u0169ng b\xECnh th\u01B0\u1EDDng th\xF4i,
+      \u0111\xF3 l\xE0 hy sinh v\xEC khoa h\u1ECDc th\xF4i."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594747
+    m_Localized: "Zenith General: C\xF2n v\u1EC1 vi\u1EC7c t\u1EA1i sao ta l\u1EA1i
+      m\u1EA5t c\xF4ng v\u1EADy sao."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594748
+    m_Localized: "Zenith General: Th\xEC c\u1EE9 \u0111\u01A1n gi\u1EA3n xem nh\u01B0
+      b\u1ECDn ta ti\u1EBFc m\u1ED9t nh\xE2n t\xE0i nh\u01B0 ng\u01B0\u01A1i."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594749
+    m_Localized: "Zenith General: T\u1EF1 tay h\u1EE7y \u0111i m\u1ED9t c\u1ED5 m\xE1y
+      chi\u1EBFn \u0111\u1EA5u s\u1ED1ng nh\u01B0 th\u1EBF n\xE0y xem nh\u01B0 c\xF3
+      ch\xFAt ti\u1EBFc nu\u1ED1i,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594750
+    m_Localized: "Zenith General: n\xEAn ng\u01B0\u01A1i n\xEAn c\u1EA3m th\u1EA5y
+      may m\u1EAFn \u0111i."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594751
+    m_Localized: "Player: H\u1EEB, xem nh\u01B0 ng\u01B0\u01A1i c\u0169ng kh\xE9o
+      \u0103n n\xF3i,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594752
+    m_Localized: "Player: nh\u01B0ng ng\u01B0\u01A1i kh\xF4ng s\u1EE3 ng\u01B0\u1EDDi
+      c\u1EE7a ta \u0111ang nghe l\xE9n cu\u1ED9c tr\xF2 chuy\u1EC7n n\xE0y sao."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594753
+    m_Localized: "Zenith General: \xC0 chuy\u1EC7n \u0111\xF3 ng\u01B0\u01A1i kh\xF4ng
+      c\u1EA7n lo,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594754
+    m_Localized: "Zenith General: b\u1ED9 \u0111\xE0m tr\xEAn tai ng\u01B0\u01A1i
+      ch\u1EE9 g\xEC, khi ng\u01B0\u01A1i b\u01B0\u1EDBc v\xE0o \u0111\xE2y th\xEC
+      b\u1ECDn ta \u0111\xE3 c\u1EAFt s\xF3ng r\u1ED3i."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594755
+    m_Localized: "Zenith General: N\xEAn cu\u1ED9c tr\xF2 chuy\u1EC7n \u1EDF \u0111\xE2y,
+      kh\xF4ng ai bi\u1EBFt ngo\xE0i ta v\xE0 ng\u01B0\u01A1i \u0111\xE2u,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594756
+    m_Localized: "Zenith General: \u0111\xF3 l\xE0 l\xFD do t\u1EEB n\xE3y gi\u1EDD
+      n\xF3 v\u1EABn im ru \u0111\u1EA5y th\xF4i"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594757
+    m_Localized: "Zenith General: Sao, gi\u1EDD quy\u1EBFt \u0111\u1ECBnh \u0111\u01B0\u1EE3c
+      r\u1ED3i ch\u1EE9?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594758
+    m_Localized: "Zenith General: \u0110\u01B0\u1EE3c r\u1ED3i, quy\u1EBFt \u0111\u1ECBnh
+      \u0111i,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594759
+    m_Localized: "Zenith General: nh\u01B0ng ta mong ng\u01B0\u01A1i s\u1EBD ra quy\u1EBFt
+      \u0111\u1ECBnh th\u1EADt th\xF4ng minh."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594760
+    m_Localized: "Tao ch\u1EA5p nh\u1EADn l\u1EDDi \u0111\u1EC1 nghi, b\u1EAFt \u0111\u1EA7u
+      th\xF4i"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594761
+    m_Localized: "Zenith General: M\u1ED9t quy\u1EBFt \u0111\u1ECBnh th\xF4ng minh."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594762
+    m_Localized: "Zenith General: Ng\u01B0\u01A1i kh\xF4ng m\xF9 qu\xE1ng v\xE0 trung
+      th\xE0nh ngu ng\u1ED1c nh\u01B0 ta t\u01B0\u1EDFng."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594763
+    m_Localized: "Zenith General: \u0110\u1EC3 ho\xE0n to\xE0n l\u1EEBa \u0111\u01B0\u1EE3c
+      b\u1ECDn Apex,"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594764
+    m_Localized: "Zenith General: ng\u01B0\u01A1i v\u1EABn ph\u1EA3i ti\u1EBFp t\u1EE5c
+      gi\u1EA3 v\u1EDD th\u1EF1c hi\u1EC7n nhi\u1EC7m v\u1EE5 c\u1EE7a m\xECnh."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594765
+    m_Localized: "Zenith General: Khi th\u1EDDi c\u01A1 \u0111\u1EBFn, th\xEC ng\u01B0\u01A1i
+      s\u1EBD ch\xEDnh tay l\u1EADt v\xE1n c\u1EDD n\xE0y, hahaha"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594766
+    m_Localized: "Zenith General: Ch\xFAc may m\u1EAFn"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594767
+    m_Localized: "N\u1EB1m m\u01A1 \u0111i, ta s\u1EBD kh\xF4ng bao gi\u1EDD theo
+      c\xE1c ng\u01B0\u01A1i"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594768
+    m_Localized: "Zenith General: Th\u1EADt \u0111\xE1ng th\u1EA5t v\u1ECDng v\xE0
+      ti\u1EBFc nu\u1ED1i cho m\u1ED9t nh\xE2n t\xE0i nh\u01B0 ng\u01B0\u01A1i ph\u1EA3i
+      b\u1ECF m\u1EA1ng \u1EDF \u0111\xE2y"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 235597594769
+    m_Localized: "Zenith General: V\u1EADy th\xEC c\u1EE9 ch\u1EBFt cho nh\u1EEFng
+      k\u1EBB ch\u1EE7 nh\xE2n th\u1EADm ch\xED c\xF2n ch\u1EA3 th\xE8m nh\u1EDB
+      t\xEAn ng\u01B0\u01A1i \u0111i!"
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

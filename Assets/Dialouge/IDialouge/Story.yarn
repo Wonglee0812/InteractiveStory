@@ -1,140 +1,101 @@
 ﻿title: Armory_PlayerCC_1
 tags: 
 ---
-Player: Có một đường hầm ở đây sao?
-// Player: Is there a tunnel here?
-Player: Đường hầm hơi nhỏ, 
-// Player: The tunnel is a bit small,
-Player: ta phải cúi-Q xuống mới qua được
-// Player: I have to crouch-Q to get through.
+Player: Có một đường hầm ở đây sao? #line:0c2183e 
+Player: Đường hầm hơi nhỏ,  #line:0024ba6 
+Player: ta phải cúi-Q xuống mới qua được #line:039949f 
 ===
 
 title: Armory_PlayerCC_2
 tags: 
 ---
-Player: Hình như ở dưới góc cây bên phải có thứ gì đó, 
-// Player: It looks like there's something under the tree on the right,
-Player: là vũ khí sao?
-// Player: is it a weapon?
-Player: Có lẽ ta có thể dùng được
-// Player: Maybe I can use it.
+Player: Hình như ở dưới góc cây bên phải có thứ gì đó,  #line:0ca562b 
+Player: là vũ khí sao? #line:0ac2256 
+Player: Có lẽ ta có thể dùng được #line:05416c1 
 ===
 
 title: Armory_PlayerCC_3
 tags: 
 ---
-Player: Có vẻ còn khá nhiều lính canh gác ở đây, 
-// Player: It seems there are still quite a few guards here,
-Player: khu này có vẻ là kho vũ khí rồi
-// Player: this area looks like the armory.
+Player: Có vẻ còn khá nhiều lính canh gác ở đây,  #line:0f348ae 
+Player: khu này có vẻ là kho vũ khí rồi #line:042dd94 
 ===
 
 title: Armory_PlayerCC_4
 tags: 
 ---
-Player: Có vẻ còn khá nhiều lính canh gác ở đây, 
-// Player: It seems there are still quite a few guards here,
-Player: khu này có vẻ là kho vũ khí rồi
-// Player: this area looks like the armory.
+Player: Có vẻ còn khá nhiều lính canh gác ở đây,  #line:0403d8f 
+Player: khu này có vẻ là kho vũ khí rồi #line:0d97253 
 ===
 
 title: Armory_PlayerCC_5
 tags: 
 ---
-Player: Bên trong có vẻ còn khá nhiều kẻ địch, 
-// Player: There seem to be quite a few enemies inside,
-Player: vẫn nên cẩn thận chút thì hơn.
-// Player: better be a little careful.
+Player: Bên trong có vẻ còn khá nhiều kẻ địch,  #line:038f3df 
+Player: vẫn nên cẩn thận chút thì hơn. #line:0870f64 
 ===
 
 title: Armory_PlayerCC_6
 tags: 
 ---
-Player: Đây có vẻ là kho vũ khí của chúng.
-// Player: This seems to be their armory.
-Player: Có khá nhiều thứ ta có thể dùng được đây
-// Player: There are quite a few things I can use here.
-Player: Hình như vẫn còn một tầng phía trên, 
-// Player: Looks like there's still a floor above,
-Player: lên đó xem sao
-// Player: let's go up and see.
+Player: Đây có vẻ là kho vũ khí của chúng. #line:028b460 
+Player: Có khá nhiều thứ ta có thể dùng được đây #line:09b7396 
+Player: Hình như vẫn còn một tầng phía trên,  #line:082ff22 
+Player: lên đó xem sao #line:0963fec 
 ===
 
 title: Armory_PlayerCC_7
 tags: 
 ---
-Player: Đây có lẽ là thông tin thiết kế của những cổ máy kia.
-// Player: This is probably the design info for those machines.
-Player: Nhưng sao...., trông nó lại kỳ lạ thế này
-// Player: But why...., does it look so strange?
-Player: Bọn chúng đã làm gì với những cổ máy này đây
-// Player: What did they do to these machines?
+Player: Đây có lẽ là thông tin thiết kế của những cổ máy kia. #line:0da0dcf 
+Player: Nhưng sao...., trông nó lại kỳ lạ thế này #line:0d16c6c 
+Player: Bọn chúng đã làm gì với những cổ máy này đây #line:015797e 
 ===
 
 title: Armory_PlayerCC_8
 tags: 
 ---
-Player: Đây...đây là gì thế này...
-// Player: What... what is this...
-Player: Hình như là..... não người mà, 
-// Player: It looks like..... a human brain,
-Player: chúng chúng...
-// Player: they they...
-Player: Dùng bộ não để điều khiển những cổ máy này sao
-// Player: Using brains to control these machines?
-Player: Ra vậy đó là lý do vì sao những cổ máy này lại thông minh đến vậy, 
-// Player: So that's why these machines are so intelligent,
-Player: ra là....
-// Player: it turns out....
-Player: Thật là vô đạo đức đi
-// Player: How completely unethical.
+Player: Đây...đây là gì thế này... #line:07c6488 
+Player: Hình như là..... não người mà,  #line:0f4777b 
+Player: chúng chúng... #line:08aa10f 
+Player: Dùng bộ não để điều khiển những cổ máy này sao #line:064a421 
+Player: Ra vậy đó là lý do vì sao những cổ máy này lại thông minh đến vậy,  #line:01c1106 
+Player: ra là.... #line:0f9d205 
+Player: Thật là vô đạo đức đi #line:07aea72 
 ===
 
 title: Armory_PlayerCC_9
 tags: 
 ---
-Player: Có khá nhiều thứ ta có thể dùng được đây
-// Player: There are quite a few things I can use here.
+Player: Có khá nhiều thứ ta có thể dùng được đây #line:050fc6a 
 ===
 
 title: Armory_PlayerCC_10
 tags: 
 ---
-Player: Đây có lẽ là thông tin thiết kế của những cổ máy kia.
-// Player: This is probably the design info for those machines.
-Player: Nhưng sao...., trông nó lại kỳ lạ thế này
-// Player: But why...., does it look so strange?
-Player: Bọn chúng đã làm gì với những cổ máy này đây
-// Player: What did they do to these machines?
+Player: Đây có lẽ là thông tin thiết kế của những cổ máy kia. #line:0aacf85 
+Player: Nhưng sao...., trông nó lại kỳ lạ thế này #line:0f6e33d 
+Player: Bọn chúng đã làm gì với những cổ máy này đây #line:00f6f3e 
 ===
 
 title: Armory_PlayerCC_11
 tags: 
 ---
-Player: Đây...đây là gì thế này...
-// Player: What... what is this...
-Player: Hình như là..... não người mà, 
-// Player: It looks like..... a human brain,
-Player: chúng chúng...
-// Player: they they...
-Player: Dùng bộ não để điều khiển những cổ máy này sao
-// Player: Using brains to control these machines?
-Player: Ra vậy đó là lý do vì sao những cổ máy này lại thông minh đến vậy, 
-// Player: So that's why these machines are so intelligent,
-Player: ra là....
-// Player: it turns out....
-Player: Thật là vô đạo đức đi
-// Player: How completely unethical.
+Player: Đây...đây là gì thế này... #line:02daf87 
+Player: Hình như là..... não người mà,  #line:0d98c70 
+Player: chúng chúng... #line:0755ddb 
+Player: Dùng bộ não để điều khiển những cổ máy này sao #line:0434d0a 
+Player: Ra vậy đó là lý do vì sao những cổ máy này lại thông minh đến vậy,  #line:0d6af1a 
+Player: ra là.... #line:0d87bb2 
+Player: Thật là vô đạo đức đi #line:067608d 
 ===
 
 title: Armory_00
 tags: 
 ---
 <<switch_camera vcam_GeneralFace>>
-Stranger: Khá khen cho ngươi khi có thể đến tận đây
-// Stranger: I commend you for making it this far.
-Stranger: Nói chuyện chút chứ?
-// Stranger: Care to chat a bit?
+Stranger: Khá khen cho ngươi khi có thể đến tận đây #line:000007e 
+Stranger: Nói chuyện chút chứ? #line:033cd0c 
 <<reset_camera>>
 ===
 
@@ -146,38 +107,26 @@ title: Armory_General_Meet
 <<declare $asked_pawn = false>>
 
 <<switch_camera vcam_GeneralFace>>
-Zenith General: Ngươi cũng đã thấy hết rồi nên có lẽ ta không thể biện hộ được nữa nhỉ, 
-// Zenith General: You've seen everything, so I suppose I can no longer make excuses,
-Zenith General: nhưng mà ta cũng rất có tình người.
-// Zenith General: but I am quite humane.
+Zenith General: Ngươi cũng đã thấy hết rồi nên có lẽ ta không thể biện hộ được nữa nhỉ,  #line:075f12d 
+Zenith General: nhưng mà ta cũng rất có tình người. #line:054ebcd 
 
-Zenith General: Thay vì giờ giết ngươi ở đây thì cũng thật phí phạm một nhân tài, 
-// Zenith General: Killing you here right now would be a waste of talent,
-Zenith General: hay là....
-// Zenith General: so how about....
+Zenith General: Thay vì giờ giết ngươi ở đây thì cũng thật phí phạm một nhân tài,  #line:075e40c 
+Zenith General: hay là.... #line:025ebe0 
 
-Zenith General: Hợp tác chứ?
-// Zenith General: A partnership?
+Zenith General: Hợp tác chứ? #line:03503ad 
 
 <<switch_camera vcam_PlayerFace>>
-Player: Hợp tác với những kẻ như ngươi, 
-// Player: Partnering with people like you,
-Player: tao không nghĩ bản thân mình có thể ngu ngốc đến thế.
-// Player: I don't think I could be that stupid.
+Player: Hợp tác với những kẻ như ngươi,  #line:0c81d4e 
+Player: tao không nghĩ bản thân mình có thể ngu ngốc đến thế. #line:02bb8d2 
 
 <<switch_camera vcam_GeneralFace>>
-Zenith General: Ngu ngốc hay không là việc của ngươi, 
-// Zenith General: Whether it's stupid or not is your business,
-Zenith General: ta chỉ đề nghị thôi, nghĩ thử xem.
-// Zenith General: I'm just offering, think about it.
+Zenith General: Ngu ngốc hay không là việc của ngươi,  #line:0c5cbba 
+Zenith General: ta chỉ đề nghị thôi, nghĩ thử xem. #line:086cc9b 
 
-Zenith General: Đằng nào ngươi cũng sẽ phải chết, 
-// Zenith General: You're going to die anyway,
-Zenith General: không dưới tay ta,... thì cũng là dưới tay Apex..
-// Zenith General: if not by my hands,... then by Apex's..
+Zenith General: Đằng nào ngươi cũng sẽ phải chết,  #line:08773ed 
+Zenith General: không dưới tay ta,... thì cũng là dưới tay Apex.. #line:02ac910 
 
-Zenith General: Nên là,..... cứ suy nghĩ cho kỹ.
-// Zenith General: So,..... think carefully.
+Zenith General: Nên là,..... cứ suy nghĩ cho kỹ. #line:0d8d710 
 
 <<jump Armory_General_Hub>>
 ===
@@ -186,17 +135,13 @@ title: Armory_General_Hub
 ---
 <<switch_camera vcam_PlayerFace>>
 
--> Ý ngươi muốn nói là gì, Apex thì sao? <<if $asked_purpose == false>>
-   // -> What do you mean, what about Apex?
+-> Ý ngươi muốn nói là gì, Apex thì sao? <<if $asked_purpose == false>> #line:05efbc2 
    <<jump Ask_Purpose>>
--> Những cỗ máy cũng như thí nghiệm ở đây là sao? <<if $asked_lore == false>>
-   // -> What is the deal with these machines and experiments here?
+-> Những cỗ máy cũng như thí nghiệm ở đây là sao? <<if $asked_lore == false>> #line:05d4590 
    <<jump Ask_Lore>>
--> Sao ngươi biết ta ở đây, ta nhớ rõ mình đâu làm gì lộ liễu. <<if $asked_pawn == false>>
-   // -> How did you know I was here, I clearly didn't do anything to expose myself.
+-> Sao ngươi biết ta ở đây, ta nhớ rõ mình đâu làm gì lộ liễu. <<if $asked_pawn == false>> #line:0b8f52a 
    <<jump Ask_Pawn>>
--> Đủ rồi. Tao đã có sự lựa chọn của mình. <<if $asked_count >= 2>>
-   // -> Enough. I have made my choice.
+-> Đủ rồi. Tao đã có sự lựa chọn của mình. <<if $asked_count >= 2>> #line:064f1f2 
    <<jump Armory_General_Decision>>
 ===
 
@@ -206,21 +151,15 @@ title: Ask_Purpose
 <<set $asked_count = $asked_count + 1>>
 <<switch_camera vcam_GeneralFace>>
 
-Zenith General: Haizz ta không biết là ngươi thực sự ngu ngốc hay giả vờ ngu ngốc.
-// Zenith General: *Sigh* I don't know if you are truly stupid or just pretending to be.
+Zenith General: Haizz ta không biết là ngươi thực sự ngu ngốc hay giả vờ ngu ngốc. #line:037772f 
 
-Zenith General: Nhìn thử xem, ngươi thì 1 thân 1 mình, 
-// Zenith General: Look around, you are all alone,
-Zenith General: còn bọn ta thì vũ trang đầy đủ...
-// Zenith General: while we are heavily armed...
+Zenith General: Nhìn thử xem, ngươi thì 1 thân 1 mình,  #line:09da784 
+Zenith General: còn bọn ta thì vũ trang đầy đủ... #line:01d8398 
 
-Zenith General: Ngươi nghĩ xem, đi làm nhiệm vụ,.... 
-// Zenith General: Think about it, going on a mission,....
-Zenith General: hay là
-// Zenith General: or
+Zenith General: Ngươi nghĩ xem, đi làm nhiệm vụ,....  #line:0d08425 
+Zenith General: hay là #line:03137e4 
 
-Zenith General: Đi thí mạng?
-// Zenith General: Going to be a sacrifice?
+Zenith General: Đi thí mạng? #line:0031a57 
 
 <<jump Armory_General_Hub>>
 ===
@@ -231,53 +170,37 @@ title: Ask_Lore
 <<set $asked_count = $asked_count + 1>>
 <<switch_camera vcam_GeneralFace>>
 
-Zenith General: Hahaa, những thí nghiệm ở đây sao.
-// Zenith General: Hahaa, the experiments here.
+Zenith General: Hahaa, những thí nghiệm ở đây sao. #line:0487929 
 
-Zenith General: Không lẽ ngươi bị dọa sợ à..
-// Zenith General: Don't tell me you're scared..
+Zenith General: Không lẽ ngươi bị dọa sợ à.. #line:04bfa57 
 
 <<switch_camera vcam_PlayerFace>>
-Player: Đừng nói nhảm nữa, vào vấn đề chính đi, 
-// Player: Cut the nonsense, get to the point,
-Player: những cỗ máy này là sao.
-// Player: what's with these machines.
+Player: Đừng nói nhảm nữa, vào vấn đề chính đi,  #line:030ce51 
+Player: những cỗ máy này là sao. #line:0abc2cb 
 
 <<switch_camera vcam_GeneralFace>>
-Zenith General: Ngươi cũng biết rõ là một cỗ máy dù thông minh đến mấy, 
-// Zenith General: You know perfectly well that no matter how smart a machine is,
-Zenith General: cũng vẫn thiếu một thứ mà không một thuật toán nào có thể thay thế được.
-// Zenith General: it still lacks something no algorithm can replace.
+Zenith General: Ngươi cũng biết rõ là một cỗ máy dù thông minh đến mấy,  #line:05f676f 
+Zenith General: cũng vẫn thiếu một thứ mà không một thuật toán nào có thể thay thế được. #line:011b188 
 
-Zenith General: Ngươi biết đó là gì chứ?
-// Zenith General: Do you know what that is?
+Zenith General: Ngươi biết đó là gì chứ? #line:0e56755 
 
-Zenith General: Đó là,.... cảm xúc đó.
-// Zenith General: It is,.... emotion.
+Zenith General: Đó là,.... cảm xúc đó. #line:0c4c47c 
 
-Zenith General: Nhưng ý ta không phải là những thứ cảm xúc đồng cảm hay sợ hãi vô vị.
-// Zenith General: But I don't mean trivial emotions like empathy or meaningless fear.
+Zenith General: Nhưng ý ta không phải là những thứ cảm xúc đồng cảm hay sợ hãi vô vị. #line:0aa836f 
 
-Zenith General: Thứ bọn ta tìm kiếm,..... là sự điên cuồng, sự giận dữ, 
-// Zenith General: What we seek,..... is madness, anger,
-Zenith General: đó là những thứ có thể giúp một cỗ máy vô tri vô giác,..
-// Zenith General: those are the things that can help a mindless machine,..
+Zenith General: Thứ bọn ta tìm kiếm,..... là sự điên cuồng, sự giận dữ,  #line:02edf5e 
+Zenith General: đó là những thứ có thể giúp một cỗ máy vô tri vô giác,.. #line:0da0d50 
 
-Zenith General: Trở thành một cỗ máy chiến đấu thực sự đấy.
-// Zenith General: Become a true war machine.
+Zenith General: Trở thành một cỗ máy chiến đấu thực sự đấy. #line:09d9f5f 
 
-Zenith General: Thì tất nhiên việc dễ nhất để mô phỏng thứ cảm xúc đó, 
-// Zenith General: And of course, the easiest way to simulate that emotion,
-Zenith General: ngươi nghĩ đi, dùng đồ thật không phải tốt hơn sao.
-// Zenith General: think about it, isn't it better to use the real thing?
+Zenith General: Thì tất nhiên việc dễ nhất để mô phỏng thứ cảm xúc đó,  #line:09f8850 
+Zenith General: ngươi nghĩ đi, dùng đồ thật không phải tốt hơn sao. #line:02778bb 
 
 <<switch_camera vcam_PlayerFace>>
-Player: Thật đúng là lũ man rợ.
-// Player: What an absolute bunch of savages.
+Player: Thật đúng là lũ man rợ. #line:07e936e 
 
 <<switch_camera vcam_GeneralFace>>
-Zenith General: Hahaha, cảm ơn vì lời khen.
-// Zenith General: Hahaha, thanks for the compliment.
+Zenith General: Hahaha, cảm ơn vì lời khen. #line:064b52e 
 
 <<jump Armory_General_Hub>>
 ===
@@ -288,39 +211,28 @@ title: Ask_Pawn
 <<set $asked_count = $asked_count + 1>>
 <<switch_camera vcam_GeneralFace>>
 
-Zenith General: Haizzz thật sự có thể hỏi những thứ ngớ ngẩn như vậy sao.
-// Zenith General: *Sigh* Can you really ask such silly things?
+Zenith General: Haizzz thật sự có thể hỏi những thứ ngớ ngẩn như vậy sao. #line:02fa073 
 
-Zenith General: Đúng là ngươi rất cẩn thận nhưng, 
-// Zenith General: You are indeed very careful, but,
-Zenith General: phe của ngươi thì có vẻ không muốn cẩn thận như thế.
-// Zenith General: your faction doesn't seem to want to be as careful.
+Zenith General: Đúng là ngươi rất cẩn thận nhưng,  #line:053f3b7 
+Zenith General: phe của ngươi thì có vẻ không muốn cẩn thận như thế. #line:0ce1933 
 
-Zenith General: Bọn ta đã nhận được thông tin từ Khu giám sát, 
-// Zenith General: We received information from the Surveillance Area,
-Zenith General: có vẻ là cảnh báo cấp đỏ.
-// Zenith General: looks like a red alert.
+Zenith General: Bọn ta đã nhận được thông tin từ Khu giám sát,  #line:0b51eb7 
+Zenith General: có vẻ là cảnh báo cấp đỏ. #line:0ca2fce 
 
 <<switch_camera vcam_PlayerFace>>
-Player: Cảnh báo cấp đỏ?
-// Player: Red alert?
+Player: Cảnh báo cấp đỏ? #line:0235b98 
 
 <<switch_camera vcam_GeneralFace>>
-Zenith General: Dễ hiểu thì ở cấp cảnh báo này hòn đảo này sẽ có nguy cơ,...
-// Zenith General: To put it simply, at this alert level, this island is at risk of,...
+Zenith General: Dễ hiểu thì ở cấp cảnh báo này hòn đảo này sẽ có nguy cơ,... #line:0cc1a2c 
 
-Zenith General: Bị san phẳng, cũng đồng nghĩa với việc,... 
-// Zenith General: Being leveled, which also means,...
-Zenith General: không một ai có thể sống sót, kể cả tao, hay là mày.
-// Zenith General: no one will survive, not me, and not you.
+Zenith General: Bị san phẳng, cũng đồng nghĩa với việc,...  #line:036982d 
+Zenith General: không một ai có thể sống sót, kể cả tao, hay là mày. #line:0ceb3c4 
 
 <<switch_camera vcam_PlayerFace>>
-Player: Nhưng mối đe dọa này,.. không lẽ đến từ...
-// Player: But this threat,.. could it be from...
+Player: Nhưng mối đe dọa này,.. không lẽ đến từ... #line:07c46df 
 
 <<switch_camera vcam_GeneralFace>>
-Zenith General: Còn ai vào đây, là tập đoàn Apex.
-// Zenith General: Who else, it's the Apex corporation.
+Zenith General: Còn ai vào đây, là tập đoàn Apex. #line:0bc68b0 
 
 <<jump Armory_General_Hub>>
 ===
@@ -328,122 +240,95 @@ Zenith General: Còn ai vào đây, là tập đoàn Apex.
 title: Armory_General_Decision
 ---
 <<switch_camera vcam_GeneralFace>>
-Zenith General: Haha, rất tốt, ta mong ngươi sẽ đưa ra lựa chọn thật sáng suốt.
-// Zenith General: Haha, very good, I hope you make a very wise choice.
+Zenith General: Haha, rất tốt, ta mong ngươi sẽ đưa ra lựa chọn thật sáng suốt. #line:0de5b17 
 
 <<switch_camera vcam_PlayerFace>>
--> Ta chấp nhận lời đề nghị. Bắt đầu thôi.
-   // -> I accept the offer. Let's begin.
+-> Ta chấp nhận lời đề nghị. Bắt đầu thôi. #line:09f37eb 
    <<switch_camera vcam_GeneralFace>>
-   Zenith General: Haha, ngươi thông minh hơn ta nghĩ, 
-   // Zenith General: Haha, you're smarter than I thought,
-   Zenith General: được thôi, nhưng hiện tại ngươi vẫn đang bị theo dõi khá sát sao
-   // Zenith General: alright, but right now you're still being watched quite closely.
-   Zenith General: Cái bộ đàm trên người ngươi là từ Apex đúng chứ?
-   // Zenith General: That radio on you is from Apex, right?
-   Zenith General: Nãy giờ nó hoàn toàn im lặng là vì ở trong đây sóng vô tuyến đã bị vô hiệu 
-   // Zenith General: It's been completely silent because radio waves are jammed in here,
-   Zenith General: nên cuộc trò chuyện của chúng ta, chúng không biết
-   // Zenith General: so they don't know about our conversation.
-   Zenith General: Giờ chúng ta vẫn phải tiếp tục vỡ kịch này nên ngươi cứ tiếp tục nhiệm vụ, 
-   // Zenith General: Now we must continue this charade, so keep going with your mission,
-   Zenith General: bọn ta sẽ hỗ trợ ngươi nhưng sau đó..
-   // Zenith General: we will support you, but after that..
-   Zenith General: Chính ngươi sẽ cần quay lại để tiêu diệt toàn bộ bọn chúng, hahahaha.
-   // Zenith General: You yourself will need to return and annihilate all of them, hahahaha.
-   Zenith General: Chúc may mắn
-   // Zenith General: Good luck.
+   Zenith General: Haha, ngươi thông minh hơn ta nghĩ,  #line:03ad42e 
+   Zenith General: được thôi, nhưng hiện tại ngươi vẫn đang bị theo dõi khá sát sao #line:049dcf4 
+   Zenith General: Cái bộ đàm trên người ngươi là từ Apex đúng chứ? #line:02f7c59 
+   Zenith General: Nãy giờ nó hoàn toàn im lặng là vì ở trong đây sóng vô tuyến đã bị vô hiệu  #line:0029528 
+   Zenith General: nên cuộc trò chuyện của chúng ta, chúng không biết #line:072d6d6 
+   Zenith General: Giờ chúng ta vẫn phải tiếp tục vỡ kịch này nên ngươi cứ tiếp tục nhiệm vụ,  #line:00c72a3 
+   Zenith General: bọn ta sẽ hỗ trợ ngươi nhưng sau đó.. #line:029e9b5 
+   Zenith General: Chính ngươi sẽ cần quay lại để tiêu diệt toàn bộ bọn chúng, hahahaha. #line:0f51d8f 
+   Zenith General: Chúc may mắn #line:08940e2 
    <<reset_camera>>
-   <<choose_zenith>>
--> Ngươi nằm mơ đi thì ta sẽ đi theo ngươi!
-   // -> You're dreaming if you think I'll follow you!
+   <<choose_zenith armory>>
+-> Ngươi nằm mơ đi thì ta sẽ đi theo ngươi! #line:068b5df 
    <<switch_camera vcam_GeneralFace>>
-   Zenith General: Là do mày chọn thôi, chúc may mắn.
-   // Zenith General: It's your choice, good luck.
+   Zenith General: Là do mày chọn thôi, chúc may mắn. #line:01a0749 
    <<reset_camera>>
-   <<choose_apex>>
+   <<choose_apex armory>>
 ===
 
 title: Armory_01
 ---
-Player: Ở đây chắc xong rồi, 
-// Player: Guess I'm done here,
-Player: Nhanh chóng tiến vào trong thôi
-// Player: better head inside quickly.
+Player: Ở đây chắc xong rồi,  #line:0e06464 
+Player: Nhanh chóng tiến vào trong thôi #line:0c2081f 
 ===
 
 
 title: Monitor_Console_RedAlert
 tags: 
 ---
-Player: Có lẽ đây là bảng điều khiển trung tâm, 
-// Player: This might be the central console,
-Player: nhưng tại sao lại có cảnh báo vậy chứ, 
-// Player: but why is there an alert,
-Player: xung quanh đây có gì sao?
-// Player: is there something around here?
+Player: Có lẽ đây là bảng điều khiển trung tâm,  #line:0dcf07d 
+Player: nhưng tại sao lại có cảnh báo vậy chứ,  #line:0fbe9b1 
+Player: xung quanh đây có gì sao? #line:0fec9c0 
 ===
 
 title: Monitor_Investigate_BusterCall
 tags: 
 ---
-Player: Đây là....
-// Player: This is...
+Player: Đây là.... #line:0c15c63 
 
-Player: Hòn đảo này đang bị đe dọa sao?
-// Player: Is this island under threat?
+Player: Hòn đảo này đang bị đe dọa sao? #line:0bdbd40 
 
-Player: Bởi.... Buster Call?,.... đây là gì cơ chứ.
-// Player: By... a Buster Call? ...what even is this.
+Player: Bởi.... Buster Call?,.... đây là gì cơ chứ. #line:0917c6f 
 
-Player: Nhưng ai là người đang chuẩn bị tấn công hòn đảo này chứ.
-// Player: But who is preparing to attack this island.
+Player: Nhưng ai là người đang chuẩn bị tấn công hòn đảo này chứ. #line:0e65e84 
 
-Player: Ngoài Apex thì rõ ràng Zenisth không hề có đối thủ cạnh tranh khác cơ mày
-// Player: Aside from Apex, Zenith clearly has no other competitors.
+Player: Ngoài Apex thì rõ ràng Zenisth không hề có đối thủ cạnh tranh khác cơ mày #line:0d2c200 
 
-Player: Nhưng nếu hòn đảo này thực sự bị tấn công mình cũng sẽ gặp nguy hiểm, 
-// Player: But if this island is actually attacked, I'll be in danger too.
+Player: Nhưng nếu hòn đảo này thực sự bị tấn công mình cũng sẽ gặp nguy hiểm,  #line:06e0710 
 
-Player: Vẫn nên nhanh chóng hoàn thành nhiệm vụ rồi rút lui thì hơn
-// Player: Better finish the mission quickly and pull out.
+Player: Vẫn nên nhanh chóng hoàn thành nhiệm vụ rồi rút lui thì hơn #line:0c98fe0 
 ===
-
-
-
-
 
 title: Monitor_00
 ---
-<<switch_camera vcam_GeneralFace>>
-Zenith General: Hahaha, rời đi sao, 
-// Zenith General: Hahaha, leave?
-Zenith General: ngươi nói như thể muốn đến là đến, đi là đi nhỉ
-// Zenith General: You speak as if you can come and go as you please.
-Player: Ngươi là ai...
-// Player: Who are you...
-Zenith General: Này này bình tĩnh, ta không có ý xấu đâu, 
-// Zenith General: Hey now, calm down, I mean no harm.
-Zenith General: trò chuyện chút đi
-// Zenith General: Let's have a little chat.
+<<switch_camera vcam_GeneralFace1>>
+Zenith General: Hahaha, rời đi sao,  #line:0026af2 
+Zenith General: ngươi nói như thể muốn đến là đến, đi là đi nhỉ #line:07c192c 
+Player: Ngươi là ai... #line:038ea88 
+Zenith General: Này này bình tĩnh, ta không có ý xấu đâu,  #line:0251d91 
+Zenith General: trò chuyện chút đi #line:07fe02a 
 <<reset_camera>>
 ===
 
 title: Monitor_01
 ---
-Player: Ở đây chắc là khu vực giám sát rồi.
-Player: Có vẻ ở đây ít lính canh gác hơn.
+Player: Ở đây chắc là khu vực giám sát rồi. #line:0fa3623 
+Player: Có vẻ ở đây ít lính canh gác hơn. #line:0dd0f06 
 ===
 
 title: Monitor_02
 ---
-Player: Ở đây xem ra cũng không có quá nhiều lính canh.
+Player: Ở đây xem ra cũng không có quá nhiều lính canh. #line:0e3208f 
 ===
 
 title: Monitor_03
 ---
-Player: Ở đây có khá nhiều máy móc
-Player: Biết đâu lại có những thông tin dùng được
+Player: Ở đây có khá nhiều máy móc #line:05548d8 
+Player: Biết đâu lại có những thông tin dùng được #line:0070c3e 
+===
+
+title: Monitor_04
+---
+Player: Có lẻ ở đây đã xong hết rồi. #line:0258c91 
+Player: Nhanh chóng tiếp tục nhiệm vụ thôi. #line:06faf40 
+Player: Lối đi tiếp theo hình như ở tầng trên rồi. #line:0e50269 
 ===
 
 title: Monitor_General_Meet
@@ -455,36 +340,26 @@ tags:
 <<declare $asked_zenith_plan = false>>
 
 <<switch_camera vcam_GeneralFace1>>
-Zenith General: Như những gì ngươi đã thấy rồi đấy.
-// Zenith General: As you have already seen.
+Zenith General: Như những gì ngươi đã thấy rồi đấy. #line:0aa90f6 
 
-Zenith General: Hiện tại cả ta, hay ngươi đều đang ngàn cân treo sợi tóc đấy
-// Zenith General: Right now, both you and I are hanging by a thread.
+Zenith General: Hiện tại cả ta, hay ngươi đều đang ngàn cân treo sợi tóc đấy #line:09b0a37 
 
-Zenith General: Nên là thay vì tiếp tục căng thẳng.
-// Zenith General: So instead of keeping this tension.
+Zenith General: Nên là thay vì tiếp tục căng thẳng. #line:02cb17a 
 
-Zenith General: Hợp tác chứ?
-// Zenith General: A partnership?
+Zenith General: Hợp tác chứ? #line:01b0617 
 
 <<switch_camera vcam_PlayerFace>>
-Player: Ngươi nghĩ ta ngu ngốc đến mức đi hợp tác với kẻ thù để phản lại đồng minh sao
-// Player: Do you think I'm stupid enough to partner with the enemy to betray my allies?
+Player: Ngươi nghĩ ta ngu ngốc đến mức đi hợp tác với kẻ thù để phản lại đồng minh sao #line:054a9b8 
 
 <<switch_camera vcam_GeneralFace1>>
-Zenith General: Haizzz, ngu ngốc hay không là việc của ngươi.
-// Zenith General: *Sigh*, whether it's stupid or not is your business.
+Zenith General: Haizzz, ngu ngốc hay không là việc của ngươi. #line:06f979e 
 
-Zenith General: Ta chỉ là đang đề nghị thôi.
-// Zenith General: I'm just offering.
+Zenith General: Ta chỉ là đang đề nghị thôi. #line:0a65f91 
 
-Zenith General: Vì dù sao thì kết cục của ngươi cũng chỉ có cái chết, 
-// Zenith General: Because either way your end is death,
-Zenith General: không dưới tay Zenith,...thì cũng là dưới tay Apex...
-// Zenith General: if not by Zenith's hands,... then by Apex's...
+Zenith General: Vì dù sao thì kết cục của ngươi cũng chỉ có cái chết,  #line:0eb3dd8 
+Zenith General: không dưới tay Zenith,...thì cũng là dưới tay Apex... #line:0b411e9 
 
-Zenith General: Nên suy nghĩ cho thật kỹ đi.
-// Zenith General: So think it through carefully.
+Zenith General: Nên suy nghĩ cho thật kỹ đi. #line:0d4ba53 
 <<jump Monitor_General_Hub>>
 ===
 
@@ -492,17 +367,13 @@ title: Monitor_General_Hub
 tags: 
 ---
 <<switch_camera vcam_PlayerFace>>
--> Ngươi có ý gì..Apex liên quan gì ở đây    <<if $asked_apex == false>>
-   // -> What do you mean... what does Apex have to do with this?
+-> Ngươi có ý gì..Apex liên quan gì ở đây    <<if $asked_apex == false>> #line:00827af 
       <<jump Ask_Apex>>
--> Nhưng cái thông báo về mối đe dọa đó Buster Call là gì?    <<if $asked_buster == false>>
-   // -> But what is that threat notification about the Buster Call?
+-> Nhưng cái thông báo về mối đe dọa đó Buster Call là gì?    <<if $asked_buster == false>> #line:0466b1a 
       <<jump Ask_BusterCall>>
--> Sao ngươi biết được ta ở đây, và tại sao lại đề nghị hợp tác?   <<if $asked_zenith_plan == false>>
-   // -> How did you know I was here, and why offer a partnership?
+-> Sao ngươi biết được ta ở đây, và tại sao lại đề nghị hợp tác?   <<if $asked_zenith_plan == false>> #line:0d0307b 
       <<jump Ask_ZenithPlan>>
--> Đủ rồi. Tao đã quyết định xong bước đi tiếp theo của mình.    <<if $monitor_asked_count >= 2>>
-   // -> Enough. I have decided my next move.
+-> Đủ rồi. Tao đã quyết định xong bước đi tiếp theo của mình.    <<if $monitor_asked_count >= 2>> #line:037ce6c 
       <<jump Monitor_General_Decision>>
 ===
 
@@ -513,41 +384,29 @@ tags:
 <<set $monitor_asked_count = $monitor_asked_count + 1>>
 <<switch_camera vcam_GeneralFace1>>
 
-Zenith General: Apex liên quan gì ở đây sao....để xem
-// Zenith General: What does Apex have to do with this... let's see.
+Zenith General: Apex liên quan gì ở đây sao....để xem #line:00d5761 
 
-Zenith General: Tới hiện tại mà ngươi vẫn chưa nhận ra sao.
-// Zenith General: You still haven't figured it out yet.
+Zenith General: Tới hiện tại mà ngươi vẫn chưa nhận ra sao. #line:0be899f 
 
 <<switch_camera vcam_PlayerFace>>
 
-Player: Nhận ra điều gì? ý ngươi là sao nói rõ ra đi.
-// Player: Figured out what? Be clear about what you mean.
+Player: Nhận ra điều gì? ý ngươi là sao nói rõ ra đi. #line:02aec41 
 
 <<switch_camera vcam_GeneralFace1>>
-Zenith General: Ta không biết nên gọi ngươi là con chó trung thành..
-// Zenith General: I don't know whether to call you a loyal dog..
-Zenith General: hay là một con tốt ngu ngốc.
-// Zenith General: or a stupid pawn.
+Zenith General: Ta không biết nên gọi ngươi là con chó trung thành.. #line:0f7fc93 
+Zenith General: hay là một con tốt ngu ngốc. #line:0cc75ea 
 
-Zenith General: Nghĩ đi, một mình ngươi, tay không tất sắt xông vào địa bàn của kẻ thù vũ trang đầy đủ.
-// Zenith General: Think about it, you alone, unarmed, charging into heavily armed enemy territory.
+Zenith General: Nghĩ đi, một mình ngươi, tay không tất sắt xông vào địa bàn của kẻ thù vũ trang đầy đủ. #line:0cccd1d 
 
-Zenith General: Nó đã cơ bản là một chuyến đi nộp mạng rồi.
-// Zenith General: It was basically a suicide mission from the start.
+Zenith General: Nó đã cơ bản là một chuyến đi nộp mạng rồi. #line:0804d13 
 
-Zenith General: Chưa kể dù ngươi có hoàn thành nhiệm vụ đi nữa thì ngươi cũng thấy rồi đó.
-// Zenith General: Not to mention, even if you complete the mission, you've seen it.
+Zenith General: Chưa kể dù ngươi có hoàn thành nhiệm vụ đi nữa thì ngươi cũng thấy rồi đó. #line:02d1166 
 
-Zenith General: Hòn đảo này đã bị đe dọa mức đỏ, 
-// Zenith General: This island is under a red alert,
-Zenith General: mức đỏ là mức cao nhất cho 1 mối nguy hại có thể xóa sổ cả hòn đảo này.
-// Zenith General: red alert is the highest level for a threat that can wipe out this entire island.
+Zenith General: Hòn đảo này đã bị đe dọa mức đỏ,  #line:0867bfc 
+Zenith General: mức đỏ là mức cao nhất cho 1 mối nguy hại có thể xóa sổ cả hòn đảo này. #line:039ec4d 
 
-Zenith General: Và nó hiện tại là Buster Call. 
-// Zenith General: And right now it's a Buster Call.
-Zenith General: Nên dù ngươi làm gì đi nữa thì ta, ngươi và cả hòn đảo này đều sẽ bị chúng xóa sổ.
-// Zenith General: So no matter what you do, me, you, and this whole island will be wiped out by them.
+Zenith General: Và nó hiện tại là Buster Call.  #line:0e75512 
+Zenith General: Nên dù ngươi làm gì đi nữa thì ta, ngươi và cả hòn đảo này đều sẽ bị chúng xóa sổ. #line:0aa098b 
 <<jump Monitor_General_Hub>>
 ===
 
@@ -558,48 +417,33 @@ tags:
 <<set $monitor_asked_count = $monitor_asked_count + 1>>
 <<switch_camera vcam_GeneralFace1>>
 
-Zenith General: Hửm..., ngươi thật sự không biết về nó sao?
-// Zenith General: Hmm..., you really don't know about it?
+Zenith General: Hửm..., ngươi thật sự không biết về nó sao? #line:0fae76b 
 
 <<switch_camera vcam_PlayerFace>>
 
-Player: Nhanh chóng đi, nếu biết thì ta còn hỏi ngươi làm gì.
-// Player: Make it quick, if I knew I wouldn't be asking you.
+Player: Nhanh chóng đi, nếu biết thì ta còn hỏi ngươi làm gì. #line:0ac31dc 
 
 <<switch_camera vcam_GeneralFace1>>
 
-Zenith General: Về cơ bản nó là một dạng thiết lập vũ khí, 
-// Zenith General: Basically it's a type of weapon configuration,
-Zenith General: đây cũng là thông tin mật mà bọn ta đã đánh cắp được.
-// Zenith General: this is also classified information that we managed to steal.
+Zenith General: Về cơ bản nó là một dạng thiết lập vũ khí,  #line:085954f 
+Zenith General: đây cũng là thông tin mật mà bọn ta đã đánh cắp được. #line:0c4be71 
 
-Zenith General: Buster Call vốn dĩ là một công nghệ đã tồn tại khá lâu rồi 
-// Zenith General: Buster Call is actually a technology that has existed for quite a while,
-Zenith General: nhưng trong quá khứ do công nghệ quá khó để kiểm soát, 
-// Zenith General: but in the past, because the technology was too hard to control,
-Zenith General: nó dễ dẫn đến sai sót khi sử dụng.
-// Zenith General: it easily led to errors in deployment.
+Zenith General: Buster Call vốn dĩ là một công nghệ đã tồn tại khá lâu rồi  #line:0d95826 
+Zenith General: nhưng trong quá khứ do công nghệ quá khó để kiểm soát,  #line:09c7b8d 
+Zenith General: nó dễ dẫn đến sai sót khi sử dụng. #line:06d413d 
 
-Zenith General: Nó sử dụng nguồn năng lượng hạt nhân để làm ngòi nổ, 
-// Zenith General: It uses nuclear energy as a detonator,
-Zenith General: khi kích hoạt nó sẽ tạo ra một vụ nổ với xung lực cực lớn, 
-// Zenith General: when activated it creates an explosion with massive impulse force,
-Zenith General: có khả năng thổi bay một thành phố.
-// Zenith General: capable of blowing away a city.
+Zenith General: Nó sử dụng nguồn năng lượng hạt nhân để làm ngòi nổ,  #line:016e747 
+Zenith General: khi kích hoạt nó sẽ tạo ra một vụ nổ với xung lực cực lớn,  #line:05438ca 
+Zenith General: có khả năng thổi bay một thành phố. #line:026522c 
 
-Zenith General: Không chỉ vậy khu vực nổ gần như sẽ trở thành vùng đất chết rất lâu về sâu 
-// Zenith General: Not only that, the blast zone will practically become a dead land for a very long time
-Zenith General: bởi vì nồng độ phóng xạ rất cao.
-// Zenith General: due to high radiation levels.
+Zenith General: Không chỉ vậy khu vực nổ gần như sẽ trở thành vùng đất chết rất lâu về sâu  #line:0910bc5 
+Zenith General: bởi vì nồng độ phóng xạ rất cao. #line:0767657 
 
-Zenith General: Đơn giản là vậy, 
-// Zenith General: It's as simple as that,
-Zenith General: sao hiểu rõ về nó rồi thì ngươi đã suy nghĩ xong chưa.
-// Zenith General: so now that you understand it, have you made up your mind?
+Zenith General: Đơn giản là vậy,  #line:091b4cb 
+Zenith General: sao hiểu rõ về nó rồi thì ngươi đã suy nghĩ xong chưa. #line:0632a62 
 
 <<switch_camera vcam_PlayerFace>>
-Player: Cứ từ từ đi, ngươi không phải gấp
-// Player: Take it easy, you don't need to rush.
+Player: Cứ từ từ đi, ngươi không phải gấp #line:0c7a77e 
 <<jump Monitor_General_Hub>>
 ===
 
@@ -610,59 +454,40 @@ tags:
 <<set $monitor_asked_count = $monitor_asked_count + 1>>
 <<switch_camera vcam_GeneralFace1>>
 
-Zenith General: Ai chà không ngờ ngươi cũng có thể hỏi câu này đấy,
-// Zenith General: Well well, I didn't expect you to ask this question,
+Zenith General: Ai chà không ngờ ngươi cũng có thể hỏi câu này đấy, #line:0de5208 
 
-Zenith General: Cả hòn đảo này dù là nơi thí nghiệm nhưng từng con ruồi con mũi ta còn nắm rõ trong lòng bàn tay
-// Zenith General: Even though this whole island is a testing facility, I know every single detail like the back of my hand.
+Zenith General: Cả hòn đảo này dù là nơi thí nghiệm nhưng từng con ruồi con mũi ta còn nắm rõ trong lòng bàn tay #line:04e5909 
 
-Zenith General: Hệ thống radar trên đảo là loại tối tân nhất nên từ khi ngươi đi vào là bọn ta đã biết rồi.
-// Zenith General: The radar system on the island is state-of-the-art, so we knew the moment you entered.
+Zenith General: Hệ thống radar trên đảo là loại tối tân nhất nên từ khi ngươi đi vào là bọn ta đã biết rồi. #line:0a75ed8 
 
 <<switch_camera vcam_PlayerFace>>
-Player: Hiện đại thế cơ à, thế sao ngươi không tự xử lý bọn ta đi 
-// Player: That modern, huh, then why didn't you deal with me yourself
-Player: mà lại cất công đến đây mời mộc.
-// Player: instead of taking the trouble to come here and invite me.
-Player: Ta không nghĩ các ngươi tốt đến thế với những việc kinh tởm mình đã làm.
-// Player: I don't think you guys are that nice, given the disgusting things you've done.
+Player: Hiện đại thế cơ à, thế sao ngươi không tự xử lý bọn ta đi  #line:030c2d9 
+Player: mà lại cất công đến đây mời mộc. #line:0deb277 
+Player: Ta không nghĩ các ngươi tốt đến thế với những việc kinh tởm mình đã làm. #line:0afafae 
 
 <<switch_camera vcam_GeneralFace1>>
-Zenith General: Kinh tởm sao, ý ngươi là mấy con robot sao, 
-// Zenith General: Disgusting? You mean the robots?
-Zenith General: ồ cũng bình thường thôi, đó là hy sinh vì khoa học thôi.
-// Zenith General: Oh, that's normal, just sacrifices for the sake of science.
+Zenith General: Kinh tởm sao, ý ngươi là mấy con robot sao,  #line:0c267b7 
+Zenith General: ồ cũng bình thường thôi, đó là hy sinh vì khoa học thôi. #line:0cfb7a4 
 
-Zenith General: Còn về việc tại sao ta lại mất công vậy sao.
-// Zenith General: As for why I went through all this trouble.
+Zenith General: Còn về việc tại sao ta lại mất công vậy sao. #line:02496f0 
 
-Zenith General: Thì cứ đơn giản xem như bọn ta tiếc một nhân tài như ngươi.
-// Zenith General: Just consider it as us feeling sorry to waste a talent like you.
+Zenith General: Thì cứ đơn giản xem như bọn ta tiếc một nhân tài như ngươi. #line:02a5c96 
 
-Zenith General: Tự tay hủy đi một cổ máy chiến đấu sống như thế này xem như có chút tiếc nuối, 
-// Zenith General: Destroying a living war machine like this with our own hands feels like a bit of a pity,
-Zenith General: nên ngươi nên cảm thấy may mắn đi.
-// Zenith General: so you should feel lucky.
+Zenith General: Tự tay hủy đi một cổ máy chiến đấu sống như thế này xem như có chút tiếc nuối,  #line:00f0faa 
+Zenith General: nên ngươi nên cảm thấy may mắn đi. #line:05916a7 
 
 <<switch_camera vcam_PlayerFace>>
-Player: Hừ, xem như ngươi cũng khéo ăn nói, 
-// Player: Hmph, I'll admit you have a way with words,
-Player: nhưng ngươi không sợ người của ta đang nghe lén cuộc trò chuyện này sao.
-// Player: but aren't you afraid my people are eavesdropping on this conversation?
+Player: Hừ, xem như ngươi cũng khéo ăn nói,  #line:0a2e223 
+Player: nhưng ngươi không sợ người của ta đang nghe lén cuộc trò chuyện này sao. #line:064b555 
 
 <<switch_camera vcam_GeneralFace1>>
-Zenith General: À chuyện đó ngươi không cần lo, 
-// Zenith General: Ah, you don't need to worry about that,
-Zenith General: bộ đàm trên tai ngươi chứ gì, khi ngươi bước vào đây thì bọn ta đã cắt sóng rồi.
-// Zenith General: the radio in your ear, right? We cut the signal the moment you walked in here.
+Zenith General: À chuyện đó ngươi không cần lo,  #line:07d7f90 
+Zenith General: bộ đàm trên tai ngươi chứ gì, khi ngươi bước vào đây thì bọn ta đã cắt sóng rồi. #line:0148e3a 
 
-Zenith General: Nên cuộc trò chuyện ở đây, không ai biết ngoài ta và ngươi đâu, 
-// Zenith General: So no one knows about this conversation except you and me,
-Zenith General: đó là lý do từ nãy giờ nó vẫn im ru đấy thôi
-// Zenith General: which is why it's been dead silent this whole time.
+Zenith General: Nên cuộc trò chuyện ở đây, không ai biết ngoài ta và ngươi đâu,  #line:0f2c52c 
+Zenith General: đó là lý do từ nãy giờ nó vẫn im ru đấy thôi #line:033b104 
 
-Zenith General: Sao, giờ quyết định được rồi chứ?
-// Zenith General: So, can you decide now?
+Zenith General: Sao, giờ quyết định được rồi chứ? #line:0aaa02d 
 <<jump Monitor_General_Hub>>
 ===
 
@@ -670,36 +495,24 @@ title: Monitor_General_Decision
 tags: 
 ---
 <<switch_camera vcam_GeneralFace1>>
-Zenith General: Được rồi, quyết định đi, 
-// Zenith General: Alright, make your decision,
-Zenith General: nhưng ta mong ngươi sẽ ra quyết định thật thông minh.
-// Zenith General: but I hope you make a very smart one.
+Zenith General: Được rồi, quyết định đi,  #line:074b032 
+Zenith General: nhưng ta mong ngươi sẽ ra quyết định thật thông minh. #line:0fa2db5 
 
 <<switch_camera vcam_PlayerFace>>
--> Tao chấp nhận lời đề nghi, bắt đầu thôi
-   // -> I accept the offer, let's begin.
+-> Tao chấp nhận lời đề nghi, bắt đầu thôi #line:065a888 
    <<switch_camera vcam_GeneralFace1>>
-   Zenith General: Một quyết định thông minh. 
-   // Zenith General: A smart decision.
-   Zenith General: Ngươi không mù quáng và trung thành ngu ngốc như ta tưởng.
-   // Zenith General: You're not as blind and foolishly loyal as I thought.
-   Zenith General: Để hoàn toàn lừa được bọn Apex, 
-   // Zenith General: To completely fool the Apex forces,
-   Zenith General: ngươi vẫn phải tiếp tục giả vờ thực hiện nhiệm vụ của mình. 
-   // Zenith General: you must continue to pretend to carry out your mission.
-   Zenith General: Khi thời cơ đến, thì ngươi sẽ chính tay lật ván cờ này, hahaha
-   // Zenith General: When the time is right, you will flip this chessboard yourself, hahaha.
-   Zenith General: Chúc may mắn
-   // Zenith General: Good luck.
-      <<choose_zenith>>
+   Zenith General: Một quyết định thông minh.  #line:0ef5377 
+   Zenith General: Ngươi không mù quáng và trung thành ngu ngốc như ta tưởng. #line:0fb622d 
+   Zenith General: Để hoàn toàn lừa được bọn Apex,  #line:06bac21 
+   Zenith General: ngươi vẫn phải tiếp tục giả vờ thực hiện nhiệm vụ của mình.  #line:0d929dd 
+   Zenith General: Khi thời cơ đến, thì ngươi sẽ chính tay lật ván cờ này, hahaha #line:0b94934 
+   Zenith General: Chúc may mắn #line:0e395a2 
+      <<choose_zenith monitor>>
    <<reset_camera>>
--> Nằm mơ đi, ta sẽ không bao giờ theo các ngươi
-   // -> Keep dreaming, I will never join you.
+-> Nằm mơ đi, ta sẽ không bao giờ theo các ngươi #line:0e70535 
    <<switch_camera vcam_GeneralFace1>>
-   Zenith General: Thật đáng thất vọng và tiếc nuối cho một nhân tài như ngươi phải bỏ mạng ở đây
-   // Zenith General: How truly disappointing and regrettable for a talent like you to lose your life here.
-   Zenith General: Vậy thì cứ chết cho những kẻ chủ nhân thậm chí còn chả thèm nhớ tên ngươi đi!
-   // Zenith General: Then go die for masters who don't even bother to remember your name!
-      <<choose_apex>>
+   Zenith General: Thật đáng thất vọng và tiếc nuối cho một nhân tài như ngươi phải bỏ mạng ở đây #line:02d7dd9 
+   Zenith General: Vậy thì cứ chết cho những kẻ chủ nhân thậm chí còn chả thèm nhớ tên ngươi đi! #line:0b475e9 
+      <<choose_apex monitor>>
    <<reset_camera>>
 ===
