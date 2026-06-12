@@ -2,6 +2,7 @@
 using UnityEngine;
 using TMPro;
 using Yarn.Unity;
+// [VI] Thêm thư viện nếu cần / [EN] Add library if needed
 
 public class DialogueExecutor : MonoBehaviour
 {
@@ -24,15 +25,11 @@ public class DialogueExecutor : MonoBehaviour
 
     private void Start()
     {
-        _mainCamera = Camera.main; // Tự động tìm Camera chính
-
-        // Tìm Player 1 lần lúc vào game để tối ưu hiệu năng (dùng cho việc khóa di chuyển)
+        _mainCamera = Camera.main;
         _cachedPlayer = FindAnyObjectByType<Player>();
-
         if (radarCanvas != null) radarCanvas.enabled = false;
     }
 
-    // [VI] Giữ cho UI Radar luôn xoay mặt về phía Camera (Hiệu ứng Billboard)
     private void LateUpdate()
     {
         if (radarCanvas != null && radarCanvas.enabled && _mainCamera != null && radarPivot != null)
@@ -44,9 +41,6 @@ public class DialogueExecutor : MonoBehaviour
         }
     }
 
-    // ==========================================
-    // 1. LỆNH DÀNH CHO YARN SPINNER (CUTSCENE)
-    // ==========================================
     public void PlayYarnNode(string nodeName)
     {
         if (dialogueRunner != null && !dialogueRunner.IsDialogueRunning)
@@ -56,9 +50,6 @@ public class DialogueExecutor : MonoBehaviour
         }
     }
 
-    // ==========================================
-    // 2. LỆNH DÀNH CHO RADAR 3D (LẨM NHẨM / BỘ ĐÀM)
-    // ==========================================
     public void PlayRadarDialogue(DialogueData3D dialogueData)
     {
         if (_isRadarPlaying || dialogueData == null) return;
@@ -70,19 +61,32 @@ public class DialogueExecutor : MonoBehaviour
         _isRadarPlaying = true;
         if (radarCanvas != null) radarCanvas.enabled = true;
 
-        // 1. Khóa Player nếu Data (ScriptableObject) yêu cầu
         if (data.isLock && _cachedPlayer != null)
         {
             _cachedPlayer.SetInputLock(true);
             Debug.Log("<color=red>[RADAR]</color> Đã khóa di chuyển của Player!");
         }
 
-        // 2. Hiệu ứng gõ chữ Typewriter
-        foreach (string line in data.lines)
+        // ==========================================
+        // [VI] XỬ LÝ LẤY DỮ LIỆU ĐA NGÔN NGỮ
+        // [EN] MULTI-LANGUAGE DATA FETCHING
+        // ==========================================
+        foreach (var localizedLine in data.localizedLines)
         {
             if (radarText != null) radarText.text = "";
 
-            foreach (char letter in line.ToCharArray())
+            // [VI] Tải câu thoại đã dịch bất đồng bộ dựa trên ngôn ngữ hiện tại của game
+            // [EN] Load the translated line asynchronously based on the game's current language
+            var handle = localizedLine.GetLocalizedStringAsync();
+            yield return handle; // [VI] Chờ tải xong / [EN] Wait until loaded
+
+            // [VI] Lấy chuỗi chữ sau khi đã dịch thành công
+            // [EN] Get the text string after successful translation
+            string translatedText = handle.Result;
+
+            // [VI] Hiệu ứng gõ chữ Typewriter
+            // [EN] Typewriter effect
+            foreach (char letter in translatedText.ToCharArray())
             {
                 if (radarText != null) radarText.text += letter;
                 yield return new WaitForSeconds(data.typingSpeed);
@@ -91,11 +95,9 @@ public class DialogueExecutor : MonoBehaviour
             yield return new WaitForSeconds(data.delayBetweenLines);
         }
 
-        // 3. Tắt UI sau khi nói xong
         if (radarCanvas != null) radarCanvas.enabled = false;
         _isRadarPlaying = false;
 
-        // 4. Mở khóa Player
         if (data.isLock && _cachedPlayer != null)
         {
             _cachedPlayer.SetInputLock(false);

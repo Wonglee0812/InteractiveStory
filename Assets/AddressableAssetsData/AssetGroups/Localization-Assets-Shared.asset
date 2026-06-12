@@ -20,6 +20,11 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: adaba5f0be991f74d81f6e430856178d
+    m_Address: Assets/Dialouge/Localization/Quest Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: e2f1d4581c98abf49a6ac0bf2f77c5a6, type: 2}
   m_SchemaSet:

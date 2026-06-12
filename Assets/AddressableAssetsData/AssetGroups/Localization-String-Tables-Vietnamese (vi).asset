@@ -21,6 +21,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-vi
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d39a359fa2e8ffd4ea8ca30f7956f879
+    m_Address: QuestTable_vi
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-vi
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: e2f1d4581c98abf49a6ac0bf2f77c5a6, type: 2}
   m_SchemaSet:

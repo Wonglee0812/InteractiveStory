@@ -22788,6 +22788,8 @@ MonoBehaviour:
   isTrustingZenith: 0
   questPanel: {fileID: 2091376163}
   questTextUI: {fileID: 1954471916}
+  questStringTableName: QuestTable
+  typingSpeed: 0.03
   onArmoryChooseZenith:
     m_PersistentCalls:
       m_Calls:
@@ -334980,14 +334982,14 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 41744600}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: SetQuest
+        m_MethodName: SetQuestFromInspector
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: "Kh\xE1m ph\xE1 b\xEAn tr\xEAn"
+          m_StringArgument: Quest_Armory
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &613717268
@@ -369825,17 +369827,17 @@ PrefabInstance:
     - target: {fileID: 894519413116060136, guid: 733fe111c41070f44b11208d8af839bd,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 373.9998
+      value: 158.3
       objectReference: {fileID: 0}
     - target: {fileID: 894519413116060136, guid: 733fe111c41070f44b11208d8af839bd,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 24
+      value: 14.5
       objectReference: {fileID: 0}
     - target: {fileID: 894519413116060136, guid: 733fe111c41070f44b11208d8af839bd,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 526.50024
+      value: 480.80002
       objectReference: {fileID: 0}
     - target: {fileID: 894519413116060136, guid: 733fe111c41070f44b11208d8af839bd,
         type: 3}
@@ -487176,10 +487178,10 @@ MonoBehaviour:
   m_MultiSelect: 0
   m_Options:
     m_Options:
-    - m_Text: VietNamese
+    - m_Text: English
       m_Image: {fileID: 0}
       m_Color: {r: 1, g: 1, b: 1, a: 1}
-    - m_Text: English
+    - m_Text: VietNamese
       m_Image: {fileID: 0}
       m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_OnValueChanged:
@@ -837672,17 +837674,17 @@ PrefabInstance:
     - target: {fileID: 4169533403335708772, guid: 193bd1c40148aa34e835f1111bf845ef,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 373.9998
+      value: 158.3
       objectReference: {fileID: 0}
     - target: {fileID: 4169533403335708772, guid: 193bd1c40148aa34e835f1111bf845ef,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 24
+      value: 14.5
       objectReference: {fileID: 0}
     - target: {fileID: 4169533403335708772, guid: 193bd1c40148aa34e835f1111bf845ef,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 526.50024
+      value: 480.80002
       objectReference: {fileID: 0}
     - target: {fileID: 4169533403335708772, guid: 193bd1c40148aa34e835f1111bf845ef,
         type: 3}
@@ -934487,17 +934489,17 @@ PrefabInstance:
     - target: {fileID: 2776429666423483962, guid: b32272eac63afc545bf755a64a6e2d27,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 379.9998
+      value: 164.3
       objectReference: {fileID: 0}
     - target: {fileID: 2776429666423483962, guid: b32272eac63afc545bf755a64a6e2d27,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 21.5
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 2776429666423483962, guid: b32272eac63afc545bf755a64a6e2d27,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 528.50024
+      value: 482.8
       objectReference: {fileID: 0}
     - target: {fileID: 2776429666423483962, guid: b32272eac63afc545bf755a64a6e2d27,
         type: 3}
@@ -1014473,7 +1014475,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: VietNamese
+  m_text: English
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

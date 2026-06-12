@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
+using System.Collections;
+using UnityEngine.Localization.Settings; // [VI] Thư viện Unity Localization / [EN] Unity Localization library
 
 public class MenuManager : MonoBehaviour
 {
@@ -16,20 +18,34 @@ public class MenuManager : MonoBehaviour
 
     private bool isMenuOpen = false;
 
-    private void Start()
+    // [VI] Chuyển Start thành IEnumerator
+    // [EN] Change Start to IEnumerator
+    private IEnumerator Start()
     {
-        // VI: Ẩn Menu khi bắt đầu game
-        // EN: Hide Menu at game start
         if (menuPanel != null) menuPanel.SetActive(false);
 
-        // VI: Đọc trạng thái ban đầu để đồng bộ giá trị Dropdown
-        // EN: Read initial state to sync Dropdown values
-        if (languageDropdown != null && GameManager.Instance != null)
-        {
-            languageDropdown.value = (int)GameManager.Instance.currentLanguage;
+        // [VI] Chờ hệ thống Localization khởi tạo để tránh lỗi Null
+        // [EN] Wait for Localization system to initialize to avoid Null errors
+        yield return LocalizationSettings.InitializationOperation;
 
-            // VI: Đăng ký sự kiện lắng nghe khi người chơi thay đổi Dropdown công cụ
-            // EN: Register event listener for when the player changes the Dropdown tool
+        if (languageDropdown != null)
+        {
+            // [VI] Đồng bộ chỉ số Dropdown với ngôn ngữ đang được chọn trong Unity
+            // [EN] Sync Dropdown index with the currently selected language in Unity
+            var currentLocale = LocalizationSettings.SelectedLocale;
+            var locales = LocalizationSettings.AvailableLocales.Locales;
+
+            for (int i = 0; i < locales.Count; i++)
+            {
+                if (locales[i] == currentLocale)
+                {
+                    languageDropdown.value = i;
+                    break;
+                }
+            }
+
+            // [VI] Đăng ký sự kiện
+            // [EN] Register event
             languageDropdown.onValueChanged.AddListener(OnLanguageChanged);
         }
     }
@@ -38,8 +54,6 @@ public class MenuManager : MonoBehaviour
     {
         if (playerInput == null) return;
 
-        // VI: Đọc Action tên là "Menu" từ hệ thống Input mới giống cách làm của file Player.cs
-        // EN: Read the Action named "Menu" from the new Input System exactly like in Player.cs
         if (playerInput.actions["Menu"].WasPressedThisFrame())
         {
             ToggleMenu();
@@ -49,15 +63,9 @@ public class MenuManager : MonoBehaviour
     public void ToggleMenu()
     {
         isMenuOpen = !isMenuOpen;
-
         if (menuPanel != null) menuPanel.SetActive(isMenuOpen);
-
-        // VI: Đóng băng hoặc cho game tiếp tục chạy
-        // EN: Freeze or resume the game loop
         Time.timeScale = isMenuOpen ? 0f : 1f;
 
-        // VI: Quản lý con trỏ chuột
-        // EN: Manage mouse cursor state
         if (isMenuOpen)
         {
             Cursor.lockState = CursorLockMode.None;
@@ -70,9 +78,25 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    // VI: Hàm xử lý khi nhấn nút hoặc đổi Dropdown ngôn ngữ
-    // EN: Function invoked when the language Dropdown changes
     private void OnLanguageChanged(int index)
     {
+        // [VI] Gọi hàm thay đổi ngôn ngữ thông qua Coroutine
+        // [EN] Call the language change function via Coroutine
+        StartCoroutine(SetLocale(index));
+    }
+
+    // ==========================================
+    // VI: Lệnh đổi ngôn ngữ trực tiếp cho Unity Package
+    // EN: Direct language change command for Unity Package
+    // ==========================================
+    private IEnumerator SetLocale(int localeID)
+    {
+        // [VI] Chờ hệ thống xác nhận trước khi đổi
+        // [EN] Wait for system confirmation before changing
+        yield return LocalizationSettings.InitializationOperation;
+
+        // [VI] Đổi ngôn ngữ nội bộ của Unity. Sự kiện SelectedLocaleChanged sẽ tự động được kích hoạt
+        // [EN] Change Unity's internal language. The SelectedLocaleChanged event will automatically trigger
+        LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[localeID];
     }
 }

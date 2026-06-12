@@ -19,7 +19,6 @@ public class PlayerCharater : MonoBehaviour, ICharacterController
 
     [SerializeField] private KinematicCharacterMotor motor;
     [SerializeField] private Transform cameraTarget;
-    [SerializeField] private Transform characterRoot; // Kéo thả cục Mesh/Visual của Player vào đây (Theo video)
 
     private CharacterState _state;
     private CharacterState _lastState;
@@ -42,7 +41,6 @@ public class PlayerCharater : MonoBehaviour, ICharacterController
     [Tooltip("Normalized height multiplier for Camera Target (0-1)")]
     [Range(0f, 1f)][SerializeField] private float standCameraTargetHeight = 0.85f; // Tỉ lệ cao độ cam lúc đứng (Ví dụ 0.85 <=> 1.7m)
     [Range(0f, 1f)][SerializeField] private float crouchCameraTargetHeight = 0.45f; // Tỉ lệ cao độ cam lúc ngồi
-    [SerializeField] private float crouchHeightResponse = 10f; // Tốc độ nội suy mượt mà cho Visual
     [Header("Jump Settings")]
     [SerializeField] private float gravity = -90f;
     [SerializeField] private float jumpPower = 5f;
@@ -72,6 +70,17 @@ public class PlayerCharater : MonoBehaviour, ICharacterController
     [SerializeField] private float soundEmitInterval = 0.4f; // Khoảng cách giữa các lần phát tiếng (Chống Lag/Spam)
     private float _timeSinceLastSound = 0f;
     [Space]
+    [Header("Animation Settings")]
+    [SerializeField] private Animator animator; // [VI] Kéo thả Model có chứa Animator vào đây / [EN] Drag and drop the Model containing the Animator here
+    [Tooltip("VI: Thời gian trễ để làm mượt animation (giây). Càng cao bước chân càng có độ trễ.\nEN: Delay time to smooth animation (seconds). Higher means more footstep delay.")]
+    [SerializeField] private float animSmoothTime = 0.1f;
+
+    // [VI] Biến lưu trữ nội bộ cho thuật toán SmoothDamp / [EN] Internal variables for SmoothDamp algorithm
+    private float _currentVelocityXRef;
+    private float _currentVelocityZRef;
+    private float _animVelocityX;
+    private float _animVelocityZ;
+    [Space]
     private float _lastSlideTime = -999f;
     private bool _jumpRequest;
     private bool _requireSlideRelease = false;
@@ -99,22 +108,14 @@ public class PlayerCharater : MonoBehaviour, ICharacterController
     {
         Vector3 cameraPlanarDirection = Vector3.ProjectOnPlane(Camera.main.transform.forward, motor.CharacterUp).normalized;
 
-        // [VI] TRƯỜNG HỢP 1: ĐANG NGẮM BẮN (Bất kể đang Đứng hay Trượt)
-        // [EN] CASE 1: AIMING (Regardless of Standing or Sliding)
         if (currentInputs.AimHeld)
         {
-            // [VI] Khóa chặt mặt nhân vật luôn hướng về phía Camera đang nhìn
-            // [EN] Hard-lock the character's face to always point where the Camera is looking
             if (cameraPlanarDirection.sqrMagnitude > 0f)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(cameraPlanarDirection, motor.CharacterUp);
-                // [VI] Xoay rất nhanh để bám sát tâm ngắm
-                // [EN] Rotate very fast to strictly follow the crosshair
                 currentRotation = Quaternion.Slerp(currentRotation, targetRotation, rotationSpeed * 2f * deltaTime);
             }
         }
-        // [VI] TRƯỜNG HỢP 2: DI CHUYỂN TỰ DO (Free-roam)
-        // [EN] CASE 2: FREE-ROAM MOVEMENT
         else if (currentInputs.MoveInput.sqrMagnitude > 0f)
         {
             Quaternion cameraPlanarRotation = Quaternion.LookRotation(cameraPlanarDirection, motor.CharacterUp);
@@ -122,10 +123,41 @@ public class PlayerCharater : MonoBehaviour, ICharacterController
 
             if (moveDirection.sqrMagnitude > 0f)
             {
-                // [VI] Xoay người mượt mà về hướng đang chạy/trượt tới
-                // [EN] Smoothly rotate towards the running/sliding direction
+                // ==========================================
+                // VI: MÔ PHỎNG THEO LAST OF US (DYNAMIC ROTATION LAG)
+                // EN: LAST OF US SIMULATION (DYNAMIC ROTATION LAG)
+                // ==========================================
+                float dynamicRotationSpeed = rotationSpeed; // Khởi tạo bằng tốc độ gốc / Init with base speed
+
+                if (_state.Stance == Stance.Slide)
+                {
+                    // VI: Khi đang trượt, bóp chết tốc độ xoay để lực quán tính đẩy dọc trục Z.
+                    // EN: While sliding, kill the rotation speed so inertia pushes along the Z-axis.
+                    dynamicRotationSpeed = 0.5f; // Xoay cực chậm / Extremely slow rotation
+                }
+                else if (_state.Stance == Stance.Crouch)
+                {
+                    // VI: Khi lén lút, xoay cực kỳ chậm để bắt Animator dùng các bước đi ngang
+                    // EN: When sneaking, rotate extremely slowly to force the Animator to use strafe steps
+                    dynamicRotationSpeed = rotationSpeed / 2;
+                }
+                else if (!currentInputs.SprintToggle)
+                {
+                    // VI: Khi đi bộ bình thường, xoay vừa phải để tạo độ đầm (Quán tính)
+                    // EN: When walking normally, rotate moderately to create weight (Inertia)
+                    dynamicRotationSpeed = rotationSpeed / 2;
+                }
+                else
+                {
+                    // VI: Khi Sprint, dùng tốc độ gốc để xoay nhanh, bẻ lái gấp
+                    // EN: When Sprinting, use base speed to rotate fast and corner sharply
+                    dynamicRotationSpeed = rotationSpeed;
+                }
+
+                // VI: Áp dụng góc xoay với tốc độ linh hoạt
+                // EN: Apply rotation with dynamic speed
                 Quaternion targetRotation = Quaternion.LookRotation(moveDirection, motor.CharacterUp);
-                currentRotation = Quaternion.Slerp(currentRotation, targetRotation, rotationSpeed * deltaTime);
+                currentRotation = Quaternion.Slerp(currentRotation, targetRotation, dynamicRotationSpeed * deltaTime);
             }
         }
     }
@@ -346,6 +378,7 @@ public class PlayerCharater : MonoBehaviour, ICharacterController
                 float currentVerticalSpeed = Vector3.Dot(currentVelocity, motor.CharacterUp);
                 float targetVerticalSpeed = Mathf.Max(currentVerticalSpeed, jumpPower);
                 currentVelocity += motor.CharacterUp * (targetVerticalSpeed - currentVerticalSpeed);
+
             }
         }
         else
@@ -440,6 +473,7 @@ public class PlayerCharater : MonoBehaviour, ICharacterController
                 _timeSinceLastSound = soundEmitInterval;
             }
         }
+        UpdateAnimation(deltaTime);
     }
 
 
@@ -460,7 +494,37 @@ public class PlayerCharater : MonoBehaviour, ICharacterController
     {
     }
 
+    private void UpdateAnimation(float deltaTime)
+    {
+        if (animator == null) return;
 
+        Vector3 localVelocity = transform.InverseTransformDirection(motor.Velocity);
+        float targetX = (localVelocity.x / sprintSpeed) * 2f;
+        float targetZ = (localVelocity.z / sprintSpeed) * 2f;
+
+        _animVelocityX = Mathf.SmoothDamp(_animVelocityX, targetX, ref _currentVelocityXRef, animSmoothTime);
+        _animVelocityZ = Mathf.SmoothDamp(_animVelocityZ, targetZ, ref _currentVelocityZRef, animSmoothTime);
+
+        animator.SetFloat("VelocityX", _animVelocityX);
+        animator.SetFloat("VelocityZ", _animVelocityZ);
+
+        // 1. TRẠNG THÁI (STANCE)
+        animator.SetBool("isCrouch", _state.Stance == Stance.Crouch);
+        animator.SetBool("isSlide", _state.Stance == Stance.Slide);
+
+        // 2. CHẠM ĐẤT & TRÊN KHÔNG (GROUNDING & AIRBORNE)
+        animator.SetBool("isGrounded", _state.Grounded);
+
+        // Tự động suy luận Nhảy/Rơi dựa trên Vận tốc trục Y (Gravity)
+        bool isFalling = !_state.Grounded && (motor.Velocity.y < 0f || motor.Velocity.y < -2);
+        bool isJumping = !_state.Grounded && motor.Velocity.y > 0f;
+        
+        animator.SetBool("isFalling", isFalling);
+        animator.SetBool("isJump", isJumping);
+
+        // (Tùy chọn) Có đang di chuyển không
+        animator.SetBool("IsMoving", motor.Velocity.sqrMagnitude > 0.1f);
+    }
 
     public void UpdateBody(float deltaTime)
     {
@@ -473,18 +537,11 @@ public class PlayerCharater : MonoBehaviour, ICharacterController
         float cameraTargetHeight = currentHeight * targetCameraFactor;
 
         // 3. Nội suy mượt mà vị trí Camera Target theo trục Y cục bộ để tránh giật hình
-        if (cameraTarget != null)
-        {
-            Vector3 targetCamPos = new Vector3(0f, cameraTargetHeight, 0f);
-            cameraTarget.localPosition = Vector3.Lerp(cameraTarget.localPosition, targetCamPos, 1f - Mathf.Exp(-crouchHeightResponse * deltaTime));
-        }
-
-        // 4. Ép trục localScale Y của mô hình Visual co giãn mượt mà theo độ lùn vật lý
-        if (characterRoot != null)
-        {
-            Vector3 rootTargetScale = new Vector3(1f, normalizedHeight, 1f);
-            characterRoot.localScale = Vector3.Lerp(characterRoot.localScale, rootTargetScale, 1f - Mathf.Exp(-crouchHeightResponse * deltaTime));
-        }
+        //if (cameraTarget != null)
+        //{
+        //    Vector3 targetCamPos = new Vector3(0f, cameraTargetHeight, 0f);
+        //    cameraTarget.localPosition = Vector3.Lerp(cameraTarget.localPosition, targetCamPos, 1f - Mathf.Exp(-crouchHeightResponse * deltaTime));
+        //}
     }
     public void UpdateInput(ref CharacterInputs inputs)
     {
