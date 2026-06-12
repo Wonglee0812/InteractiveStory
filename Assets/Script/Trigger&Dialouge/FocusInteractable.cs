@@ -10,8 +10,6 @@ public class FocusInteractable : MonoBehaviour
 
     public bool playOnce = true;
 
-    [Header("--- CONDITIONS (TÙY CHỌN) ---")]
-    public bool requireArmoryCleared = false;
 
     [Header("--- OUTPUT EVENTS ---")]
     public UnityEvent onLookAtTriggered;
@@ -28,8 +26,6 @@ public class FocusInteractable : MonoBehaviour
     {
         if (_hasTriggered && playOnce) return;
 
-        if (requireArmoryCleared && GameManager.Instance != null && !GameManager.Instance.isArmoryCleared)
-            return;
 
         _currentLookTimer += deltaTime;
 

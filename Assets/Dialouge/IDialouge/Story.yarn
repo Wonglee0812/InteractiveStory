@@ -2,81 +2,129 @@
 tags: 
 ---
 Player: Có một đường hầm ở đây sao?
-Player: Đường hầm hơi nhỏ, ta phải cúi-Q xuống mới qua được
+// Player: Is there a tunnel here?
+Player: Đường hầm hơi nhỏ, 
+// Player: The tunnel is a bit small,
+Player: ta phải cúi-Q xuống mới qua được
+// Player: I have to crouch-Q to get through.
 ===
 
 title: Armory_PlayerCC_2
 tags: 
 ---
-Player: Hình như ở dưới góc cây bên phải có thứ gì đó, là vũ khí sao?
+Player: Hình như ở dưới góc cây bên phải có thứ gì đó, 
+// Player: It looks like there's something under the tree on the right,
+Player: là vũ khí sao?
+// Player: is it a weapon?
 Player: Có lẽ ta có thể dùng được
+// Player: Maybe I can use it.
 ===
 
 title: Armory_PlayerCC_3
 tags: 
 ---
-Player: Có vẻ còn khá nhiều lính canh gác ở đây, khu này có vẻ là kho vũ khí rồi
+Player: Có vẻ còn khá nhiều lính canh gác ở đây, 
+// Player: It seems there are still quite a few guards here,
+Player: khu này có vẻ là kho vũ khí rồi
+// Player: this area looks like the armory.
 ===
 
 title: Armory_PlayerCC_4
 tags: 
 ---
-Player: Có vẻ còn khá nhiều lính canh gác ở đây, khu này có vẻ là kho vũ khí rồi
+Player: Có vẻ còn khá nhiều lính canh gác ở đây, 
+// Player: It seems there are still quite a few guards here,
+Player: khu này có vẻ là kho vũ khí rồi
+// Player: this area looks like the armory.
 ===
 
 title: Armory_PlayerCC_5
 tags: 
 ---
-Player: Bên trong có vẻ còn khá nhiều kẻ địch, vẫn nên cẩn thận chút thì hơn.
+Player: Bên trong có vẻ còn khá nhiều kẻ địch, 
+// Player: There seem to be quite a few enemies inside,
+Player: vẫn nên cẩn thận chút thì hơn.
+// Player: better be a little careful.
 ===
 
 title: Armory_PlayerCC_6
 tags: 
 ---
 Player: Đây có vẻ là kho vũ khí của chúng.
+// Player: This seems to be their armory.
 Player: Có khá nhiều thứ ta có thể dùng được đây
-Player: Hình như vẫn còn một tầng phía trên, lên đó xem sao
+// Player: There are quite a few things I can use here.
+Player: Hình như vẫn còn một tầng phía trên, 
+// Player: Looks like there's still a floor above,
+Player: lên đó xem sao
+// Player: let's go up and see.
 ===
 
 title: Armory_PlayerCC_7
 tags: 
 ---
 Player: Đây có lẽ là thông tin thiết kế của những cổ máy kia.
+// Player: This is probably the design info for those machines.
 Player: Nhưng sao...., trông nó lại kỳ lạ thế này
+// Player: But why...., does it look so strange?
 Player: Bọn chúng đã làm gì với những cổ máy này đây
+// Player: What did they do to these machines?
 ===
 
 title: Armory_PlayerCC_8
 tags: 
 ---
 Player: Đây...đây là gì thế này...
-Player: Hình như là..... não người mà, chúng chúng...
+// Player: What... what is this...
+Player: Hình như là..... não người mà, 
+// Player: It looks like..... a human brain,
+Player: chúng chúng...
+// Player: they they...
 Player: Dùng bộ não để điều khiển những cổ máy này sao
-Player: Ra vậy đó là lý do vì sao những cổ máy này lại thông minh đến vậy, ra là....
+// Player: Using brains to control these machines?
+Player: Ra vậy đó là lý do vì sao những cổ máy này lại thông minh đến vậy, 
+// Player: So that's why these machines are so intelligent,
+Player: ra là....
+// Player: it turns out....
 Player: Thật là vô đạo đức đi
+// Player: How completely unethical.
 ===
 
 title: Armory_PlayerCC_9
 tags: 
 ---
 Player: Có khá nhiều thứ ta có thể dùng được đây
+// Player: There are quite a few things I can use here.
 ===
 
 title: Armory_PlayerCC_10
 tags: 
 ---
 Player: Đây có lẽ là thông tin thiết kế của những cổ máy kia.
+// Player: This is probably the design info for those machines.
 Player: Nhưng sao...., trông nó lại kỳ lạ thế này
+// Player: But why...., does it look so strange?
 Player: Bọn chúng đã làm gì với những cổ máy này đây
+// Player: What did they do to these machines?
 ===
+
 title: Armory_PlayerCC_11
 tags: 
 ---
 Player: Đây...đây là gì thế này...
-Player: Hình như là..... não người mà, chúng chúng...
+// Player: What... what is this...
+Player: Hình như là..... não người mà, 
+// Player: It looks like..... a human brain,
+Player: chúng chúng...
+// Player: they they...
 Player: Dùng bộ não để điều khiển những cổ máy này sao
-Player: Ra vậy đó là lý do vì sao những cổ máy này lại thông minh đến vậy, ra là....
+// Player: Using brains to control these machines?
+Player: Ra vậy đó là lý do vì sao những cổ máy này lại thông minh đến vậy, 
+// Player: So that's why these machines are so intelligent,
+Player: ra là....
+// Player: it turns out....
 Player: Thật là vô đạo đức đi
+// Player: How completely unethical.
 ===
 
 title: Armory_00
@@ -84,9 +132,10 @@ tags:
 ---
 <<switch_camera vcam_GeneralFace>>
 Stranger: Khá khen cho ngươi khi có thể đến tận đây
+// Stranger: I commend you for making it this far.
 Stranger: Nói chuyện chút chứ?
+// Stranger: Care to chat a bit?
 <<reset_camera>>
-
 ===
 
 title: Armory_General_Meet
@@ -97,25 +146,35 @@ title: Armory_General_Meet
 <<declare $asked_pawn = false>>
 
 <<switch_camera vcam_GeneralFace>>
-Zenith General: Ngươi cũng đã thấy hết rồi nên có lẽ ta không thể biện hộ được nữa nhỉ, nhưng mà ta cũng rất có tình người.
-// Zenith General: You've seen everything, so I suppose I can no longer make excuses, but I am quite humane.
+Zenith General: Ngươi cũng đã thấy hết rồi nên có lẽ ta không thể biện hộ được nữa nhỉ, 
+// Zenith General: You've seen everything, so I suppose I can no longer make excuses,
+Zenith General: nhưng mà ta cũng rất có tình người.
+// Zenith General: but I am quite humane.
 
-Zenith General: Thay vì giờ giết ngươi ở đây thì cũng thật phí phạm một nhân tài, hay là....
-// Zenith General: Killing you here right now would be a waste of talent, so how about....
+Zenith General: Thay vì giờ giết ngươi ở đây thì cũng thật phí phạm một nhân tài, 
+// Zenith General: Killing you here right now would be a waste of talent,
+Zenith General: hay là....
+// Zenith General: so how about....
 
 Zenith General: Hợp tác chứ?
 // Zenith General: A partnership?
 
 <<switch_camera vcam_PlayerFace>>
-Player: Hợp tác với những kẻ như ngươi, tao không nghĩ bản thân mình có thể ngu ngốc đến thế.
-// Player: Partnering with people like you, I don't think I could be that stupid.
+Player: Hợp tác với những kẻ như ngươi, 
+// Player: Partnering with people like you,
+Player: tao không nghĩ bản thân mình có thể ngu ngốc đến thế.
+// Player: I don't think I could be that stupid.
 
 <<switch_camera vcam_GeneralFace>>
-Zenith General: Ngu ngốc hay không là việc của ngươi, ta chỉ đề nghị thôi, nghĩ thử xem.
-// Zenith General: Whether it's stupid or not is your business, I'm just offering, think about it.
+Zenith General: Ngu ngốc hay không là việc của ngươi, 
+// Zenith General: Whether it's stupid or not is your business,
+Zenith General: ta chỉ đề nghị thôi, nghĩ thử xem.
+// Zenith General: I'm just offering, think about it.
 
-Zenith General: Đằng nào ngươi cũng sẽ phải chết, không dưới tay ta,... thì cũng là dưới tay Apex..
-// Zenith General: You're going to die anyway, if not by my hands,... then by Apex's..
+Zenith General: Đằng nào ngươi cũng sẽ phải chết, 
+// Zenith General: You're going to die anyway,
+Zenith General: không dưới tay ta,... thì cũng là dưới tay Apex..
+// Zenith General: if not by my hands,... then by Apex's..
 
 Zenith General: Nên là,..... cứ suy nghĩ cho kỹ.
 // Zenith General: So,..... think carefully.
@@ -150,11 +209,15 @@ title: Ask_Purpose
 Zenith General: Haizz ta không biết là ngươi thực sự ngu ngốc hay giả vờ ngu ngốc.
 // Zenith General: *Sigh* I don't know if you are truly stupid or just pretending to be.
 
-Zenith General: Nhìn thử xem, ngươi thì 1 thân 1 mình, còn bọn ta thì vũ trang đầy đủ...
-// Zenith General: Look around, you are all alone, while we are heavily armed...
+Zenith General: Nhìn thử xem, ngươi thì 1 thân 1 mình, 
+// Zenith General: Look around, you are all alone,
+Zenith General: còn bọn ta thì vũ trang đầy đủ...
+// Zenith General: while we are heavily armed...
 
-Zenith General: Ngươi nghĩ xem, đi làm nhiệm vụ,.... hay là
-// Zenith General: Think about it, going on a mission,.... or
+Zenith General: Ngươi nghĩ xem, đi làm nhiệm vụ,.... 
+// Zenith General: Think about it, going on a mission,....
+Zenith General: hay là
+// Zenith General: or
 
 Zenith General: Đi thí mạng?
 // Zenith General: Going to be a sacrifice?
@@ -175,12 +238,16 @@ Zenith General: Không lẽ ngươi bị dọa sợ à..
 // Zenith General: Don't tell me you're scared..
 
 <<switch_camera vcam_PlayerFace>>
-Player: Đừng nói nhảm nữa, vào vấn đề chính đi, những cỗ máy này là sao.
-// Player: Cut the nonsense, get to the point, what's with these machines.
+Player: Đừng nói nhảm nữa, vào vấn đề chính đi, 
+// Player: Cut the nonsense, get to the point,
+Player: những cỗ máy này là sao.
+// Player: what's with these machines.
 
 <<switch_camera vcam_GeneralFace>>
-Zenith General: Ngươi cũng biết rõ là một cỗ máy dù thông minh đến mấy, cũng vẫn thiếu một thứ mà không một thuật toán nào có thể thay thế được.
-// Zenith General: You know perfectly well that no matter how smart a machine is, it still lacks something no algorithm can replace.
+Zenith General: Ngươi cũng biết rõ là một cỗ máy dù thông minh đến mấy, 
+// Zenith General: You know perfectly well that no matter how smart a machine is,
+Zenith General: cũng vẫn thiếu một thứ mà không một thuật toán nào có thể thay thế được.
+// Zenith General: it still lacks something no algorithm can replace.
 
 Zenith General: Ngươi biết đó là gì chứ?
 // Zenith General: Do you know what that is?
@@ -189,16 +256,20 @@ Zenith General: Đó là,.... cảm xúc đó.
 // Zenith General: It is,.... emotion.
 
 Zenith General: Nhưng ý ta không phải là những thứ cảm xúc đồng cảm hay sợ hãi vô vị.
-// Zenith General: But I don't mean trivial emotions like empathy or fear.
+// Zenith General: But I don't mean trivial emotions like empathy or meaningless fear.
 
-Zenith General: Thứ bọn ta tìm kiếm,..... là sự điên cuồng, sự giận dữ, đó là những thứ có thể giúp một cỗ máy vô tri vô giác,..
-// Zenith General: What we seek,..... is madness, anger, those are the things that can help a mindless machine,..
+Zenith General: Thứ bọn ta tìm kiếm,..... là sự điên cuồng, sự giận dữ, 
+// Zenith General: What we seek,..... is madness, anger,
+Zenith General: đó là những thứ có thể giúp một cỗ máy vô tri vô giác,..
+// Zenith General: those are the things that can help a mindless machine,..
 
 Zenith General: Trở thành một cỗ máy chiến đấu thực sự đấy.
 // Zenith General: Become a true war machine.
 
-Zenith General: Thì tất nhiên việc dễ nhất để mô phỏng thứ cảm xúc đó, ngươi nghĩ đi, dùng đồ thật không phải tốt hơn sao.
-// Zenith General: And of course, the easiest way to simulate that emotion, think about it, isn't it better to use the real thing.
+Zenith General: Thì tất nhiên việc dễ nhất để mô phỏng thứ cảm xúc đó, 
+// Zenith General: And of course, the easiest way to simulate that emotion,
+Zenith General: ngươi nghĩ đi, dùng đồ thật không phải tốt hơn sao.
+// Zenith General: think about it, isn't it better to use the real thing?
 
 <<switch_camera vcam_PlayerFace>>
 Player: Thật đúng là lũ man rợ.
@@ -218,13 +289,17 @@ title: Ask_Pawn
 <<switch_camera vcam_GeneralFace>>
 
 Zenith General: Haizzz thật sự có thể hỏi những thứ ngớ ngẩn như vậy sao.
-// Zenith General: *Sigh* Can you really ask such silly things.
+// Zenith General: *Sigh* Can you really ask such silly things?
 
-Zenith General: Đúng là ngươi rất cẩn thận nhưng, phe của ngươi thì có vẻ không muốn cẩn thận như thế.
-// Zenith General: You are indeed very careful, but your faction doesn't seem to want to be as careful.
+Zenith General: Đúng là ngươi rất cẩn thận nhưng, 
+// Zenith General: You are indeed very careful, but,
+Zenith General: phe của ngươi thì có vẻ không muốn cẩn thận như thế.
+// Zenith General: your faction doesn't seem to want to be as careful.
 
-Zenith General: Bọn ta đã nhận được thông tin từ Khu giám sát, có vẻ là cảnh báo cấp đỏ.
-// Zenith General: We received information from the Surveillance Area, looks like a red alert.
+Zenith General: Bọn ta đã nhận được thông tin từ Khu giám sát, 
+// Zenith General: We received information from the Surveillance Area,
+Zenith General: có vẻ là cảnh báo cấp đỏ.
+// Zenith General: looks like a red alert.
 
 <<switch_camera vcam_PlayerFace>>
 Player: Cảnh báo cấp đỏ?
@@ -234,8 +309,10 @@ Player: Cảnh báo cấp đỏ?
 Zenith General: Dễ hiểu thì ở cấp cảnh báo này hòn đảo này sẽ có nguy cơ,...
 // Zenith General: To put it simply, at this alert level, this island is at risk of,...
 
-Zenith General: Bị san phẳng, cũng đồng nghĩa với việc,... không một ai có thể sống sót, kể cả tao, hay là mày.
-// Zenith General: Being leveled, which also means,... no one will survive, not me, and not you.
+Zenith General: Bị san phẳng, cũng đồng nghĩa với việc,... 
+// Zenith General: Being leveled, which also means,...
+Zenith General: không một ai có thể sống sót, kể cả tao, hay là mày.
+// Zenith General: no one will survive, not me, and not you.
 
 <<switch_camera vcam_PlayerFace>>
 Player: Nhưng mối đe dọa này,.. không lẽ đến từ...
@@ -258,85 +335,371 @@ Zenith General: Haha, rất tốt, ta mong ngươi sẽ đưa ra lựa chọn th
 -> Ta chấp nhận lời đề nghị. Bắt đầu thôi.
    // -> I accept the offer. Let's begin.
    <<switch_camera vcam_GeneralFace>>
-   Zenith General: Haha, ngươi thông minh hơn ta nghĩ, được thôi, nhưng hiện tại ngươi vẫn đang bị theo dõi khá sát sao
+   Zenith General: Haha, ngươi thông minh hơn ta nghĩ, 
+   // Zenith General: Haha, you're smarter than I thought,
+   Zenith General: được thôi, nhưng hiện tại ngươi vẫn đang bị theo dõi khá sát sao
+   // Zenith General: alright, but right now you're still being watched quite closely.
    Zenith General: Cái bộ đàm trên người ngươi là từ Apex đúng chứ?
-   Zenith General: Nãy giờ nó hoàn toàn im lặng là vì ở trong đây sóng vô tuyến đã bị vô hiệu nên cuộc trò chuyện của chúng ta, chúng không biết
-   Zenith General: Giờ chúng ta vẫn phải tiếp tục vỡ kịch này nên ngươi cứ tiếp tục nhiệm vụ, bọn ta sẽ hỗ trợ ngươi nhưng sau đó..
+   // Zenith General: That radio on you is from Apex, right?
+   Zenith General: Nãy giờ nó hoàn toàn im lặng là vì ở trong đây sóng vô tuyến đã bị vô hiệu 
+   // Zenith General: It's been completely silent because radio waves are jammed in here,
+   Zenith General: nên cuộc trò chuyện của chúng ta, chúng không biết
+   // Zenith General: so they don't know about our conversation.
+   Zenith General: Giờ chúng ta vẫn phải tiếp tục vỡ kịch này nên ngươi cứ tiếp tục nhiệm vụ, 
+   // Zenith General: Now we must continue this charade, so keep going with your mission,
+   Zenith General: bọn ta sẽ hỗ trợ ngươi nhưng sau đó..
+   // Zenith General: we will support you, but after that..
    Zenith General: Chính ngươi sẽ cần quay lại để tiêu diệt toàn bộ bọn chúng, hahahaha.
+   // Zenith General: You yourself will need to return and annihilate all of them, hahahaha.
    Zenith General: Chúc may mắn
+   // Zenith General: Good luck.
    <<reset_camera>>
-   <<armory_trust_zenith>>
+   <<choose_zenith>>
 -> Ngươi nằm mơ đi thì ta sẽ đi theo ngươi!
    // -> You're dreaming if you think I'll follow you!
    <<switch_camera vcam_GeneralFace>>
    Zenith General: Là do mày chọn thôi, chúc may mắn.
    // Zenith General: It's your choice, good luck.
    <<reset_camera>>
-   <<armory_betray_zenith>>
+   <<choose_apex>>
 ===
 
 title: Armory_01
 ---
-Player: Ở đây chắc xong rồi, nhanh chóng tiến vào trong thôi
+Player: Ở đây chắc xong rồi, 
+// Player: Guess I'm done here,
+Player: Nhanh chóng tiến vào trong thôi
+// Player: better head inside quickly.
+===
+
+
+title: Monitor_Console_RedAlert
+tags: 
+---
+Player: Có lẽ đây là bảng điều khiển trung tâm, 
+// Player: This might be the central console,
+Player: nhưng tại sao lại có cảnh báo vậy chứ, 
+// Player: but why is there an alert,
+Player: xung quanh đây có gì sao?
+// Player: is there something around here?
+===
+
+title: Monitor_Investigate_BusterCall
+tags: 
+---
+Player: Đây là....
+// Player: This is...
+
+Player: Hòn đảo này đang bị đe dọa sao?
+// Player: Is this island under threat?
+
+Player: Bởi.... Buster Call?,.... đây là gì cơ chứ.
+// Player: By... a Buster Call? ...what even is this.
+
+Player: Nhưng ai là người đang chuẩn bị tấn công hòn đảo này chứ.
+// Player: But who is preparing to attack this island.
+
+Player: Ngoài Apex thì rõ ràng Zenisth không hề có đối thủ cạnh tranh khác cơ mày
+// Player: Aside from Apex, Zenith clearly has no other competitors.
+
+Player: Nhưng nếu hòn đảo này thực sự bị tấn công mình cũng sẽ gặp nguy hiểm, 
+// Player: But if this island is actually attacked, I'll be in danger too.
+
+Player: Vẫn nên nhanh chóng hoàn thành nhiệm vụ rồi rút lui thì hơn
+// Player: Better finish the mission quickly and pull out.
 ===
 
 
 
 
 
-
+title: Monitor_00
+---
+<<switch_camera vcam_GeneralFace>>
+Zenith General: Hahaha, rời đi sao, 
+// Zenith General: Hahaha, leave?
+Zenith General: ngươi nói như thể muốn đến là đến, đi là đi nhỉ
+// Zenith General: You speak as if you can come and go as you please.
+Player: Ngươi là ai...
+// Player: Who are you...
+Zenith General: Này này bình tĩnh, ta không có ý xấu đâu, 
+// Zenith General: Hey now, calm down, I mean no harm.
+Zenith General: trò chuyện chút đi
+// Zenith General: Let's have a little chat.
+<<reset_camera>>
+===
 
 title: Monitor_01
+---
+Player: Ở đây chắc là khu vực giám sát rồi.
+Player: Có vẻ ở đây ít lính canh gác hơn.
+===
+
+title: Monitor_02
+---
+Player: Ở đây xem ra cũng không có quá nhiều lính canh.
+===
+
+title: Monitor_03
+---
+Player: Ở đây có khá nhiều máy móc
+Player: Biết đâu lại có những thông tin dùng được
+===
+
+title: Monitor_General_Meet
 tags: 
 ---
-// [VI] Nhìn vào biểu đồ radar quỹ đạo đó đi. Đẹp thật đúng không?
-Zenith General: Looking at that orbital radar, I presume? Beautiful, isn't it? 
+<<declare $monitor_asked_count = 0>>
+<<declare $asked_apex = false>>
+<<declare $asked_buster = false>>
+<<declare $asked_zenith_plan = false>>
 
-// [VI] Lộ diện đi. Cấu trúc này là cái quái gì? Một lệnh Buster Call?
-Player: Show yourself. What the hell is this signature? A Buster Call?
+<<switch_camera vcam_GeneralFace1>>
+Zenith General: Như những gì ngươi đã thấy rồi đấy.
+// Zenith General: As you have already seen.
 
-// [VI] Một giao thức xóa sổ của Apex. Một thứ siêu vũ khí được thiết kế để san phẳng toàn bộ tọa độ này. Các chủ nhân của ngươi làm việc rất triệt để.
-Zenith General: An Apex erasure protocol. A superweapon designed to flatten this entire grid. Your masters are very thorough.
+Zenith General: Hiện tại cả ta, hay ngươi đều đang ngàn cân treo sợi tóc đấy
+// Zenith General: Right now, both you and I are hanging by a thread.
 
-// [VI] Bớt nói nhảm đi. Tại sao nó lại nhắm vào đây trong khi tao vẫn đang trích xuất Công Nghệ Lõi?
-Player: Cut the bullshit. Why is it aimed here while I'm still extracting the Core?
+Zenith General: Nên là thay vì tiếp tục căng thẳng.
+// Zenith General: So instead of keeping this tension.
 
-// [VI] Động não đi, lính đánh thuê! Tại sao ngươi lại nghĩ mình được cử đi đơn độc? Ngươi không phải là kẻ thu hồi. Ngươi là mồi nhử định vị.
-Zenith General: Think, mercenary! Why do you think you were sent completely alone? You are not an extractor. You are the targeting beacon.
+Zenith General: Hợp tác chứ?
+// Zenith General: A partnership?
 
-// [VI] Ngay khoảnh khắc ngươi phát tín hiệu 'Hoàn thành nhiệm vụ', bầu trời đó sẽ khai hỏa. Không có sơ tán. Không có nhân chứng.
-Zenith General: The second you transmit the 'Mission Accomplished' signal, that sky fires. No extraction. No witnesses.
+<<switch_camera vcam_PlayerFace>>
+Player: Ngươi nghĩ ta ngu ngốc đến mức đi hợp tác với kẻ thù để phản lại đồng minh sao
+// Player: Do you think I'm stupid enough to partner with the enemy to betray my allies?
 
-// [VI] Mày mong tao tin mày thay vì bộ tư lệnh của tao sao?
-Player: You expect me to believe you over my own command?
+<<switch_camera vcam_GeneralFace1>>
+Zenith General: Haizzz, ngu ngốc hay không là việc của ngươi.
+// Zenith General: *Sigh*, whether it's stupid or not is your business.
 
-// [VI] Ngươi không cần phải tin ta. Hãy tin vào cái radar trước mắt ngươi. Đó là công nghệ của Apex mà, đúng chứ?
-Zenith General: You don't have to believe me. Believe the radar in front of your eyes. It's Apex tech, isn't it?
+Zenith General: Ta chỉ là đang đề nghị thôi.
+// Zenith General: I'm just offering.
 
-// [VI] Ta chuẩn bị pháo đài này không phải để chống lại ngươi, mà là để sống sót qua cơn mưa địa ngục mà chủ nhân của ngươi sắp trút xuống.
-Zenith General: I prepared this fortress not to fight you, but to survive the hellfire your masters are about to rain down.
+Zenith General: Vì dù sao thì kết cục của ngươi cũng chỉ có cái chết, 
+// Zenith General: Because either way your end is death,
+Zenith General: không dưới tay Zenith,...thì cũng là dưới tay Apex...
+// Zenith General: if not by Zenith's hands,... then by Apex's...
 
-// [VI] Nói đi, mày muốn cái gì?
-Player: Tell me, what do you want?
+Zenith General: Nên suy nghĩ cho thật kỹ đi.
+// Zenith General: So think it through carefully.
+<<jump Monitor_General_Hub>>
+===
 
-// [VI] Đổi hướng bàn cờ này. Giao Lõi Năng Lượng cho ta.
-Zenith General: To change the trajectory of this board. Hand over the Core to me.
+title: Monitor_General_Hub
+tags: 
+---
+<<switch_camera vcam_PlayerFace>>
+-> Ngươi có ý gì..Apex liên quan gì ở đây    <<if $asked_apex == false>>
+   // -> What do you mean... what does Apex have to do with this?
+      <<jump Ask_Apex>>
+-> Nhưng cái thông báo về mối đe dọa đó Buster Call là gì?    <<if $asked_buster == false>>
+   // -> But what is that threat notification about the Buster Call?
+      <<jump Ask_BusterCall>>
+-> Sao ngươi biết được ta ở đây, và tại sao lại đề nghị hợp tác?   <<if $asked_zenith_plan == false>>
+   // -> How did you know I was here, and why offer a partnership?
+      <<jump Ask_ZenithPlan>>
+-> Đủ rồi. Tao đã quyết định xong bước đi tiếp theo của mình.    <<if $monitor_asked_count >= 2>>
+   // -> Enough. I have decided my next move.
+      <<jump Monitor_General_Decision>>
+===
 
-// [VI] Bọn ta sẽ dùng nó để sạc khiên phòng thủ, và cùng nhau, ta sẽ quay nòng súng về phía hạm đội Apex.
-Zenith General: We use it to power our defense, and together, we turn the cannons back on the Apex fleet.
+title: Ask_Apex
+tags: 
+---
+<<set $asked_apex to true>>
+<<set $monitor_asked_count = $monitor_asked_count + 1>>
+<<switch_camera vcam_GeneralFace1>>
 
-// [VI] Trở thành người làm nên lịch sử, hoặc chết như một con chó săn hết giá trị lợi dụng. Lựa chọn đi.
-Zenith General: Live as a kingmaker, or die as a disposable hound. The choice is yours.
+Zenith General: Apex liên quan gì ở đây sao....để xem
+// Zenith General: What does Apex have to do with this... let's see.
 
--> Okay, I'll trust you this time.
-    // [VI] Một quyết định thông minh. Ngươi không mù quáng như ta tưởng.
-    Zenith General: A smart decision. You're not as blind as I thought.
-    // [VI] Để hoàn toàn lật lọng Apex, ngươi vẫn phải hoàn thành mục tiêu của mình. Khi thời cơ đến, chúng ta sẽ làm nên lịch sử.
-    Zenith General: To completely outsmart Apex, you must finish your objective. When the time is right, we make history.
+Zenith General: Tới hiện tại mà ngươi vẫn chưa nhận ra sao.
+// Zenith General: You still haven't figured it out yet.
 
--> Did you think this childish trick could fool me? Don't even dream of it.
-    // [VI] Có vẻ như ngươi thực sự chỉ là một con chó dại bị xích cổ.
-    Zenith General: It seems you truly are just a rabid dog on a leash.
-    // [VI] Chết cho những kẻ chủ nhân thậm chí còn chả biết tên ngươi đi!
-    Zenith General: Die for masters who don't even know your name!
+<<switch_camera vcam_PlayerFace>>
+
+Player: Nhận ra điều gì? ý ngươi là sao nói rõ ra đi.
+// Player: Figured out what? Be clear about what you mean.
+
+<<switch_camera vcam_GeneralFace1>>
+Zenith General: Ta không biết nên gọi ngươi là con chó trung thành..
+// Zenith General: I don't know whether to call you a loyal dog..
+Zenith General: hay là một con tốt ngu ngốc.
+// Zenith General: or a stupid pawn.
+
+Zenith General: Nghĩ đi, một mình ngươi, tay không tất sắt xông vào địa bàn của kẻ thù vũ trang đầy đủ.
+// Zenith General: Think about it, you alone, unarmed, charging into heavily armed enemy territory.
+
+Zenith General: Nó đã cơ bản là một chuyến đi nộp mạng rồi.
+// Zenith General: It was basically a suicide mission from the start.
+
+Zenith General: Chưa kể dù ngươi có hoàn thành nhiệm vụ đi nữa thì ngươi cũng thấy rồi đó.
+// Zenith General: Not to mention, even if you complete the mission, you've seen it.
+
+Zenith General: Hòn đảo này đã bị đe dọa mức đỏ, 
+// Zenith General: This island is under a red alert,
+Zenith General: mức đỏ là mức cao nhất cho 1 mối nguy hại có thể xóa sổ cả hòn đảo này.
+// Zenith General: red alert is the highest level for a threat that can wipe out this entire island.
+
+Zenith General: Và nó hiện tại là Buster Call. 
+// Zenith General: And right now it's a Buster Call.
+Zenith General: Nên dù ngươi làm gì đi nữa thì ta, ngươi và cả hòn đảo này đều sẽ bị chúng xóa sổ.
+// Zenith General: So no matter what you do, me, you, and this whole island will be wiped out by them.
+<<jump Monitor_General_Hub>>
+===
+
+title: Ask_BusterCall
+tags: 
+---
+<<set $asked_buster to true>>
+<<set $monitor_asked_count = $monitor_asked_count + 1>>
+<<switch_camera vcam_GeneralFace1>>
+
+Zenith General: Hửm..., ngươi thật sự không biết về nó sao?
+// Zenith General: Hmm..., you really don't know about it?
+
+<<switch_camera vcam_PlayerFace>>
+
+Player: Nhanh chóng đi, nếu biết thì ta còn hỏi ngươi làm gì.
+// Player: Make it quick, if I knew I wouldn't be asking you.
+
+<<switch_camera vcam_GeneralFace1>>
+
+Zenith General: Về cơ bản nó là một dạng thiết lập vũ khí, 
+// Zenith General: Basically it's a type of weapon configuration,
+Zenith General: đây cũng là thông tin mật mà bọn ta đã đánh cắp được.
+// Zenith General: this is also classified information that we managed to steal.
+
+Zenith General: Buster Call vốn dĩ là một công nghệ đã tồn tại khá lâu rồi 
+// Zenith General: Buster Call is actually a technology that has existed for quite a while,
+Zenith General: nhưng trong quá khứ do công nghệ quá khó để kiểm soát, 
+// Zenith General: but in the past, because the technology was too hard to control,
+Zenith General: nó dễ dẫn đến sai sót khi sử dụng.
+// Zenith General: it easily led to errors in deployment.
+
+Zenith General: Nó sử dụng nguồn năng lượng hạt nhân để làm ngòi nổ, 
+// Zenith General: It uses nuclear energy as a detonator,
+Zenith General: khi kích hoạt nó sẽ tạo ra một vụ nổ với xung lực cực lớn, 
+// Zenith General: when activated it creates an explosion with massive impulse force,
+Zenith General: có khả năng thổi bay một thành phố.
+// Zenith General: capable of blowing away a city.
+
+Zenith General: Không chỉ vậy khu vực nổ gần như sẽ trở thành vùng đất chết rất lâu về sâu 
+// Zenith General: Not only that, the blast zone will practically become a dead land for a very long time
+Zenith General: bởi vì nồng độ phóng xạ rất cao.
+// Zenith General: due to high radiation levels.
+
+Zenith General: Đơn giản là vậy, 
+// Zenith General: It's as simple as that,
+Zenith General: sao hiểu rõ về nó rồi thì ngươi đã suy nghĩ xong chưa.
+// Zenith General: so now that you understand it, have you made up your mind?
+
+<<switch_camera vcam_PlayerFace>>
+Player: Cứ từ từ đi, ngươi không phải gấp
+// Player: Take it easy, you don't need to rush.
+<<jump Monitor_General_Hub>>
+===
+
+title: Ask_ZenithPlan
+tags: 
+---
+<<set $asked_zenith_plan to true>>
+<<set $monitor_asked_count = $monitor_asked_count + 1>>
+<<switch_camera vcam_GeneralFace1>>
+
+Zenith General: Ai chà không ngờ ngươi cũng có thể hỏi câu này đấy,
+// Zenith General: Well well, I didn't expect you to ask this question,
+
+Zenith General: Cả hòn đảo này dù là nơi thí nghiệm nhưng từng con ruồi con mũi ta còn nắm rõ trong lòng bàn tay
+// Zenith General: Even though this whole island is a testing facility, I know every single detail like the back of my hand.
+
+Zenith General: Hệ thống radar trên đảo là loại tối tân nhất nên từ khi ngươi đi vào là bọn ta đã biết rồi.
+// Zenith General: The radar system on the island is state-of-the-art, so we knew the moment you entered.
+
+<<switch_camera vcam_PlayerFace>>
+Player: Hiện đại thế cơ à, thế sao ngươi không tự xử lý bọn ta đi 
+// Player: That modern, huh, then why didn't you deal with me yourself
+Player: mà lại cất công đến đây mời mộc.
+// Player: instead of taking the trouble to come here and invite me.
+Player: Ta không nghĩ các ngươi tốt đến thế với những việc kinh tởm mình đã làm.
+// Player: I don't think you guys are that nice, given the disgusting things you've done.
+
+<<switch_camera vcam_GeneralFace1>>
+Zenith General: Kinh tởm sao, ý ngươi là mấy con robot sao, 
+// Zenith General: Disgusting? You mean the robots?
+Zenith General: ồ cũng bình thường thôi, đó là hy sinh vì khoa học thôi.
+// Zenith General: Oh, that's normal, just sacrifices for the sake of science.
+
+Zenith General: Còn về việc tại sao ta lại mất công vậy sao.
+// Zenith General: As for why I went through all this trouble.
+
+Zenith General: Thì cứ đơn giản xem như bọn ta tiếc một nhân tài như ngươi.
+// Zenith General: Just consider it as us feeling sorry to waste a talent like you.
+
+Zenith General: Tự tay hủy đi một cổ máy chiến đấu sống như thế này xem như có chút tiếc nuối, 
+// Zenith General: Destroying a living war machine like this with our own hands feels like a bit of a pity,
+Zenith General: nên ngươi nên cảm thấy may mắn đi.
+// Zenith General: so you should feel lucky.
+
+<<switch_camera vcam_PlayerFace>>
+Player: Hừ, xem như ngươi cũng khéo ăn nói, 
+// Player: Hmph, I'll admit you have a way with words,
+Player: nhưng ngươi không sợ người của ta đang nghe lén cuộc trò chuyện này sao.
+// Player: but aren't you afraid my people are eavesdropping on this conversation?
+
+<<switch_camera vcam_GeneralFace1>>
+Zenith General: À chuyện đó ngươi không cần lo, 
+// Zenith General: Ah, you don't need to worry about that,
+Zenith General: bộ đàm trên tai ngươi chứ gì, khi ngươi bước vào đây thì bọn ta đã cắt sóng rồi.
+// Zenith General: the radio in your ear, right? We cut the signal the moment you walked in here.
+
+Zenith General: Nên cuộc trò chuyện ở đây, không ai biết ngoài ta và ngươi đâu, 
+// Zenith General: So no one knows about this conversation except you and me,
+Zenith General: đó là lý do từ nãy giờ nó vẫn im ru đấy thôi
+// Zenith General: which is why it's been dead silent this whole time.
+
+Zenith General: Sao, giờ quyết định được rồi chứ?
+// Zenith General: So, can you decide now?
+<<jump Monitor_General_Hub>>
+===
+
+title: Monitor_General_Decision
+tags: 
+---
+<<switch_camera vcam_GeneralFace1>>
+Zenith General: Được rồi, quyết định đi, 
+// Zenith General: Alright, make your decision,
+Zenith General: nhưng ta mong ngươi sẽ ra quyết định thật thông minh.
+// Zenith General: but I hope you make a very smart one.
+
+<<switch_camera vcam_PlayerFace>>
+-> Tao chấp nhận lời đề nghi, bắt đầu thôi
+   // -> I accept the offer, let's begin.
+   <<switch_camera vcam_GeneralFace1>>
+   Zenith General: Một quyết định thông minh. 
+   // Zenith General: A smart decision.
+   Zenith General: Ngươi không mù quáng và trung thành ngu ngốc như ta tưởng.
+   // Zenith General: You're not as blind and foolishly loyal as I thought.
+   Zenith General: Để hoàn toàn lừa được bọn Apex, 
+   // Zenith General: To completely fool the Apex forces,
+   Zenith General: ngươi vẫn phải tiếp tục giả vờ thực hiện nhiệm vụ của mình. 
+   // Zenith General: you must continue to pretend to carry out your mission.
+   Zenith General: Khi thời cơ đến, thì ngươi sẽ chính tay lật ván cờ này, hahaha
+   // Zenith General: When the time is right, you will flip this chessboard yourself, hahaha.
+   Zenith General: Chúc may mắn
+   // Zenith General: Good luck.
+      <<choose_zenith>>
+   <<reset_camera>>
+-> Nằm mơ đi, ta sẽ không bao giờ theo các ngươi
+   // -> Keep dreaming, I will never join you.
+   <<switch_camera vcam_GeneralFace1>>
+   Zenith General: Thật đáng thất vọng và tiếc nuối cho một nhân tài như ngươi phải bỏ mạng ở đây
+   // Zenith General: How truly disappointing and regrettable for a talent like you to lose your life here.
+   Zenith General: Vậy thì cứ chết cho những kẻ chủ nhân thậm chí còn chả thèm nhớ tên ngươi đi!
+   // Zenith General: Then go die for masters who don't even bother to remember your name!
+      <<choose_apex>>
+   <<reset_camera>>
 ===

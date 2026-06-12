@@ -1,6 +1,6 @@
 ==================================================
 LOCAL FOLDER CONTEXT: Script
-Generated on: 2026-05-29 13:03:28
+Generated on: 2026-06-12 06:57:21
 ==================================================
 
 
@@ -82,29 +82,28 @@ public class AIAgent : MonoBehaviour
 
     private void UpdateLocomotion()
     {
-        // 1. KHI ĐANG DI CHUYỂN: Xoay mượt theo hướng đi
+        // 1. KHI ĐANG DI CHUYỂN: Xoay mượt theo hướng đi (Giới hạn góc quay tối đa 120 độ/giây)
         if (NavAgent.hasPath && NavAgent.velocity.sqrMagnitude > 0.1f && NavAgent.updateRotation)
         {
-            _isLazyRotating = false; // Đang đi bộ thì reset cờ lười biếng
+            _isLazyRotating = false;
             Vector3 dir = NavAgent.desiredVelocity.normalized;
             dir.y = 0;
             if (dir != Vector3.zero)
             {
                 Quaternion targetRot = Quaternion.LookRotation(dir);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 8f);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 120f * Time.deltaTime);
             }
         }
-        // 2. KHI ĐỨNG YÊN (Và không bị khóa bởi hệ thống Skill): Kích hoạt Lazy Rotation Toàn cục
+        // 2. KHI ĐỨNG YÊN: Kích hoạt Lazy Rotation Toàn cục
         else if (NavAgent.updateRotation)
         {
             if (Context.HasState(AIWorldState.HasTarget) && Context.Target != null)
             {
-                // Vượt 45 độ mới xoay, gom vào 10 độ thì dừng (Chuẩn Master Plan)
-                FaceTargetLazy(Context.Target.position, TacticalSettings != null ? TacticalSettings.combatTurnSpeed : 5f, 45f, 10f);
+                FaceTargetLazy(Context.Target.position, TacticalSettings != null ? TacticalSettings.combatTurnSpeed : 90f, 45f, 10f);
             }
             else if (Context.HasState(AIWorldState.HasSuspectedLocation))
             {
-                FaceTargetLazy(Context.SuspectedLocation, TacticalSettings != null ? TacticalSettings.turnSpeed : 3f, 45f, 10f);
+                FaceTargetLazy(Context.SuspectedLocation, TacticalSettings != null ? TacticalSettings.turnSpeed : 60f, 45f, 10f);
             }
         }
     }
@@ -490,6 +489,123 @@ public class AICore : MonoBehaviour, IDamageable
 // ==========================================
 
 
+// [FILE_START]: AIGunController.cs
+// PATH: AI_Core\AIGunController.cs
+// ------------------------------------------
+
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.Pool;
+
+public class AIGunController : MonoBehaviour
+{
+    [Header("--- AI WEAPON STATS ---")]
+    public float damage = 20f;
+    public float fireRate = 0.15f;
+    public float soundRadius = 30f;
+    public Vector3 spread = new Vector3(0.5f, 0.5f, 0.5f);
+    public LayerMask hitMask;
+
+    [Header("--- VFX & REFS ---")]
+    public Transform barrelTransform;
+    public ParticleSystem shootSystem;
+    public TrailConfigScriptableObject trailConfig;
+
+    private float _lastShootTime;
+    private ObjectPool<TrailRenderer> _trailPool;
+
+    void Start()
+    {
+        _trailPool = new ObjectPool<TrailRenderer>(CreateTrail);
+    }
+
+    public void ShootAt(Vector3 targetPoint)
+    {
+        if (Time.time < _lastShootTime + fireRate) return;
+        _lastShootTime = Time.time;
+
+        if (shootSystem != null) shootSystem.Play();
+        AIAuditorySystem.ReportSound(barrelTransform.position, soundRadius);
+
+        Vector3 baseDir = (targetPoint - barrelTransform.position).normalized;
+        Vector3 spreadVec = new Vector3(
+            Random.Range(-spread.x, spread.x),
+            Random.Range(-spread.y, spread.y),
+            Random.Range(-spread.z, spread.z)
+        );
+        Vector3 finalDir = (baseDir + spreadVec).normalized;
+        Ray ray = new Ray(barrelTransform.position, finalDir);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, 200f, hitMask))
+        {
+            IDamageable target = hit.collider.GetComponent<IDamageable>();
+            if (target != null) target.TakeDamage(damage, hit.point, hit.normal);
+
+            // Tích hợp Surface Manager như hệ thống cũ của bạn / Integrating Surface Manager like your old system
+            if (SurfaceManager.Instance != null)
+                SurfaceManager.Instance.PlayImpact(hit.point, hit.normal, hit.collider.tag);
+
+            StartCoroutine(PlayTrail(barrelTransform.position, hit.point, hit));
+        }
+        else
+        {
+            Vector3 missTarget = ray.origin + (finalDir * (trailConfig != null ? trailConfig.MissDisstance : 50f));
+            StartCoroutine(PlayTrail(barrelTransform.position, missTarget, new RaycastHit()));
+        }
+    }
+
+    private IEnumerator PlayTrail(Vector3 startPoint, Vector3 endPoint, RaycastHit hit)
+    {
+        if (trailConfig == null) yield break;
+
+        TrailRenderer instance = _trailPool.Get();
+        instance.gameObject.SetActive(true);
+        instance.transform.position = startPoint;
+        yield return null;
+
+        instance.emitting = true;
+        float distance = Vector3.Distance(startPoint, endPoint);
+        float remain = distance;
+
+        while (remain > 0)
+        {
+            instance.transform.position = Vector3.Lerp(startPoint, endPoint, Mathf.Clamp01(1 - (remain / distance)));
+            remain -= trailConfig.StimlationSpeed * Time.deltaTime;
+            yield return null;
+        }
+
+        instance.transform.position = endPoint;
+        yield return new WaitForSeconds(trailConfig.Duration);
+
+        if (hit.collider != null) AIAuditorySystem.ReportSound(endPoint, 15f);
+
+        instance.emitting = false;
+        instance.gameObject.SetActive(false);
+        _trailPool.Release(instance);
+    }
+
+    private TrailRenderer CreateTrail()
+    {
+        GameObject instance = new GameObject("AI Bullet Trail");
+        TrailRenderer trail = instance.AddComponent<TrailRenderer>();
+        if (trailConfig != null)
+        {
+            trail.colorGradient = trailConfig.Color;
+            trail.material = trailConfig.Materail;
+            trail.widthCurve = trailConfig.WidthCurve;
+            trail.time = trailConfig.Duration;
+            trail.minVertexDistance = trailConfig.MinVertexDistance;
+        }
+        trail.emitting = false;
+        trail.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        return trail;
+    }
+}
+
+// [FILE_END]: AIGunController.cs
+// ==========================================
+
+
 // [FILE_START]: AIHealth.cs
 // PATH: AI_Core\AIHealth.cs
 // ------------------------------------------
@@ -689,163 +805,85 @@ using UnityEngine.Animations.Rigging;
 [DefaultExecutionOrder(100)]
 public class AILookController : MonoBehaviour
 {
-    [Header("--- CORE REFERENCES ---")]
-    private AIAgent _agent;
-    public Transform neckBase;
-    public ChainIKConstraint neckIKConstraint;
-    public Transform neckIKTarget;
+    [Header("--- TURRET RIGGING (CƠ KHÍ) ---")]
+    public Transform turretAimTarget;
+    public Transform turretBase;
 
-    [Header("--- HEAD OVERRIDE (CODE CONTROL) ---")]
-    public Transform headBone;
-    public Transform headAimTarget;
-    public Vector3 headFacingOffset = Vector3.zero;
-    public float headTurnSpeed = 10f;
+    public float lookSmoothTime = 0.15f;
+    public float virtualLookDistance = 10f;
 
-    [Header("--- BIOMECHANICS & POSTURE ---")]
-    public float maxNeckReach = 4f;
-    public float minNeckReach = 1.5f;
-    [Range(0.5f, 1f)] public float neckCurveRetainer = 0.8f;
+    [Tooltip("VI: Góc ngắm ngóc lên tối đa (Độ).\nEN: Maximum elevation angle (Degrees).")]
+    public float maxLookUpAngle = 45f;
 
-    // [ĐÃ KHÔI PHỤC]: Trả lại biến giới hạn khoảng cách ngắm!
-    public float minHeadTargetDistance = 3f;
+    [Tooltip("VI: Góc ngắm hạ xuống tối đa (Độ). NHỚ ĐỂ SỐ ÂM!\nEN: Maximum depression angle (Degrees). KEEP AS NEGATIVE!")]
+    public float maxLookDownAngle = -25f;
 
-    public float virtualLookDistance = 5f;
-    public float maxLookAngle = 80f;
-
-    [Header("--- CHIỀU CAO CỔ & LÀM MƯỢT ---")]
-    public float maxHeadUpOffset = 0.8f;
-    public float maxHeadDownOffset = -1.2f;
-    public float patrolMovingNeckHeight = -0.5f;
-    public float patrolStoppedNeckHeight = 1.5f;
-    public float alertNeckHeight = 2.0f;
-    public float headSmoothTime = 0.15f;
-    public float neckSmoothTime = 0.25f;
-
-    [Header("--- ĐỘ MẠNH CỦA IK (WEIGHTS) ---")]
-    public float alertHeadWeight = 1.0f;
-    public float alertNeckWeight = 1.0f;
-    public float patrolHeadWeight = 1.0f;
-    public float patrolNeckWeight = 1.0f;
-    public float weightSmoothTime = 0.2f;
-
-    [Header("--- THỜI GIAN GIỮ MẮT (RADAR) ---")]
+    [Header("--- RADAR SCANNING (QUÉT TÌM KIẾM) ---")]
     public float lookHoldTime = 2.0f;
     public float lookTransitionSpeed = 4f;
-    public float stoppedHorizontalRange = 5.0f;
-    public float stoppedVerticalRange = 0.4f;
-    public float movingHorizontalRange = 1.5f;
-    public float movingVerticalRange = 0.1f;
+    public float scanHorizontalRange = 5.0f;
+    public float scanVerticalRange = 0.5f;
 
-    [Header("--- NOISE SINH HỌC ---")]
-    public float noiseSpeed = 1.5f;
-    public float noiseAmplitude = 2.5f;
-
-    // --- VARIABLES ---
+    private AIAgent _agent;
     private Vector3 _smoothedTargetPos;
     private Vector3 _targetPosVel;
-    private Vector3 _smoothedRelHead, _smoothedRelNeck;
-    private Vector3 _relHeadVel, _relNeckVel;
-
-    private float _currentHeadWeight = 1f;
-    private float _currentNeckWeight = 1f;
-    private float _headWeightVel, _neckWeightVel;
 
     private float _lookTimer;
     private Vector3 _targetVisualOffset;
     private Vector3 _currentVisualOffset;
-    private float _smoothedPatrolHeight, _patrolHeightVel;
-    private float _smoothedLookRadius, _lookRadiusVel;
-    private bool _isStandingStill;
-
-    private Quaternion _lastHeadRot;
-    private bool _isFirstFrame = true;
 
     private void Awake()
     {
         _agent = GetComponent<AIAgent>();
-        if (neckBase != null) _smoothedTargetPos = neckBase.position + transform.forward * virtualLookDistance;
-        _smoothedRelHead = transform.forward * virtualLookDistance;
-        _smoothedRelNeck = transform.forward * (virtualLookDistance * 0.5f);
+
+        if (turretBase != null)
+            _smoothedTargetPos = turretBase.position + transform.forward * virtualLookDistance;
     }
 
     private void LateUpdate()
     {
-        if (neckBase == null || _agent == null) return;
-        _isStandingStill = _agent.NavAgent.velocity.magnitude < 0.1f;
-
-        float targetHeight = _isStandingStill ? patrolStoppedNeckHeight : patrolMovingNeckHeight;
-        _smoothedPatrolHeight = Mathf.SmoothDamp(_smoothedPatrolHeight, targetHeight, ref _patrolHeightVel, 0.25f);
-        float targetRadius = _isStandingStill ? stoppedHorizontalRange : movingHorizontalRange;
-        _smoothedLookRadius = Mathf.SmoothDamp(_smoothedLookRadius, targetRadius, ref _lookRadiusVel, 0.25f);
+        if (turretBase == null || _agent == null || turretAimTarget == null) return;
 
         UpdateStaggeredLookAround();
-
         Vector3 rawTargetPos = GetPointOfInterest();
+
         bool isEngaged = _agent.Context.HasState(AIWorldState.HasTarget) || _agent.Context.LookFocusOverride.HasValue;
         if (!isEngaged)
         {
-            rawTargetPos += _currentVisualOffset;
+            rawTargetPos += transform.right * _currentVisualOffset.x + transform.up * _currentVisualOffset.y;
         }
 
-        Vector3 dirToRawTarget = (rawTargetPos - neckBase.position).normalized;
-        Vector3 localDir = transform.InverseTransformDirection(dirToRawTarget);
-        float currentAngle = Vector3.Angle(Vector3.forward, localDir);
+        // ==========================================
+        // [MỚI] GIỚI HẠN GÓC NGẮM LÊN/XUỐNG (PITCH CLAMP)
+        // [NEW] UP/DOWN AIM PITCH CLAMP
+        // ==========================================
+        Vector3 dirToTarget = rawTargetPos - turretBase.position;
 
-        if (currentAngle > maxLookAngle)
-        {
-            Vector3 clampedLocalDir = Vector3.Slerp(Vector3.forward, localDir, maxLookAngle / currentAngle);
-            dirToRawTarget = transform.TransformDirection(clampedLocalDir);
-            rawTargetPos = neckBase.position + dirToRawTarget * virtualLookDistance;
-        }
+        // VI: Chuyển hướng nhìn sang Không gian cục bộ của Mech để không bị lỗi khi đứng trên dốc
+        // EN: Convert look direction to Mech's Local Space to avoid errors when standing on slopes
+        Vector3 localDir = transform.InverseTransformDirection(dirToTarget);
 
-        _smoothedTargetPos = Vector3.SmoothDamp(_smoothedTargetPos, rawTargetPos, ref _targetPosVel, 0.15f);
+        // VI: Tính khoảng cách trên mặt phẳng ngang (X-Z)
+        // EN: Calculate distance on the horizontal plane (X-Z)
+        float flatDist = new Vector2(localDir.x, localDir.z).magnitude;
 
-        Vector3 targetRelHead = _smoothedTargetPos - neckBase.position;
-        Vector3 targetRelNeck = targetRelHead * 0.5f;
+        // VI: Dùng lượng giác (Tan) để tìm ra chiều cao Y tối đa/tối thiểu cho phép
+        // EN: Use trigonometry (Tan) to find the maximum/minimum allowed Y height
+        float maxY = flatDist * Mathf.Tan(maxLookUpAngle * Mathf.Deg2Rad);
+        float minY = flatDist * Mathf.Tan(maxLookDownAngle * Mathf.Deg2Rad);
 
-        _smoothedRelHead = Vector3.SmoothDamp(_smoothedRelHead, targetRelHead, ref _relHeadVel, headSmoothTime);
-        _smoothedRelNeck = Vector3.SmoothDamp(_smoothedRelNeck, targetRelNeck, ref _relNeckVel, neckSmoothTime);
+        // VI: Kẹp (Clamp) trục Y cục bộ lại
+        // EN: Clamp the local Y axis
+        localDir.y = Mathf.Clamp(localDir.y, minY, maxY);
 
-        Vector3 smoothedWorldHead = neckBase.position + _smoothedRelHead;
-        Vector3 smoothedWorldNeck = neckBase.position + _smoothedRelNeck;
+        // VI: Trả ngược hướng nhìn về Không gian thế giới và áp dụng
+        // EN: Convert look direction back to World Space and apply
+        dirToTarget = transform.TransformDirection(localDir);
+        rawTargetPos = turretBase.position + dirToTarget;
+        // ==========================================
 
-        Vector3 dirToHead = smoothedWorldHead - neckBase.position;
-        if (dirToHead.magnitude < minHeadTargetDistance)
-            smoothedWorldHead = neckBase.position + dirToHead.normalized * minHeadTargetDistance;
-        smoothedWorldHead.y = Mathf.Clamp(smoothedWorldHead.y, neckBase.position.y + maxHeadDownOffset, neckBase.position.y + maxHeadUpOffset);
-
-        Vector3 flatNeckDir = (smoothedWorldNeck - neckBase.position).normalized;
-        flatNeckDir.y = 0; flatNeckDir.Normalize();
-        float distNeck = Mathf.Clamp(Vector3.Distance(neckBase.position, smoothedWorldNeck), minNeckReach, maxNeckReach * neckCurveRetainer);
-
-        bool isAlert = _agent.Context.HasState(AIWorldState.HasTarget) || _agent.Context.HasState(AIWorldState.HasSuspectedLocation);
-        float currentNeckHeight = isAlert ? alertNeckHeight : _smoothedPatrolHeight;
-        smoothedWorldNeck = neckBase.position + flatNeckDir * distNeck + Vector3.up * currentNeckHeight;
-
-        if (headAimTarget != null) headAimTarget.position = smoothedWorldHead;
-        if (neckIKTarget != null) neckIKTarget.position = smoothedWorldNeck;
-
-        float desiredHeadWeight = isAlert ? alertHeadWeight : patrolHeadWeight;
-        float desiredNeckWeight = isAlert ? alertNeckWeight : patrolNeckWeight;
-        _currentHeadWeight = Mathf.SmoothDamp(_currentHeadWeight, desiredHeadWeight, ref _headWeightVel, weightSmoothTime);
-        _currentNeckWeight = Mathf.SmoothDamp(_currentNeckWeight, desiredNeckWeight, ref _neckWeightVel, weightSmoothTime);
-        if (neckIKConstraint != null) neckIKConstraint.weight = _currentNeckWeight;
-
-        if (headBone != null)
-        {
-            if (_isFirstFrame) { _lastHeadRot = headBone.rotation; _isFirstFrame = false; }
-            Vector3 lookDir = smoothedWorldHead - headBone.position;
-            if (lookDir != Vector3.zero)
-            {
-                Quaternion targetLookRot = Quaternion.LookRotation(lookDir, Vector3.up) * Quaternion.Euler(headFacingOffset);
-                float nx = (Mathf.PerlinNoise(Time.time * noiseSpeed, 0f) - 0.5f) * 2f * noiseAmplitude;
-                float ny = (Mathf.PerlinNoise(0f, Time.time * noiseSpeed) - 0.5f) * 2f * noiseAmplitude;
-                targetLookRot *= Quaternion.Euler(nx, ny, 0f);
-
-                _lastHeadRot = Quaternion.Slerp(_lastHeadRot, targetLookRot, Time.deltaTime * headTurnSpeed);
-                headBone.rotation = Quaternion.Slerp(headBone.rotation, _lastHeadRot, _currentHeadWeight);
-            }
-        }
+        _smoothedTargetPos = Vector3.SmoothDamp(_smoothedTargetPos, rawTargetPos, ref _targetPosVel, lookSmoothTime);
+        turretAimTarget.position = _smoothedTargetPos;
     }
 
     private void UpdateStaggeredLookAround()
@@ -861,13 +899,14 @@ public class AILookController : MonoBehaviour
         if (Time.time >= _lookTimer)
         {
             _lookTimer = Time.time + lookHoldTime + Random.Range(-0.5f, 0.5f);
+
             bool hasSuspicion = _agent.Context.HasState(AIWorldState.HasSuspectedLocation);
             bool isScanning = _agent.Context.IsScanning;
 
-            float currentMaxX = (isScanning || hasSuspicion) ? stoppedHorizontalRange : _smoothedLookRadius;
-            float currentMaxY = (isScanning || hasSuspicion) ? stoppedVerticalRange : (_isStandingStill ? stoppedVerticalRange : movingVerticalRange);
+            float currentMaxX = (isScanning || hasSuspicion) ? scanHorizontalRange : (scanHorizontalRange * 0.3f);
+            float currentMaxY = (isScanning || hasSuspicion) ? scanVerticalRange : 0.1f;
 
-            _targetVisualOffset = transform.right * Random.Range(-currentMaxX, currentMaxX) + Vector3.up * Random.Range(-currentMaxY, currentMaxY);
+            _targetVisualOffset = new Vector3(Random.Range(-currentMaxX, currentMaxX), Random.Range(-currentMaxY, currentMaxY), 0f);
         }
         _currentVisualOffset = Vector3.Lerp(_currentVisualOffset, _targetVisualOffset, Time.deltaTime * lookTransitionSpeed);
     }
@@ -885,10 +924,15 @@ public class AILookController : MonoBehaviour
 
         if (_agent.NavAgent.hasPath && _agent.NavAgent.remainingDistance > 0.5f)
         {
-            return _agent.NavAgent.steeringTarget + Vector3.up * 1.2f;
+            Vector3 dirToSteering = (_agent.NavAgent.steeringTarget - turretBase.position);
+            dirToSteering.y = 0;
+            if (dirToSteering != Vector3.zero)
+            {
+                return turretBase.position + dirToSteering.normalized * virtualLookDistance;
+            }
         }
 
-        return neckBase.position + transform.forward * virtualLookDistance + Vector3.up * 1.2f;
+        return turretBase.position + transform.forward * virtualLookDistance;
     }
 }
 
@@ -1020,78 +1064,168 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public class AIProceduralBody : MonoBehaviour
 {
-    [Header("--- HỆ THỐNG NHỊP BƯỚC (TROT GAIT) ---")]
-    public AIProceduralLeg frontLeftLeg;
-    public AIProceduralLeg backRightLeg;
-    public AIProceduralLeg frontRightLeg;
-    public AIProceduralLeg backLeftLeg;
+    [System.Serializable]
+    public class ProceduralLeg
+    {
+        [Tooltip("VI: Điểm neo IK dưới bàn chân (Target của Chain IK Constraint).\nEN: IK anchor under the foot (Target of Chain IK Constraint).")]
+        public Transform tipTarget;
 
-    [Header("--- NHỊP THỞ & NHẤP NHÔ (BODY BOBBING) ---")]
+        [Tooltip("VI: Điểm mốc lơ lửng gắn chết với thân mech để xác định vị trí gốc của chân.\nEN: Floating reference point parented to the mech body to determine the leg's home position.")]
+        public Transform homeTransform;
+
+        [HideInInspector] public Vector3 currentFootprint;
+        [HideInInspector] public Vector3 idealPosition;
+        [HideInInspector] public bool isStepping;
+        [HideInInspector] public float stepTimer;
+        [HideInInspector] public Vector3 stepStartPos;
+    }
+
+    [Header("--- LEGS CONFIGURATION ---")]
+    [Tooltip("VI: Mảng chứa toàn bộ chân. Nên xếp chéo góc (0=TrướcTrái, 1=TrướcPhải, 2=SauPhải, 3=SauTrái) để nhện bước mượt nhất.\nEN: Array of all legs. Should be ordered diagonally (0=FrontLeft, 1=FrontRight, 2=BackRight, 3=BackLeft) for smoothest gait.")]
+    public ProceduralLeg[] legs;
+
+    [Header("--- GLOBAL STEP SETTINGS (PURE MATH) ---")]
+    [Tooltip("VI: Khoảng cách chân bị kéo giãn tối đa trước khi buộc phải nhấc lên bước tiếp.\nEN: Maximum distance the leg stretches before it is forced to lift and take a step.")]
+    public float stepDistance = 0.8f;
+
+    [Tooltip("VI: Chiều cao nhấc chân (tính bằng mét) khi bước.\nEN: Leg lift height (in meters) when stepping.")]
+    public float stepHeight = 0.3f;
+
+    [Tooltip("VI: Thời gian (giây) để hoàn thành một bước chân. Càng nhỏ bước càng nhanh.\nEN: Time (in seconds) to complete one footstep. Smaller value means faster step.")]
+    public float stepDuration = 0.25f;
+
+    [Tooltip("VI: Hệ số nhân với vận tốc để đoán trước điểm đáp chân (0 = rớt đâu dẫm đó, 0.4 = đón đầu hướng đi).\nEN: Multiplier with velocity to predict landing spot (0 = step exactly below, 0.4 = step into movement direction).")]
+    public float overshootMultiplier = 0.4f;
+
+    [Tooltip("VI: Độ dài tia dò đường xuống mặt đất. Tăng lên nếu mech cao kều, giảm đi nếu mech lùn.\nEN: Downward raycast length to the ground. Increase if mech is tall, decrease if short.")]
+    public float raycastLength = 8f;
+
+    [Tooltip("VI: Đồ thị tạo vòm cong bước chân. Vẽ Parabol từ (0,0) lên đỉnh (0.5, 1) và hạ về (1,0).\nEN: Curve to generate step arc. Draw a Parabola from (0,0) peaking at (0.5, 1) and ending at (1,0).")]
+    public AnimationCurve stepHeightCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+
+    [Tooltip("VI: Layer của mặt đất. Chân sẽ chỉ bước lên vật thể có Layer này.\nEN: Ground Layer. Legs will only step on objects with this Layer.")]
+    public LayerMask groundLayer;
+
+    [Header("--- BODY BOBBING ---")]
+    [Tooltip("VI: Khối Mesh của thân Mech để tạo hiệu ứng nhấp nhô theo nhịp thở/di chuyển.\nEN: The Mech's body Mesh object to create breathing/movement bobbing effects.")]
     public Transform bodyMesh;
-    public float idleBobSpeed = 2f;
-    public float idleBobAmount = 0.05f;
-    public float moveBobSpeed = 15f;
-    public float moveBobAmount = 0.15f;
 
-    public bool isIKLocked = false;
-    public bool isSkillActive = false; // [MỚI] Cờ kiểm soát vòng đời Skill
+    [Tooltip("VI: Tốc độ nhấp nhô thân hình khi đang đi dạo.\nEN: Body bobbing speed while walking.")]
+    public float moveBobSpeed = 14f;
+
+    [Tooltip("VI: Biên độ (độ nảy cao thấp) của thân hình khi đi dạo.\nEN: Amplitude (up/down bounce) of the body while walking.")]
+    public float moveBobAmount = 0.08f;
 
     private NavMeshAgent _navAgent;
     private float _bobTimer;
     private Vector3 _startBodyLocalPos;
 
-    void Awake() { _navAgent = GetComponent<NavMeshAgent>(); }
-    void Start() { if (bodyMesh != null) _startBodyLocalPos = bodyMesh.localPosition; }
-
-    void Update()
+    void Awake()
     {
-        // [FIX LỖI CHÂN GIẬT]: Nếu đang lướt hoặc đang thu đòn -> KHÔNG CHO TROT GAIT HOẠT ĐỘNG
-        if (isIKLocked || isSkillActive) return;
+        _navAgent = GetComponent<NavMeshAgent>();
+    }
 
-        float currentSpeed = _navAgent.velocity.magnitude;
-        bool isMoving = currentSpeed > 0.1f;
-        float speedMultiplier = Mathf.Max(1f, currentSpeed / Mathf.Max(1f, _navAgent.speed));
+    void Start()
+    {
+        if (bodyMesh != null) _startBodyLocalPos = bodyMesh.localPosition;
 
-        bool isPairAStepping = frontLeftLeg.IsStepping || backRightLeg.IsStepping;
-        bool isPairBStepping = frontRightLeg.IsStepping || backLeftLeg.IsStepping;
-
-        bool pairAWantsToStep = frontLeftLeg.WantsToStep() || backRightLeg.WantsToStep();
-        bool pairBWantsToStep = frontRightLeg.WantsToStep() || backLeftLeg.WantsToStep();
-
-        if (!isPairBStepping && pairAWantsToStep)
+        foreach (var leg in legs)
         {
-            frontLeftLeg.Step(); backRightLeg.Step();
-        }
-        else if (!isPairAStepping && pairBWantsToStep)
-        {
-            frontRightLeg.Step(); backLeftLeg.Step();
-        }
-
-        if (bodyMesh != null)
-        {
-            float currentBobSpeed = isMoving ? moveBobSpeed * speedMultiplier : idleBobSpeed;
-            float currentBobAmount = isMoving ? moveBobAmount : idleBobAmount;
-            _bobTimer += Time.deltaTime * currentBobSpeed;
-            float offsetY = Mathf.Sin(_bobTimer) * currentBobAmount;
-            Vector3 targetBodyPos = _startBodyLocalPos + new Vector3(0f, offsetY, 0f);
-            bodyMesh.localPosition = Vector3.Lerp(bodyMesh.localPosition, targetBodyPos, Time.deltaTime * 10f);
+            if (leg != null && leg.tipTarget != null)
+            {
+                leg.currentFootprint = leg.tipTarget.position;
+                leg.idealPosition = leg.tipTarget.position;
+            }
         }
     }
 
-    public void LockAndResetLegs(bool isLocked)
+    void Update()
     {
-        isIKLocked = isLocked;
-        if (frontLeftLeg != null) frontLeftLeg.SetLocked(isLocked);
-        if (backRightLeg != null) backRightLeg.SetLocked(isLocked);
-        if (frontRightLeg != null) frontRightLeg.SetLocked(isLocked);
-        if (backLeftLeg != null) backLeftLeg.SetLocked(isLocked);
+        if (legs == null || legs.Length == 0) return;
 
-        if (!isLocked)
+        ManageLegStepping();
+        ApplyBodyBobbing();
+    }
+
+    private void ManageLegStepping()
+    {
+        bool isEvenGroupStepping = false;
+        bool isOddGroupStepping = false;
+
+        for (int i = 0; i < legs.Length; i++)
         {
-            if (frontLeftLeg != null) frontLeftLeg.SnapToIdealPosition();
-            if (backRightLeg != null) backRightLeg.SnapToIdealPosition();
-            if (frontRightLeg != null) frontRightLeg.SnapToIdealPosition();
-            if (backLeftLeg != null) backLeftLeg.SnapToIdealPosition();
+            if (legs[i] != null && legs[i].isStepping)
+            {
+                if (i % 2 == 0) isEvenGroupStepping = true;
+                else isOddGroupStepping = true;
+            }
+        }
+
+        Vector3 velocityOffset = _navAgent != null ? _navAgent.velocity * overshootMultiplier : Vector3.zero;
+
+        for (int i = 0; i < legs.Length; i++)
+        {
+            if (legs[i] == null || legs[i].tipTarget == null || legs[i].homeTransform == null) continue;
+
+            // Sử dụng raycastLength có thể tùy chỉnh
+            Vector3 predictedPos = legs[i].homeTransform.position + velocityOffset;
+            if (Physics.Raycast(predictedPos + Vector3.up * 2f, Vector3.down, out RaycastHit hit, raycastLength, groundLayer))
+            {
+                legs[i].idealPosition = hit.point;
+            }
+
+            if (!legs[i].isStepping)
+            {
+                float dist = Vector3.Distance(legs[i].currentFootprint, legs[i].idealPosition);
+                if (dist > stepDistance)
+                {
+                    if ((i % 2 == 0 && !isOddGroupStepping) || (i % 2 != 0 && !isEvenGroupStepping))
+                    {
+                        legs[i].isStepping = true;
+                        legs[i].stepTimer = 0f;
+                        legs[i].stepStartPos = legs[i].currentFootprint;
+
+                        if (i % 2 == 0) isEvenGroupStepping = true;
+                        else isOddGroupStepping = true;
+                    }
+                }
+
+                legs[i].tipTarget.position = legs[i].currentFootprint;
+            }
+            else
+            {
+                legs[i].stepTimer += Time.deltaTime / stepDuration;
+                if (legs[i].stepTimer >= 1f)
+                {
+                    legs[i].stepTimer = 1f;
+                    legs[i].isStepping = false;
+                    legs[i].currentFootprint = legs[i].idealPosition;
+                }
+
+                Vector3 lerpedPos = Vector3.Lerp(legs[i].stepStartPos, legs[i].idealPosition, legs[i].stepTimer);
+                float heightOffset = stepHeightCurve != null ? stepHeightCurve.Evaluate(legs[i].stepTimer) * stepHeight : 0f;
+                lerpedPos.y += heightOffset;
+
+                legs[i].tipTarget.position = lerpedPos;
+            }
+        }
+    }
+
+    private void ApplyBodyBobbing()
+    {
+        if (bodyMesh == null) return;
+
+        float currentSpeed = _navAgent.velocity.magnitude;
+        if (currentSpeed > 0.1f)
+        {
+            _bobTimer += Time.deltaTime * moveBobSpeed;
+            float offsetY = Mathf.Sin(_bobTimer) * moveBobAmount;
+            Vector3 targetBodyPos = _startBodyLocalPos + new Vector3(0f, offsetY, 0f);
+            bodyMesh.localPosition = Vector3.Lerp(bodyMesh.localPosition, targetBodyPos, Time.deltaTime * 10f);
+        }
+        else
+        {
+            bodyMesh.localPosition = Vector3.Lerp(bodyMesh.localPosition, _startBodyLocalPos, Time.deltaTime * 5f);
         }
     }
 }
@@ -1388,9 +1522,7 @@ public class AIRagdollController : MonoBehaviour
 
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 using FluidHTN;
-using DG.Tweening;
 using TaskStatus = FluidHTN.TaskStatus;
 
 [System.Serializable]
@@ -1408,30 +1540,23 @@ public class AISkillController : MonoBehaviour
     public List<ActiveSkill> availableSkills = new List<ActiveSkill>();
     public float momentumBonus = 0.2f;
 
-    [Header("--- CHOREOGRAPHY REFS ---")]
-    public Transform groundPivot;
-    public Transform bodyMesh;
-    public AIMeleeHitbox meleeHitbox;
-    public AIProceduralBody proceduralBody;
-
     [Header("--- RANGED COMBAT REFS ---")]
-    public GunController aiGunController; // [VI] Đã xóa biến aiGunBarrel / [EN] Removed aiGunBarrel variable
+    [Tooltip("VI: Gắn script AIGunController mới vào đây.\nEN: Attach the new AIGunController script here.")]
+    public AIGunController aiGunController;
 
     public TaskStatus CurrentSkillStatus { get; private set; } = TaskStatus.Success;
 
     private AIAgent _agent;
     private ActiveSkill _currentSkill;
     private ActiveSkill _lastSelectedSkill;
+
     private int _phase = 0;
     private float _timer = 0f;
-    private Sequence _currentSkillSeq;
-    private Vector3 _originalBodyPos;
-    private Vector3 _snapshotTargetPos;
+    private int _strafeDir = 1;
 
     void Awake()
     {
         _agent = GetComponent<AIAgent>();
-        if (bodyMesh != null) _originalBodyPos = bodyMesh.localPosition;
     }
 
     public void StartBestSkill(Transform target)
@@ -1449,18 +1574,20 @@ public class AISkillController : MonoBehaviour
         _phase = 0;
         _timer = 0f;
 
-        if (_agent.NavAgent != null)
+        // VI: Chọn ngẫu nhiên hướng trượt ngang cho lượt bắn này
+        // EN: Randomly choose a strafing direction for this firing sequence
+        _strafeDir = UnityEngine.Random.value > 0.5f ? 1 : -1;
+
+        if (_agent.NavAgent != null && _agent.NavAgent.isOnNavMesh)
         {
             _agent.NavAgent.ResetPath();
-            if (_currentSkill.data.skillType != SkillArchetype.RangedShoot)
-            {
-                _agent.NavAgent.updatePosition = false;
-            }
+            // VI: Ép vận tốc về 0 để dừng di chuyển theo path, KHÔNG DÙNG isStopped để NavAgent vẫn tính toán di chuyển trượt!
+            // EN: Force velocity to 0 to stop pathing, DO NOT USE isStopped so NavAgent still calculates strafing!
+            _agent.NavAgent.velocity = Vector3.zero;
             _agent.NavAgent.updateRotation = false;
         }
 
         _agent.Context.CurrentExecutingSkill = _currentSkill.data;
-        _agent.Context.LookFocusOverride = target.position + Vector3.up * 1.2f;
     }
 
     void Update()
@@ -1469,6 +1596,15 @@ public class AISkillController : MonoBehaviour
 
         _timer += Time.deltaTime;
 
+        // VI: Luôn luôn xoay dìm mặt về phía Player một cách đầm chắc
+        // EN: Always ponderously rotate to face the Player
+        _agent.FaceTargetLazy(_agent.Context.Target.position, _agent.TacticalSettings.combatTurnSpeed, 0f, 0f);
+
+        // ==========================================
+        // CỖ MÁY TRẠNG THÁI / STATE MACHINE
+        // ==========================================
+
+        // PHASE 0: CHỜ GÓC NGẮM (FOV CHECK)
         if (_phase == 0)
         {
             Vector3 dirToTarget = (_agent.Context.Target.position - transform.position).normalized;
@@ -1477,141 +1613,52 @@ public class AISkillController : MonoBehaviour
 
             if (angleToTarget <= _currentSkill.data.weaponFOV / 2f)
             {
-                _phase = 1;
-                ExecuteSkillChoreography();
+                _phase = 1; _timer = 0f;
             }
-            else
+            else if (_timer > 4f)
             {
-                _agent.FaceTargetLazy(_agent.Context.Target.position, _agent.TacticalSettings.combatTurnSpeed);
-                if (_timer > 3f) AbortExecution(TaskStatus.Failure);
+                AbortExecution(TaskStatus.Failure);
             }
         }
-    }
-
-    private void ExecuteSkillChoreography()
-    {
-        _agent.Context.LookFocusOverride = null;
-        if (proceduralBody != null) proceduralBody.isSkillActive = true;
-        if (_currentSkillSeq != null && _currentSkillSeq.IsActive()) _currentSkillSeq.Kill();
-        _currentSkillSeq = DOTween.Sequence();
-
-        _snapshotTargetPos = _agent.Context.Target.position;
-
-        switch (_currentSkill.data.skillType)
+        // PHASE 1: ĐỨNG YÊN NGẮM (WIND-UP)
+        else if (_phase == 1)
         {
-            case SkillArchetype.MeleeLunge:
-                Vector3 dashDir = (_snapshotTargetPos - transform.position).normalized;
-                dashDir.y = 0;
-                Vector3 finalDashTarget = _snapshotTargetPos + (dashDir * _currentSkill.data.overshootDistance);
+            if (_timer >= _currentSkill.data.windUpTime)
+            {
+                _phase = 2; _timer = 0f;
+            }
+        }
+        // PHASE 2: XẢ ĐẠN & TRƯỢT NGANG (EXECUTE & STRAFE)
+        else if (_phase == 2)
+        {
+            if (aiGunController != null)
+            {
+                Vector3 aimTarget = _agent.Context.Target.position + (Vector3.up * 1.2f);
+                aiGunController.ShootAt(aimTarget);
+            }
 
-                if (NavMesh.SamplePosition(finalDashTarget, out NavMeshHit navHit, 3f, NavMesh.AllAreas))
-                    finalDashTarget = navHit.position;
-                else
-                    finalDashTarget = _snapshotTargetPos;
+            // VI: Logic trượt ngang liên tục không dùng Tween
+            // EN: Continuous strafing logic without using Tween
+            if (_agent.NavAgent != null && _agent.NavAgent.isOnNavMesh)
+            {
+                Vector3 dirToTarget = (_agent.Context.Target.position - transform.position).normalized;
+                Vector3 rightDir = Vector3.Cross(dirToTarget, Vector3.up) * _strafeDir;
+                _agent.NavAgent.Move(rightDir * _agent.TacticalSettings.prowlSpeed * Time.deltaTime);
+            }
 
-                if (bodyMesh != null)
-                    _currentSkillSeq.Append(bodyMesh.DOLocalMoveY(_originalBodyPos.y - _currentSkill.data.windUpDip, _currentSkill.data.windUpTime).SetEase(Ease.InOutSine));
-                else
-                    _currentSkillSeq.AppendInterval(_currentSkill.data.windUpTime);
-
-                _currentSkillSeq.AppendCallback(() =>
-                {
-                    if (_agent.NavAgent != null) _agent.NavAgent.enabled = false;
-                    if (meleeHitbox != null) meleeHitbox.ActivateHitbox(_currentSkill.data.damage, _currentSkill.data.knockbackForce);
-                    if (proceduralBody != null) proceduralBody.LockAndResetLegs(true);
-                });
-
-                _currentSkillSeq.Append(transform.DOMove(finalDashTarget, _currentSkill.data.executeTime)
-                    .SetEase(Ease.OutExpo)
-                    .OnUpdate(() =>
-                    {
-                        if (groundPivot != null)
-                        {
-                            if (NavMesh.SamplePosition(groundPivot.position + Vector3.up * 2f, out NavMeshHit floorHit, 4f, NavMesh.AllAreas))
-                            {
-                                float offsetToRoot = transform.position.y - groundPivot.position.y;
-                                transform.position = new Vector3(transform.position.x, floorHit.position.y + offsetToRoot, transform.position.z);
-                            }
-                        }
-                    })
-                );
-
-                if (bodyMesh != null)
-                    _currentSkillSeq.Join(bodyMesh.DOLocalJump(_originalBodyPos, _currentSkill.data.jumpArcHeight, 1, _currentSkill.data.executeTime).SetEase(Ease.OutExpo));
-
-                _currentSkillSeq.AppendCallback(() =>
-                {
-                    if (meleeHitbox != null) meleeHitbox.DeactivateHitbox();
-                    if (_agent.NavAgent != null)
-                    {
-                        if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit2, 2f, NavMesh.AllAreas))
-                            transform.position = hit2.position;
-
-                        _agent.NavAgent.enabled = true;
-                        if (_agent.NavAgent.isOnNavMesh) _agent.NavAgent.Warp(transform.position);
-                    }
-                    if (proceduralBody != null) proceduralBody.LockAndResetLegs(false);
-                });
-
-                if (bodyMesh != null)
-                    _currentSkillSeq.Append(bodyMesh.DOLocalMoveY(_originalBodyPos.y, _currentSkill.data.recoveryTime).SetEase(Ease.InOutSine));
-                else
-                    _currentSkillSeq.AppendInterval(_currentSkill.data.recoveryTime);
-
-                _currentSkillSeq.OnComplete(() =>
-                {
-                    _currentSkill.RecordCastTime();
-                    AbortExecution(TaskStatus.Success);
-                });
-
-                break;
-
-            case SkillArchetype.RangedShoot:
-                if (bodyMesh != null)
-                    _currentSkillSeq.Append(bodyMesh.DOLocalMoveY(_originalBodyPos.y - _currentSkill.data.windUpDip, _currentSkill.data.windUpTime).SetEase(Ease.InOutSine));
-                else
-                    _currentSkillSeq.AppendInterval(_currentSkill.data.windUpTime);
-                int strafeDir = UnityEngine.Random.value > 0.5f ? 1 : -1;
-
-                _currentSkillSeq.AppendInterval(_currentSkill.data.executeTime)
-                    .OnUpdate(() =>
-                    {
-                        if (_agent != null && _agent.Context.Target != null)
-                        {
-                            _agent.FaceTargetLazy(_agent.Context.Target.position, _agent.TacticalSettings.combatTurnSpeed);
-                            if (aiGunController != null)
-                            {
-                                Vector3 aimTarget = _agent.Context.Target.position + (Vector3.up * 1.2f);
-                                aiGunController.ShootAtAI(aimTarget);
-                            }
-
-                            if (_agent.NavAgent != null && _agent.NavAgent.isOnNavMesh)
-                            {
-                                // Lấy hướng đâm thẳng vào người Player
-                                Vector3 dirToTarget = (_agent.Context.Target.position - transform.position).normalized;
-                                // Lấy Vector vuông góc 90 độ (bên trái/phải)
-                                Vector3 rightDir = Vector3.Cross(dirToTarget, Vector3.up) * strafeDir;
-
-                                // Ép quái di chuyển trượt sang ngang
-                                _agent.NavAgent.Move(rightDir * _agent.TacticalSettings.prowlSpeed * Time.deltaTime);
-                            }
-                        }
-                    });
-
-                if (bodyMesh != null)
-                    _currentSkillSeq.Append(bodyMesh.DOLocalMoveY(_originalBodyPos.y, _currentSkill.data.recoveryTime).SetEase(Ease.InOutSine));
-                else
-                    _currentSkillSeq.AppendInterval(_currentSkill.data.recoveryTime);
-
-                _currentSkillSeq.OnComplete(() =>
-                {
-                    _currentSkill.RecordCastTime();
-                    AbortExecution(TaskStatus.Success);
-                });
-                break;
-
-            case SkillArchetype.AoEStomp:
-                break;
+            if (_timer >= _currentSkill.data.executeTime)
+            {
+                _phase = 3; _timer = 0f;
+            }
+        }
+        // PHASE 3: THU SÚNG (RECOVERY)
+        else if (_phase == 3)
+        {
+            if (_timer >= _currentSkill.data.recoveryTime)
+            {
+                _currentSkill.RecordCastTime();
+                AbortExecution(TaskStatus.Success);
+            }
         }
     }
 
@@ -1619,33 +1666,15 @@ public class AISkillController : MonoBehaviour
     {
         CurrentSkillStatus = finalStatus;
 
-        if (_currentSkillSeq != null && _currentSkillSeq.IsActive()) _currentSkillSeq.Kill();
-        if (meleeHitbox != null) meleeHitbox.DeactivateHitbox();
-        if (bodyMesh != null) bodyMesh.localPosition = _originalBodyPos;
-
-        if (_agent != null && _agent.NavAgent != null)
+        if (_agent != null && _agent.NavAgent != null && _agent.NavAgent.isOnNavMesh)
         {
-            _agent.NavAgent.enabled = true;
-            _agent.NavAgent.updatePosition = true;
             _agent.NavAgent.updateRotation = true;
-            if (_agent.NavAgent.isOnNavMesh) _agent.NavAgent.Warp(transform.position);
-        }
-
-        // ==========================================
-        // [VI] FIX LỖI KẸT IK CHÂN TẠI ĐÂY
-        // [EN] FIX IK LEG FREEZE BUG HERE
-        // ==========================================
-        if (proceduralBody != null)
-        {
-            proceduralBody.isSkillActive = false; // Báo hiệu đã hết dùng Skill
-            proceduralBody.LockAndResetLegs(false); // Thả rông đôi chân
         }
 
         _currentSkill = null;
         if (_agent != null && _agent.Context != null)
         {
             _agent.Context.CurrentExecutingSkill = null;
-            _agent.Context.LookFocusOverride = null;
         }
     }
 
@@ -1723,6 +1752,8 @@ public class AITacticalSettings : ScriptableObject
     public float scanDuration = 4f;       // Thời gian rà quét bụi cỏ
     public float overwatchTime = 5f;      // Thời gian đứng lườm yểm trợ
     public float tauntDuration = 2f;      // Thời gian gầm gừ chờ đợi
+    public float patrolRestTime = 3f; // Thời gian nghỉ và nhìn quanh tại mỗi điểm Waypoint
+
 
     [Header("--- DI CHUYỂN & VẬN ĐỘNG ---")]
     public float circleRadius = 8f;       // Bán kính đi vòng cung vây ráp
@@ -1998,6 +2029,7 @@ public static class GreyboxDomain
                 .End()
 
                 // ========================================================
+                // ========================================================
                 // NHÁNH 5 (ƯU TIÊN THẤP NHẤT): PATROL (FALLBACK ĐI TUẦN)
                 // ========================================================
                 .Sequence("Patrol Methodically")
@@ -2005,7 +2037,8 @@ public static class GreyboxDomain
                     .Action("Look At Waypoint").DoOperator(new TelegraphOperator(false, ctx => ctx.Agent.TacticalSettings.tauntDuration)).End()
                     .Action("Turn To Waypoint").DoOperator(new TurnToFaceOperator(false, ctx => ctx.Agent.TacticalSettings.turnSpeed)).End()
                     .Action("Move To Waypoint").DoOperator(new MoveToVectorDestinationOperator(false, ctx => 0.5f)).End()
-                    .Action("Rest And Scan").DoOperator(new ScanAreaOperator(ctx => 3f)).End()
+                    // VI: Sửa số 3f ở đây / EN: Fix the 3f right here:
+                    .Action("Rest And Scan").DoOperator(new ScanAreaOperator(ctx => ctx.Agent.TacticalSettings.patrolRestTime)).End()
                 .End()
 
             .End()
@@ -2268,7 +2301,6 @@ public class TurnToFaceOperator : IOperator
                 ? context.Target.position : context.SuspectedLocation;
         }
 
-        // Cầu chì: Đứng quá gần thì không khóa mắt để chống gập cổ
         if (Vector3.Distance(context.Agent.transform.position, targetPos) > 1.5f)
             context.LookFocusOverride = targetPos + Vector3.up * 1.2f;
         else
@@ -2283,7 +2315,11 @@ public class TurnToFaceOperator : IOperator
         }
 
         Quaternion lookRot = Quaternion.LookRotation(dir);
-        context.Agent.transform.rotation = Quaternion.Slerp(context.Agent.transform.rotation, lookRot, Time.deltaTime * _getTurnSpeed(context));
+
+        // VI: Ép tốc độ xoay (nhân hệ số 20 để chuyển đổi logic Speed cũ sang Độ/Giây)
+        // EN: Force rotation speed (multiply by 20 to convert old Speed logic to Degrees/Second)
+        float turnSpeedInDegrees = _getTurnSpeed(context) * 20f;
+        context.Agent.transform.rotation = Quaternion.RotateTowards(context.Agent.transform.rotation, lookRot, turnSpeedInDegrees * Time.deltaTime);
 
         if (Quaternion.Angle(context.Agent.transform.rotation, lookRot) <= 5f)
         {
@@ -2817,6 +2853,314 @@ public class VisionSensor : MonoBehaviour
 }
 
 // [FILE_END]: VisionSensor.cs
+// ==========================================
+
+
+// [FILE_START]: BossBodyPart.cs
+// PATH: AI_Core\Boss\BossBodyPart.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+
+// VI: Vẫn dùng IDamageable để đạn của Player hay mảnh vỡ nhận diện được
+// EN: Still uses IDamageable so Player bullets or debris can recognize it
+public class BossBodyPart : MonoBehaviour, IDamageable
+{
+    [Tooltip("VI: Kéo script BossHealth ở object cha (Root) vào đây.\nEN: Drag the BossHealth script from the parent (Root) object here.")]
+    public BossHealth mainBossHealth;
+
+    [Tooltip("VI: Hệ số sát thương (Giáp thân = 0.2, Đuôi/Mắt = 1.5).\nEN: Damage multiplier (Body armor = 0.2, Tail/Eyes = 1.5).")]
+    public float damageMultiplier = 1.0f;
+
+    public void TakeDamage(float damage, Vector3 hitPoint, Vector3 hitNormal = default)
+    {
+        if (mainBossHealth == null) return;
+
+        // VI: Nhân sát thương và truyền về cục gốc
+        // EN: Multiply damage and pass it to the root
+        float finalDamage = damage * damageMultiplier;
+        mainBossHealth.TakeDamage(finalDamage, hitPoint, hitNormal);
+    }
+}
+
+// [FILE_END]: BossBodyPart.cs
+// ==========================================
+
+
+// [FILE_START]: BossHealth.cs
+// PATH: AI_Core\Boss\BossHealth.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+public class BossHealth : MonoBehaviour, IDamageable
+{
+    [Header("--- BOSS STATS ---")]
+    public float maxHealth = 3000f;
+    public float currentHealth;
+    private bool _isDead = false;
+
+    [Header("--- UI HEALTH BAR ---")]
+    public Slider frontHealthBar;
+    public Slider backHealthBar;
+
+    [Header("--- GHOST BAR SETTINGS ---")]
+    public float ghostDelay = 0.5f;
+    public float ghostLerpSpeed = 5f;
+    private float _ghostTimer = 0f;
+
+    void Awake()
+    {
+        currentHealth = maxHealth;
+        if (frontHealthBar != null) { frontHealthBar.maxValue = maxHealth; frontHealthBar.value = currentHealth; }
+        if (backHealthBar != null) { backHealthBar.maxValue = maxHealth; backHealthBar.value = currentHealth; }
+    }
+
+    void Update()
+    {
+        if (_isDead || frontHealthBar == null || backHealthBar == null) return;
+        frontHealthBar.value = currentHealth;
+
+        if (backHealthBar.value > frontHealthBar.value)
+        {
+            _ghostTimer += Time.deltaTime;
+            if (_ghostTimer > ghostDelay)
+            {
+                backHealthBar.value = Mathf.Lerp(backHealthBar.value, frontHealthBar.value, ghostLerpSpeed * Time.deltaTime);
+            }
+        }
+    }
+
+    public void TakeDamage(float damage, Vector3 hitPoint, Vector3 hitNormal = default)
+    {
+        if (_isDead) return;
+        currentHealth -= damage;
+        _ghostTimer = 0f;
+
+        if (currentHealth <= 0)
+        {
+            currentHealth = 0;
+            if (frontHealthBar != null) frontHealthBar.value = 0;
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        if (_isDead) return;
+        _isDead = true;
+
+        Debug.Log("<color=yellow>[BOSS] ĐÃ BỊ TIÊU DIỆT!</color>");
+
+        BossSplineAttacker splineMovement = GetComponentInParent<BossSplineAttacker>();
+        if (splineMovement != null)
+        {
+            splineMovement.StopAllCoroutines();
+            splineMovement.enabled = false;
+            if (splineMovement.splineCart != null) splineMovement.splineCart.enabled = false;
+        }
+
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
+
+        if (frontHealthBar != null && frontHealthBar.transform.parent != null)
+            frontHealthBar.transform.parent.gameObject.SetActive(false);
+
+        GameObject objectToDestroy = splineMovement != null ? splineMovement.gameObject : gameObject;
+        Destroy(objectToDestroy, 5f);
+    }
+}
+
+// [FILE_END]: BossHealth.cs
+// ==========================================
+
+
+// [FILE_START]: BossRamHitbox.cs
+// PATH: AI_Core\Boss\BossRamHitbox.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+
+[RequireComponent(typeof(Collider))]
+public class BossRamHitbox : MonoBehaviour
+{
+    [Header("--- RAM DAMAGE SETTINGS ---")]
+    public float ramDamage = 60f;
+    public float knockbackForce = 25f;
+
+    [Tooltip("VI: Đảm bảo hitbox chỉ va chạm với Player và Môi trường.\nEN: Ensure hitbox only collides with Player and Environment.")]
+    public LayerMask targetMask;
+
+    // VI: Hàm kích hoạt khi Đầu Boss tông vào vật thể
+    // EN: Function triggered when Boss Head rams an object
+    private void OnTriggerEnter(Collider other)
+    {
+        // VI: Kiểm tra xem vật thể có nằm trong LayerMask cho phép không
+        // EN: Check if the object is within the allowed LayerMask
+        if (((1 << other.gameObject.layer) & targetMask) == 0) return;
+
+        // ==========================================
+        // 1. PHÁ HỦY TỨC THÌ MÔI TRƯỜNG (INSTANT DESTRUCTION)
+        // ==========================================
+        DestructionBuild destructibleWall = other.GetComponent<DestructionBuild>();
+        if (destructibleWall != null)
+        {
+            // VI: Ép tường nhận một lượng sát thương khổng lồ để vỡ ngay lập tức thay vì trừ từ từ
+            // EN: Force the wall to take massive damage to shatter instantly instead of gradually
+            IDamageable wallDamageable = other.GetComponent<IDamageable>();
+            if (wallDamageable != null)
+            {
+                wallDamageable.TakeDamage(99999f, transform.position);
+            }
+            return; // VI: Đã tông vỡ tường thì kết thúc nhịp xử lý này / EN: Wall shattered, end this processing tick
+        }
+
+        // ==========================================
+        // 2. GÂY SÁT THƯƠNG CHO PLAYER (DAMAGE PLAYER)
+        // ==========================================
+        IDamageable target = other.GetComponent<IDamageable>();
+        if (target == null) target = other.GetComponentInParent<IDamageable>();
+
+        if (target != null)
+        {
+            // VI: Boss không tự tự sát thương chính mình
+            // EN: Boss does not damage itself
+            if (other.GetComponent<AIHealth>() != null || other.GetComponent<AIBodyPart>() != null) return;
+
+            // VI: Tính toán hướng hất văng (Đẩy lùi và hất hếch lên trên một chút)
+            // EN: Calculate knockback direction (Push back and slightly upwards)
+            Vector3 pushDirection = (other.transform.position - transform.position).normalized;
+            pushDirection.y = 0.5f;
+
+            // VI: Truyền sát thương (Tùy thuộc vào hàm TakeDamage của Player có nhận thêm Vector3 knockback hay không)
+            // EN: Apply damage (Depending on whether Player's TakeDamage accepts a Vector3 knockback)
+            target.TakeDamage(ramDamage, transform.position);
+
+            // VI: Gọi hiệu ứng rung màn hình tại đây nếu có
+            // EN: Call screen shake effect here if available
+        }
+    }
+}
+
+// [FILE_END]: BossRamHitbox.cs
+// ==========================================
+
+
+// [FILE_START]: BossSplineAttacker.cs
+// PATH: AI_Core\Boss\BossSplineAttacker.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+using UnityEngine.Splines;
+using Unity.Cinemachine;
+using System.Collections;
+
+public class BossSplineAttacker : MonoBehaviour
+{
+    [Header("--- SYSTEM REFERENCES ---")]
+    public SplineContainer splineContainer;
+    public CinemachineSplineCart splineCart;
+    public Transform playerTarget;
+
+    [Header("--- FLIGHT TRAJECTORY ---")]
+    public float emergeDistance = 30f;
+    public float undergroundDepth = -15f;
+    public float apexHeight = 5f;
+
+    [Header("--- PACING & SPEED ---")]
+    public float flightSpeed = 40f;
+    public float cooldownBetweenAttacks = 3f;
+
+    private bool _isAttacking = false;
+
+    void Start()
+    {
+        if (splineContainer.Spline == null) splineContainer.AddSpline();
+        splineCart.SplinePosition = 0f;
+        StartCoroutine(AttackLoop());
+    }
+
+    private IEnumerator AttackLoop()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(cooldownBetweenAttacks);
+            if (playerTarget != null && !_isAttacking)
+            {
+                CalculateDynamicArc();
+                yield return StartCoroutine(ExecuteFlight());
+            }
+        }
+    }
+
+    private void CalculateDynamicArc()
+    {
+        // ========================================================
+        // 1. TÍNH TOÁN TỌA ĐỘ THẾ GIỚI (WORLD SPACE CALCULATION)
+        // ========================================================
+        Vector3 playerPos = playerTarget.position;
+
+        Vector3 randomRange = Random.insideUnitSphere * emergeDistance;
+        randomRange.y = 0;
+
+        Vector3 p0_World = playerPos + randomRange;
+        Vector3 p2_World = playerPos - randomRange;
+
+        p0_World.y = undergroundDepth;
+        Vector3 p1_World = playerPos + (Vector3.up * apexHeight);
+        p2_World.y = undergroundDepth;
+
+        // ========================================================
+        // 2. CHUYỂN ĐỔI SANG TỌA ĐỘ CỤC BỘ (CONVERT TO LOCAL SPACE)
+        // ========================================================
+        Transform splineTransform = splineContainer.transform;
+        Vector3 p0_Local = splineTransform.InverseTransformPoint(p0_World);
+        Vector3 p1_Local = splineTransform.InverseTransformPoint(p1_World);
+        Vector3 p2_Local = splineTransform.InverseTransformPoint(p2_World);
+
+        // ========================================================
+        // 3. [FIXED] TẠO SPLINE HOÀN TOÀN MỚI ĐỂ XÓA CACHE
+        // 3. [FIXED] CREATE COMPLETELY NEW SPLINE TO CLEAR CACHE
+        // ========================================================
+        Spline newSpline = new Spline();
+
+        newSpline.Add(new BezierKnot(p0_Local));
+        newSpline.Add(new BezierKnot(p1_Local));
+        newSpline.Add(new BezierKnot(p2_Local));
+
+        newSpline.SetTangentMode(new SplineRange(0, newSpline.Count), TangentMode.AutoSmooth);
+
+        // VI: Hành động gán này ép CinemachineSplineCart phải tính toán lại đường ray!
+        // EN: This assignment action forces the CinemachineSplineCart to recalculate the track!
+        splineContainer.Spline = newSpline;
+    }
+
+    private IEnumerator ExecuteFlight()
+    {
+        _isAttacking = true;
+
+        // VI: Tính toán thời gian bay dựa trên vận tốc
+        // EN: Calculate flight time based on speed
+        float pathLength = splineContainer.CalculateLength();
+        float travelTime = pathLength / flightSpeed;
+
+        float normalizedTime = 0f;
+
+        // VI: Vòng lặp đơn giản chạy Cart từ 0.0 đến 1.0 (0% đến 100%)
+        // EN: Simple loop running Cart from 0.0 to 1.0 (0% to 100%)
+        while (normalizedTime < 1f)
+        {
+            normalizedTime += Time.deltaTime / travelTime;
+            splineCart.SplinePosition = normalizedTime;
+            yield return null;
+        }
+
+        _isAttacking = false;
+    }
+}
+
+// [FILE_END]: BossSplineAttacker.cs
 // ==========================================
 
 
@@ -6961,33 +7305,43 @@ public class DestructionBuild : MonoBehaviour, IDamageable
 // ------------------------------------------
 
 ﻿using UnityEngine;
+using UnityEngine.Events; // [VI] Bắt buộc phải có để dùng UnityEvent / [EN] Mandatory to use UnityEvent
 using TMPro;
 using Yarn.Unity;
-using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
-    // Tạo Singleton để các thành phần khác dễ dàng truy cập
+    // VI: Tạo Singleton để các thành phần khác dễ dàng truy cập
+    // EN: Create Singleton for easy access by other components
     public static GameManager Instance { get; private set; }
 
     [Header("--- YARN SPINNER ---")]
     public DialogueRunner dialogueRunner;
 
     [Header("--- STORY STATES (Sổ tay cốt truyện) ---")]
-    public bool isArmoryCleared = false; // Biến nhớ trạng thái phòng Armory
+    public bool isArmoryCleared = false;
+
+    [Tooltip("VI: Biến ghi nhớ lựa chọn của Player. True = Theo Zenith, False = Theo Apex.\nEN: Variable remembering Player's choice. True = Trust Zenith, False = Trust Apex.")]
+    public bool isTrustingZenith = false;
 
     [Header("--- QUEST UI ---")]
     public GameObject questPanel;
     public TextMeshProUGUI questTextUI;
 
-    [Header("--- BONUS SUPPORT ---")]
-    public List<EnemyActivationTrigger> zenithSupportTriggers = new List<EnemyActivationTrigger>();
+    [Header("--- NARRATIVE BRANCHES: ARMORY ---")]
+    public UnityEvent onArmoryTrustZenith;
+    public UnityEvent onArmoryBetrayZenith;
 
-    [Header("--- EXECUTION SETUP ---")]
-    public Animator playerAnimator;
+    [Header("--- NARRATIVE BRANCHES: MONITOR ---")]
+    public UnityEvent onMonitorTrustZenith;
+    public UnityEvent onMonitorBetrayZenith;
 
-    [Tooltip("Kéo cấu trúc AIHealth của con quái vật đóng vai trò tướng/boss vào đây")]
-    public AIHealth generalBoss; // Chuẩn hóa từ FortressBoss cũ sang AIHealth của hệ thống mới
+    [Header("--- NARRATIVE BRANCHES: ENDING ---")]
+    [Tooltip("VI: Kích hoạt khi chạy đến điểm cuối và Player đã chọn THEO Zenith.\nEN: Triggered at the end point if Player TRUSTED Zenith.")]
+    public UnityEvent onEndingTrustZenith;
+
+    [Tooltip("VI: Kích hoạt khi chạy đến điểm cuối và Player đã chọn THEO Apex (Phản Zenith).\nEN: Triggered at the end point if Player TRUSTED Apex (Betrayed Zenith).")]
+    public UnityEvent onEndingTrustApex;
 
     private void Awake()
     {
@@ -6997,20 +7351,34 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        ClearQuest(); // Ẩn bảng nhiệm vụ lúc bắt đầu game
+        // VI: Ẩn bảng nhiệm vụ lúc bắt đầu game
+        // EN: Hide quest panel at the start of the game
+        ClearQuest();
     }
 
     private void OnEnable()
     {
         if (dialogueRunner == null) return;
 
-        // Đăng ký lệnh nhận diện hội thoại từ Yarn Spinner
+        // ==========================================
+        // ĐĂNG KÝ LỆNH CHO QUEST (QUEST COMMANDS)
+        // ==========================================
         dialogueRunner.AddCommandHandler<string>("set_quest", SetQuest);
         dialogueRunner.AddCommandHandler("complete_quest", CompleteQuest);
         dialogueRunner.AddCommandHandler("clear_quest", ClearQuest);
-        dialogueRunner.AddCommandHandler("execute_general", ExecuteGeneralDecision);
+
+        // ==========================================
+        // ĐĂNG KÝ LỆNH CHO CỐT TRUYỆN (STORY COMMANDS)
+        // ==========================================
+        dialogueRunner.AddCommandHandler("armory_trust_zenith", ArmoryTrustZenith);
+        dialogueRunner.AddCommandHandler("armory_betray_zenith", ArmoryBetrayZenith);
+        dialogueRunner.AddCommandHandler("monitor_trust_zenith", MonitorTrustZenith);
+        dialogueRunner.AddCommandHandler("monitor_betray_zenith", MonitorBetrayZenith);
     }
 
+    // ==========================================
+    // HÀM XỬ LÝ NHIỆM VỤ (QUEST FUNCTIONS)
+    // ==========================================
     public void SetQuest(string questDescription)
     {
         if (questPanel != null) questPanel.SetActive(true);
@@ -7036,22 +7404,236 @@ public class GameManager : MonoBehaviour
         if (questTextUI != null) questTextUI.text = "";
     }
 
-    // ===============================================
-    // QUYẾT ĐỊNH CỐT TRUYỆN (Gọi từ Yarn)
-    // ===============================================
-    private void ExecuteGeneralDecision()
+    // ==========================================
+    // HÀM XỬ LÝ CỐT TRUYỆN (STORY FUNCTIONS)
+    // ==========================================
+    private void ArmoryTrustZenith()
     {
-        if (playerAnimator != null) playerAnimator.SetTrigger("ShootExecution");
+        Debug.Log("<color=yellow>[STORY]</color> Armory Branch: Trust Zenith");
+        isTrustingZenith = true; // Lưu lựa chọn / Save choice
+        if (onArmoryTrustZenith != null) onArmoryTrustZenith.Invoke();
+    }
 
-        // Cập nhật hàm gây sát thương kết liễu theo cấu trúc số thực float mới của hệ thống súng
-        if (generalBoss != null)
+    private void ArmoryBetrayZenith()
+    {
+        Debug.Log("<color=yellow>[STORY]</color> Armory Branch: Betray Zenith");
+        isTrustingZenith = false; // Lưu lựa chọn / Save choice
+        if (onArmoryBetrayZenith != null) onArmoryBetrayZenith.Invoke();
+    }
+
+    private void MonitorTrustZenith()
+    {
+        Debug.Log("<color=yellow>[STORY]</color> Monitor Branch: Trust Zenith");
+        isTrustingZenith = true; // Lưu lựa chọn / Save choice
+        if (onMonitorTrustZenith != null) onMonitorTrustZenith.Invoke();
+    }
+
+    private void MonitorBetrayZenith()
+    {
+        Debug.Log("<color=yellow>[STORY]</color> Monitor Branch: Betray Zenith");
+        isTrustingZenith = false; // Lưu lựa chọn / Save choice
+        if (onMonitorBetrayZenith != null) onMonitorBetrayZenith.Invoke();
+    }
+
+    // ==========================================
+    // HÀM KÍCH HOẠT ENDING TỪ MÁY BAY
+    // ENDING TRIGGER FUNCTIONS FROM HELICOPTER
+    // ==========================================
+    public void EndingGiveCore()
+    {
+        Debug.Log("<color=magenta>[ACTION]</color> Player đã chạy vào vùng sáng và NỘP LÕI!");
+        if (isTrustingZenith)
         {
-            generalBoss.TakeDamage(9999f, generalBoss.transform.position);
+            Debug.Log("<color=green>=> Kết quả:</color> THEO ZENITH (Lên máy bay thoát khỏi hòn đảo).");
+            if (onEndingTrustZenith != null) onEndingTrustZenith.Invoke();
+        }
+        else
+        {
+            Debug.Log("<color=red>=> Kết quả:</color> THEO APEX (Giao nộp lõi nhưng bị tẩu tán/tiêu diệt).");
+            if (onEndingTrustApex != null) onEndingTrustApex.Invoke();
+        }
+    }
+
+    public void EndingShootHelicopter()
+    {
+        Debug.Log("<color=magenta>[ACTION]</color> Player đã BẮN RƠI máy bay Apex!");
+        if (isTrustingZenith)
+        {
+            Debug.Log("<color=orange>=> Kết quả:</color> THEO ZENITH (Zenith thả quân ra, kích hoạt Escape Run).");
+        }
+        else
+        {
+            Debug.Log("<color=orange>=> Kết quả:</color> THEO APEX (Bắn rụng mồi nhử, kẹt lại đảo tử chiến).");
         }
     }
 }
 
 // [FILE_END]: GameManager.cs
+// ==========================================
+
+
+// [FILE_START]: HelicopterHealth.cs
+// PATH: Others\HelicopterHealth.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+using UnityEngine.Events; // [VI] Bắt buộc cho UnityEvent / [EN] Mandatory for UnityEvent
+
+public class HelicopterHealth : MonoBehaviour, IDamageable
+{
+    [Header("--- HEALTH & DAMAGE SETTINGS ---")]
+    [Tooltip("VI: Tick chọn nếu muốn máy bay có thể bị bắn rớt.\nEN: Check if you want the helicopter to be shootable.")]
+    public bool canBeDamaged = false;
+
+    [Tooltip("VI: Lượng máu tối đa của máy bay (Chỉ có tác dụng nếu được tick ở trên).\nEN: Max health of the helicopter (Only active if checked above).")]
+    public float maxHealth = 1000f;
+
+    private float _currentHealth;
+    private bool _isDestroyed = false;
+
+    [Header("--- DESTRUCTION EFFECTS ---")]
+    [Tooltip("VI: Prefab hiệu ứng cháy nổ khi máy bay rớt.\nEN: Explosion effect prefab when helicopter crashes.")]
+    public GameObject explosionPrefab;
+
+    [Header("--- ENDING EVENTS ---")]
+    [Tooltip("VI: Kéo GameManager vào đây để gọi hàm EndingShootHelicopter() khi máu = 0.\nEN: Drag GameManager here to call EndingShootHelicopter() when health = 0.")]
+    public UnityEvent onHelicopterDestroyed;
+
+    private void Start()
+    {
+        // [VI] Khởi tạo máu đầy lúc bắt đầu
+        // [EN] Initialize full health at start
+        _currentHealth = maxHealth;
+    }
+
+    // [VI] Hàm nhận sát thương bắt buộc từ IDamageable
+    // [EN] Mandatory damage receiving function from IDamageable
+    public void TakeDamage(float damage, Vector3 hitPoint, Vector3 hitNormal = default)
+    {
+        // [VI] Nếu không cho phép nhận sát thương hoặc đã nổ rồi thì bỏ qua hoàn toàn
+        // [EN] If taking damage is not allowed or it's already destroyed, ignore completely
+        if (!canBeDamaged || _isDestroyed) return;
+
+        _currentHealth -= damage;
+
+        // [VI] Kiểm tra máu để kích hoạt cháy nổ
+        // [EN] Check health to trigger explosion
+        if (_currentHealth <= 0)
+        {
+            DestroyHelicopter();
+        }
+    }
+
+    private void DestroyHelicopter()
+    {
+        _isDestroyed = true;
+
+        // 1. [VI] Sinh ra hiệu ứng cháy nổ
+        // 1. [EN] Spawn the explosion effect
+        if (explosionPrefab != null)
+        {
+            Instantiate(explosionPrefab, transform.position, transform.rotation);
+        }
+
+        // 2. [VI] Gọi sự kiện rẽ nhánh Ending trong GameManager
+        // 2. [EN] Call the Ending branching event in GameManager
+        if (onHelicopterDestroyed != null)
+        {
+            onHelicopterDestroyed.Invoke();
+        }
+
+        // 3. [VI] Ẩn mô hình máy bay đi (không dùng Destroy để tránh lỗi các script đang chạy ngầm)
+        // 3. [EN] Hide the helicopter model (do not use Destroy to avoid breaking background scripts)
+        gameObject.SetActive(false);
+    }
+}
+
+// [FILE_END]: HelicopterHealth.cs
+// ==========================================
+
+
+// [FILE_START]: HelicopterWaypoint.cs
+// PATH: Others\HelicopterWaypoint.cs
+// ------------------------------------------
+
+﻿using System.Collections.Generic;
+using UnityEngine;
+
+public class HelicopterWaypoint : MonoBehaviour
+{
+    [Header("--- MOVEMENT SETTINGS ---")]
+    [Tooltip("VI: Tốc độ bay của trực thăng.\nEN: Flight speed of the helicopter.")]
+    public float moveSpeed = 15f;
+
+    [Tooltip("VI: Tốc độ xoay mũi máy bay hướng về điểm đến.\nEN: Speed of rotating the helicopter nose towards destination.")]
+    public float turnSpeed = 5f;
+
+    [Tooltip("VI: Tick để máy bay luôn giữ thăng bằng ngang, không cắm mặt xuống đất khi hạ cánh.\nEN: Check to keep the helicopter level, preventing it from nose-diving when landing.")]
+    public bool keepLevelFlight = true;
+
+    [Header("--- WAYPOINTS ---")]
+    [Tooltip("VI: Kéo thả các điểm Transform mốc (Tọa độ) vào đây.\nEN: Drag and drop target Transform points (Coordinates) here.")]
+    public List<Transform> waypoints;
+
+    private int _currentWaypointIndex = 0;
+    private bool _isMoving = false;
+
+    private void OnEnable()
+    {
+        // VI: Tự động bay ngay khi Object này được SetActive(true)
+        // EN: Automatically fly as soon as this Object is SetActive(true)
+        if (waypoints.Count > 0)
+        {
+            _isMoving = true;
+        }
+    }
+
+    private void Update()
+    {
+        if (!_isMoving || waypoints.Count == 0) return;
+
+        Transform targetWaypoint = waypoints[_currentWaypointIndex];
+
+        // VI: Tiến về phía tọa độ đích
+        // EN: Move towards the target coordinate
+        transform.position = Vector3.MoveTowards(transform.position, targetWaypoint.position, moveSpeed * Time.deltaTime);
+
+        // VI: Tính toán hướng đi
+        // EN: Calculate the direction
+        Vector3 direction = (targetWaypoint.position - transform.position).normalized;
+
+        // VI: KHÓA TRỤC Y - Bắt máy bay luôn nhìn thẳng song song với mặt đất
+        // EN: LOCK Y AXIS - Force the helicopter to always look parallel to the ground
+        if (keepLevelFlight)
+        {
+            direction.y = 0;
+        }
+
+        // VI: Mượt mà xoay mũi máy bay (Bỏ qua nếu hướng đi là Vector Zero khi bay thẳng đứng xuống)
+        // EN: Smoothly rotate the nose (Ignore if the direction is Vector Zero when flying straight down)
+        if (direction != Vector3.zero)
+        {
+            Quaternion lookRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, turnSpeed * Time.deltaTime);
+        }
+
+        // VI: Kiểm tra xem đã chạm đến mốc chưa (sai số 0.1f)
+        // EN: Check if the waypoint is reached (0.1f margin)
+        if (Vector3.Distance(transform.position, targetWaypoint.position) < 0.1f)
+        {
+            _currentWaypointIndex++;
+
+            // VI: Nếu đã bay hết danh sách điểm mốc thì dừng lại lơ lửng
+            // EN: If all waypoints in the list are reached, stop and hover
+            if (_currentWaypointIndex >= waypoints.Count)
+            {
+                _isMoving = false;
+            }
+        }
+    }
+}
+
+// [FILE_END]: HelicopterWaypoint.cs
 // ==========================================
 
 
@@ -7068,6 +7650,121 @@ public interface IDamageable
 }
 
 // [FILE_END]: IDamageable.cs
+// ==========================================
+
+
+// [FILE_START]: NPCMoveToPoint.cs
+// PATH: Others\NPCMoveToPoint.cs
+// ------------------------------------------
+
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.Events;
+
+public class NPCMoveToPoint : MonoBehaviour
+{
+    [Header("--- MOVEMENT SETTINGS ---")]
+    [Tooltip("VI: Điểm đến của NPC.\nEN: The NPC's destination.")]
+    public Transform targetPoint;
+
+    public float moveSpeed = 2.5f;
+    public float turnSpeed = 5f;
+
+    [Header("--- OUTPUT EVENTS ---")]
+    [Tooltip("VI: Sự kiện kích hoạt khi NPC đến đích (Vd: Bật Quest, Bật AreaSensor).\nEN: Events triggered when NPC arrives (e.g: Enable Quest, Enable AreaSensor).")]
+    public UnityEvent onDestinationReached;
+
+    // VI: OnEnable tự động chạy khi GameObject chứa script này được bật lên
+    // EN: OnEnable runs automatically when the GameObject holding this script is turned on
+    private void OnEnable()
+    {
+        if (targetPoint != null)
+        {
+            StartCoroutine(MoveRoutine());
+        }
+    }
+
+    private IEnumerator MoveRoutine()
+    {
+        // VI: Vòng lặp di chuyển cho đến khi khoảng cách nhỏ hơn 0.1 mét
+        // EN: Movement loop until the distance is less than 0.1 meters
+        while (Vector3.Distance(transform.position, targetPoint.position) > 0.1f)
+        {
+            // 1. TÍNH GÓC XOAY (CALCULATE ROTATION)
+            Vector3 dir = (targetPoint.position - transform.position).normalized;
+            dir.y = 0;
+
+            if (dir != Vector3.zero)
+            {
+                Quaternion targetRot = Quaternion.LookRotation(dir);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, turnSpeed * Time.deltaTime);
+            }
+
+            // 2. DI CHUYỂN (MOVE)
+            transform.position = Vector3.MoveTowards(transform.position, targetPoint.position, moveSpeed * Time.deltaTime);
+
+            yield return null;
+        }
+
+        // VI: Khi đã đến đích, kích hoạt luồng sự kiện
+        // EN: Once arrived, trigger the event flow
+        if (onDestinationReached != null)
+        {
+            onDestinationReached.Invoke();
+        }
+    }
+}
+
+// [FILE_END]: NPCMoveToPoint.cs
+// ==========================================
+
+
+// [FILE_START]: OverlapDamageZone.cs
+// PATH: Others\OverlapDamageZone.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+
+public class OverlapDamageZone : MonoBehaviour
+{
+    [Header("--- DAMAGE SETTINGS ---")]
+    [Tooltip("VI: Bán kính vùng quét để đập nát trần nhà.\nEN: Radius of the scan zone to smash the ceiling.")]
+    public float crushRadius = 3f;
+
+    [Tooltip("VI: Chọn Layer của trần nhà để tối ưu, không quét trúng bậy bạ.\nEN: Select the ceiling's Layer for optimization, avoiding random hits.")]
+    public LayerMask breakableLayer;
+
+    private void Update()
+    {
+        // VI: Quét một vùng hình cầu xung quanh vị trí này mỗi khung hình
+        // EN: Scan a spherical area around this position every frame
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, crushRadius, breakableLayer);
+
+        foreach (Collider col in hitColliders)
+        {
+            // VI: Tìm component IDamageable trên vật thể trúng phải (chính là trần nhà)
+            // EN: Find the IDamageable component on the hit object (which is the ceiling)
+            IDamageable damageable = col.GetComponent<IDamageable>();
+
+            if (damageable != null)
+            {
+                // VI: Truyền lượng sát thương khổng lồ để kích hoạt vỡ ngay lập tức
+                // EN: Pass a massive amount of damage to trigger immediate break
+                damageable.TakeDamage(999999f, transform.position, Vector3.down);
+            }
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        // VI: Vẽ quả cầu màu đỏ trong Inspector để sếp dễ căn chỉnh độ to nhỏ
+        // EN: Draw a red sphere in the Inspector so you can easily adjust the size
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, crushRadius);
+    }
+}
+
+// [FILE_END]: OverlapDamageZone.cs
 // ==========================================
 
 
@@ -8854,11 +9551,156 @@ public class EnemyActivationTrigger : MonoBehaviour
 // ==========================================
 
 
+// [FILE_START]: FocusInteractable.cs
+// PATH: Trigger&Dialouge\FocusInteractable.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+using UnityEngine.Events;
+
+[RequireComponent(typeof(Collider))]
+public class FocusInteractable : MonoBehaviour
+{
+    [Header("--- FOCUS SETTINGS ---")]
+    [Tooltip("VI: Thời gian nhìn liên tục (giây) để kích hoạt.\nEN: Continuous look time (seconds) to trigger.")]
+    public float requiredLookTime = 1.5f;
+
+    public bool playOnce = true;
+
+    [Header("--- CONDITIONS (TÙY CHỌN) ---")]
+    public bool requireArmoryCleared = false;
+
+    [Header("--- OUTPUT EVENTS ---")]
+    public UnityEvent onLookAtTriggered;
+
+    private float _currentLookTimer = 0f;
+    private bool _hasTriggered = false;
+
+    // ==========================================
+    // CÁC HÀM ĐƯỢC GỌI BỞI PLAYER VISION
+    // FUNCTIONS CALLED BY PLAYER VISION
+    // ==========================================
+
+    public void IncreaseTimer(float deltaTime)
+    {
+        if (_hasTriggered && playOnce) return;
+
+        if (requireArmoryCleared && GameManager.Instance != null && !GameManager.Instance.isArmoryCleared)
+            return;
+
+        _currentLookTimer += deltaTime;
+
+        if (_currentLookTimer >= requiredLookTime)
+        {
+            _hasTriggered = true;
+            Debug.Log($"<color=cyan>[INTERACT]</color> Đã kích hoạt điểm khám phá: {gameObject.name}");
+
+            if (onLookAtTriggered != null)
+            {
+                onLookAtTriggered.Invoke();
+            }
+        }
+    }
+
+    public void ResetTimer()
+    {
+        // VI: Chỉ reset nếu chưa kích hoạt xong
+        // EN: Only reset if not fully triggered yet
+        if (!_hasTriggered)
+        {
+            _currentLookTimer = 0f;
+        }
+    }
+}
+
+// [FILE_END]: FocusInteractable.cs
+// ==========================================
+
+
+// [FILE_START]: PlayerVisionRaycast.cs
+// PATH: Trigger&Dialouge\PlayerVisionRaycast.cs
+// ------------------------------------------
+
+﻿using UnityEngine;
+
+public class PlayerVisionRaycast : MonoBehaviour
+{
+    [Header("--- RAYCAST SETTINGS ---")]
+    [Tooltip("VI: Camera chính để bắn tia từ giữa màn hình.\nEN: Main camera to shoot the ray from center screen.")]
+    public Camera mainCamera;
+
+    [Tooltip("VI: Khoảng cách nhìn tối đa.\nEN: Maximum looking distance.")]
+    public float interactDistance = 5f;
+
+    [Tooltip("VI: CHỈ bắn tia vào các vật thể thuộc Layer này (Vd: tạo layer 'Interactable').\nEN: ONLY hit objects in this Layer (e.g., create an 'Interactable' layer).")]
+    public LayerMask interactableLayer;
+
+    // VI: Lưu trữ vật thể đang bị nhìn trúng / EN: Store the currently looked-at object
+    private FocusInteractable _currentTarget;
+
+    private void Start()
+    {
+        if (mainCamera == null) mainCamera = Camera.main;
+    }
+
+    private void Update()
+    {
+        // VI: Bắn 1 tia từ giữa màn hình thẳng tới trước
+        // EN: Shoot 1 ray from the center of the screen straight forward
+        Ray ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, interactDistance, interactableLayer))
+        {
+            // VI: Nếu tia chạm trúng vật có script FocusInteractable
+            // EN: If the ray hits an object with the FocusInteractable script
+            FocusInteractable interactable = hit.collider.GetComponent<FocusInteractable>();
+
+            if (interactable != null)
+            {
+                // VI: Nếu vừa nhìn sang một vật MỚI, reset vật CŨ
+                // EN: If just looked at a NEW object, reset the OLD object
+                if (_currentTarget != interactable)
+                {
+                    ClearTarget();
+                    _currentTarget = interactable;
+                }
+
+                // VI: Truyền thời gian cho vật thể để nó tự đếm
+                // EN: Pass time to the object so it counts itself
+                _currentTarget.IncreaseTimer(Time.deltaTime);
+            }
+            else
+            {
+                ClearTarget(); // Bắn trúng tường / Hit a wall
+            }
+        }
+        else
+        {
+            ClearTarget(); // Bắn vào không khí / Hit thin air
+        }
+    }
+
+    private void ClearTarget()
+    {
+        if (_currentTarget != null)
+        {
+            _currentTarget.ResetTimer();
+            _currentTarget = null;
+        }
+    }
+}
+
+// [FILE_END]: PlayerVisionRaycast.cs
+// ==========================================
+
+
 // [FILE_START]: AreaSensor.cs
 // PATH: Trigger&Dialouge\Sensor\AreaSensor.cs
 // ------------------------------------------
 
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.Events;
 
 [RequireComponent(typeof(BoxCollider))]
@@ -8867,15 +9709,18 @@ public class AreaSensor : MonoBehaviour
     [Header("--- SENSOR SETTINGS ---")]
     public bool playOnce = true;
 
-    [Tooltip("Nếu tick, Player sẽ đứng im khi đạp trúng Trigger này / If ticked, locks Player movement on enter")]
+    [Tooltip("VI: Nếu tick, Player sẽ đứng im khi đạp trúng Trigger này.\nEN: If ticked, locks Player movement on enter.")]
     public bool lockPlayerControl = false;
 
+    [Tooltip("VI: Thời gian tự động mở khóa (Để 0 nếu muốn tự mở bằng Code/Yarn).\nEN: Auto unlock delay (Leave 0 to unlock manually via Code/Yarn).")]
+    public float autoUnlockDelay = 0f;
+
     [Header("--- OUTPUT EVENTS ---")]
-    [Tooltip("Kéo thả các sự kiện sếp muốn kích hoạt vào đây / Drag and drop events to trigger here")]
+    [Tooltip("VI: Kéo thả các sự kiện muốn kích hoạt vào đây.\nEN: Drag and drop events to trigger here.")]
     public UnityEvent onTriggered;
 
     private bool _hasTriggered = false;
-    private Player _playerObj; // Lưu trữ Player để lát nữa mở khóa
+    private Player _playerObj;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -8886,19 +9731,23 @@ public class AreaSensor : MonoBehaviour
 
             Debug.Log($"<color=cyan>[SENSOR]</color> {gameObject.name} đã đạp trúng! Đang phát tín hiệu...");
 
-            // 1. [VI] Khóa Player nếu sếp tick vào ô LockPlayer
             if (lockPlayerControl && _playerObj != null)
             {
                 _playerObj.SetInputLock(true);
+
+                // VI: Kích hoạt bộ đếm tự động mở khóa nếu có cài đặt
+                // EN: Activate auto-unlock timer if set
+                if (autoUnlockDelay > 0f)
+                {
+                    StartCoroutine(AutoUnlockRoutine());
+                }
             }
 
-            // 2. [VI] Bắn luồng điện (Kích hoạt toàn bộ danh sách ở Inspector)
             if (onTriggered != null)
             {
                 onTriggered.Invoke();
             }
 
-            // 3. [VI] Tắt Collider ngay lập tức nếu chỉ chạy 1 lần để tối ưu Game
             if (playOnce)
             {
                 GetComponent<Collider>().enabled = false;
@@ -8906,12 +9755,12 @@ public class AreaSensor : MonoBehaviour
         }
     }
 
-    // ==========================================
-    // HÀM HỖ TRỢ ĐỂ MỞ KHÓA PLAYER
-    // ==========================================
-    /// <summary>
-    /// Hàm này dùng để gọi khi thoại Yarn chạy xong, trả lại quyền điều khiển cho Player.
-    /// </summary>
+    private IEnumerator AutoUnlockRoutine()
+    {
+        yield return new WaitForSeconds(autoUnlockDelay);
+        UnlockPlayer();
+    }
+
     public void UnlockPlayer()
     {
         if (_playerObj != null)
@@ -8971,19 +9820,26 @@ public class AutoDelaySensor : MonoBehaviour
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(Collider))]
 public class LookAtSensor : MonoBehaviour
 {
     [Header("--- SENSOR SETTINGS ---")]
-    [Tooltip("Khoảng cách tối đa để có thể nhìn thấy / Max distance to trigger")]
+    [Tooltip("VI: Khoảng cách tối đa để có thể nhìn thấy.\nEN: Max distance to trigger.")]
     public float maxDistance = 5f;
 
-    [Tooltip("Góc nhìn tối đa (độ) để tính là đang nhìn vào / Max angle threshold")]
+    [Tooltip("VI: Góc nhìn tối đa (độ) để tính là đang nhìn vào.\nEN: Max angle threshold.")]
     public float viewAngleThreshold = 15f;
+
+    [Tooltip("VI: Thời gian (giây) phải nhìn liên tục để kích hoạt.\nEN: Continuous look duration (seconds) to trigger.")]
+    public float requiredLookTime = 1.5f;
 
     public bool playOnce = true;
 
-    [Header("--- CONDITIONS (TùY CHỌN) ---")]
-    [Tooltip("Nếu tick, phải đánh xong quái (GameManager cho phép) mới được nhìn / Requires Room Cleared")]
+    [Header("--- LINE OF SIGHT (CHỐNG NHÌN XUYÊN TƯỜNG) ---")]
+    [Tooltip("VI: Chọn Layer của tường/vật cản để cảm biến không nhìn xuyên qua.\nEN: Select the Layer for walls/obstacles so the sensor doesn't see through them.")]
+    public LayerMask obstacleMask;
+
+    [Header("--- CONDITIONS (TÙY CHỌN) ---")]
     public bool requireArmoryCleared = false;
 
     [Header("--- OUTPUT EVENTS ---")]
@@ -8991,38 +9847,204 @@ public class LookAtSensor : MonoBehaviour
 
     private bool _hasTriggered = false;
     private Camera _mainCam;
+    private Collider _collider;
+    private float _currentLookTimer = 0f;
 
     private void Start()
     {
-        _mainCam = Camera.main; // Tự động tìm Camera chính
+        _mainCam = Camera.main;
+
+        // VI: Lấy Collider để tìm ra tâm thực sự của vật thể
+        // EN: Get the Collider to find the true center of the object
+        _collider = GetComponent<Collider>();
     }
 
     private void Update()
     {
         if (_hasTriggered && playOnce) return;
 
-        // Nếu yêu cầu phải dọn sạch phòng mới được khám phá, mà phòng chưa sạch thì bỏ qua
         if (requireArmoryCleared && GameManager.Instance != null && !GameManager.Instance.isArmoryCleared)
             return;
 
-        // Tính khoảng cách
-        float distance = Vector3.Distance(_mainCam.transform.position, transform.position);
+        // VI: Sử dụng tâm của Collider thay vì transform.position
+        // EN: Use the Collider's center instead of transform.position
+        Vector3 targetCenter = _collider.bounds.center;
+        float distance = Vector3.Distance(_mainCam.transform.position, targetCenter);
+
         if (distance <= maxDistance)
         {
-            // Tính góc nhìn giữa hướng Camera và vị trí vật thể
-            Vector3 dirToObject = (transform.position - _mainCam.transform.position).normalized;
+            Vector3 dirToObject = (targetCenter - _mainCam.transform.position).normalized;
             float angle = Vector3.Angle(_mainCam.transform.forward, dirToObject);
 
             if (angle <= viewAngleThreshold)
             {
-                _hasTriggered = true;
-                Debug.Log($"<color=cyan>[SENSOR]</color> Người chơi đang nhìn vào {gameObject.name}");
+                // VI: Phóng tia Raycast kiểm tra xem có bức tường nào chặn giữa Camera và Vật thể không
+                // EN: Shoot a Raycast to check if any wall is blocking between the Camera and the Object
+                if (!Physics.Linecast(_mainCam.transform.position, targetCenter, obstacleMask))
+                {
+                    _currentLookTimer += Time.deltaTime;
 
-                if (onLookAtTriggered != null) onLookAtTriggered.Invoke();
+                    if (_currentLookTimer >= requiredLookTime)
+                    {
+                        _hasTriggered = true;
+                        Debug.Log($"<color=cyan>[SENSOR]</color> Người chơi đã tập trung nhìn vào {gameObject.name}");
+
+                        if (onLookAtTriggered != null) onLookAtTriggered.Invoke();
+                    }
+                    return; // VI: Thoát vòng lặp để không bị reset / EN: Exit loop to prevent reset
+                }
             }
         }
+
+        // VI: Reset bộ đếm nếu quay mặt đi, đi ra xa, hoặc bị tường che
+        // EN: Reset timer if looking away, moving too far, or occluded by a wall
+        _currentLookTimer = 0f;
+    }
+
+    // ==========================================
+    // HỆ THỐNG VẼ ĐƯỜNG DÒ TRONG EDITOR (GIZMOS)
+    // ==========================================
+    private void OnDrawGizmosSelected()
+    {
+        if (Camera.main == null) return;
+
+        Collider col = GetComponent<Collider>();
+        Vector3 center = col != null ? col.bounds.center : transform.position;
+        Vector3 camPos = Camera.main.transform.position;
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(center, 0.2f); // VI: Vẽ tâm vật thể / EN: Draw object center
+
+        // VI: Đổi màu tia nối thành Đỏ nếu ngoài tầm, Xanh lá nếu trong tầm nhìn
+        // EN: Change line color to Red if out of range, Green if in visual range
+        float distance = Vector3.Distance(camPos, center);
+        if (distance > maxDistance) Gizmos.color = Color.red;
+        else Gizmos.color = Color.green;
+
+        Gizmos.DrawLine(camPos, center);
     }
 }
 
 // [FILE_END]: LookAtSensor.cs
+// ==========================================
+
+
+// [FILE_START]: PlayerWaypointSensor.cs
+// PATH: Trigger&Dialouge\Sensor\PlayerWaypointSensor.cs
+// ------------------------------------------
+
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Events;
+
+[RequireComponent(typeof(BoxCollider))]
+public class PlayerWaypointSensor : MonoBehaviour
+{
+    [Header("--- SENSOR SETTINGS ---")]
+    public bool playOnce = true;
+
+    [Header("--- WAYPOINT MOVEMENT ---")]
+    [Tooltip("VI: Tốc độ bước đi của Player.\nEN: Player's walking speed.")]
+    public float moveSpeed = 3f;
+
+    [Tooltip("VI: Tốc độ xoay người hướng về Waypoint.\nEN: Speed of rotating towards the Waypoint.")]
+    public float turnSpeed = 5f;
+
+    [Tooltip("VI: Danh sách các điểm đến theo thứ tự.\nEN: List of destination points in order.")]
+    public List<Transform> waypoints = new List<Transform>();
+
+    [Header("--- OUTPUT EVENTS ---")]
+    [Tooltip("VI: Gọi sự kiện (như mở cửa, phát thoại) khi Player tới điểm cuối cùng.\nEN: Trigger events (like opening doors, playing dialogue) when Player reaches the final point.")]
+    public UnityEvent onSequenceFinished;
+
+    private bool _hasTriggered = false;
+    private Player _playerObj;
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player") && (!_hasTriggered || !playOnce))
+        {
+            _hasTriggered = true;
+            _playerObj = other.GetComponentInParent<Player>();
+
+            if (_playerObj != null)
+            {
+                Debug.Log($"<color=cyan>[WAYPOINT SENSOR]</color> Kích hoạt! Đang ép Player đi theo lộ trình...");
+
+                // VI: Khóa điều khiển di chuyển của Player (Camera vẫn quay được nếu script Player cho phép)
+                // EN: Lock Player movement control (Camera can still rotate if Player script allows it)
+                _playerObj.SetInputLock(true);
+
+                // VI: Khởi chạy tiến trình dẫn đường
+                // EN: Start the pathfinding routine
+                StartCoroutine(FollowWaypointsRoutine(_playerObj.transform));
+            }
+
+            if (playOnce)
+            {
+                GetComponent<Collider>().enabled = false;
+            }
+        }
+    }
+
+    private IEnumerator FollowWaypointsRoutine(Transform playerTransform)
+    {
+        // VI: Tắt CharacterController (hoặc Collider) tạm thời để tránh bị hệ thống Vật lý cản bước
+        // EN: Temporarily disable CharacterController (or Collider) to prevent Physics system obstruction
+        CharacterController cc = playerTransform.GetComponent<CharacterController>();
+        if (cc != null) cc.enabled = false;
+
+        // VI: Lặp qua từng điểm Waypoint trong danh sách
+        // EN: Iterate through each Waypoint in the list
+        foreach (Transform wp in waypoints)
+        {
+            if (wp == null) continue;
+
+            // VI: Tiếp tục di chuyển cho đến khi khoảng cách tới Waypoint nhỏ hơn 0.1 mét
+            // EN: Keep moving until the distance to the Waypoint is less than 0.1 meters
+            while (Vector3.Distance(playerTransform.position, wp.position) > 0.1f)
+            {
+                // 1. XOAY NGƯỜI (ROTATION)
+                Vector3 dir = (wp.position - playerTransform.position).normalized;
+                dir.y = 0; // VI: Ép trục Y về 0 để Player không bị ngửa mặt lên trời / EN: Force Y axis to 0 so Player doesn't tilt upward
+
+                if (dir != Vector3.zero)
+                {
+                    Quaternion targetRot = Quaternion.LookRotation(dir);
+                    playerTransform.rotation = Quaternion.Slerp(playerTransform.rotation, targetRot, turnSpeed * Time.deltaTime);
+                }
+
+                // 2. DI CHUYỂN (MOVEMENT)
+                playerTransform.position = Vector3.MoveTowards(playerTransform.position, wp.position, moveSpeed * Time.deltaTime);
+
+                // VI: Chờ khung hình tiếp theo
+                // EN: Wait for the next frame
+                yield return null;
+            }
+        }
+
+        Debug.Log($"<color=cyan>[WAYPOINT SENSOR]</color> Đã đến đích! Trả lại quyền điều khiển.");
+
+        // VI: Bật lại Vật lý cho Player
+        // EN: Re-enable Physics for the Player
+        if (cc != null) cc.enabled = true;
+
+        // VI: Mở khóa điều khiển
+        // EN: Unlock input control
+        if (_playerObj != null)
+        {
+            _playerObj.SetInputLock(false);
+        }
+
+        // VI: Kích hoạt các sự kiện sau khi đi xong (vd: Mở cửa)
+        // EN: Trigger events after walking finishes (e.g.: Open door)
+        if (onSequenceFinished != null)
+        {
+            onSequenceFinished.Invoke();
+        }
+    }
+}
+
+// [FILE_END]: PlayerWaypointSensor.cs
 // ==========================================

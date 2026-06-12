@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
-using UnityEngine.Events; // [VI] Bắt buộc phải có để dùng UnityEvent / [EN] Mandatory to use UnityEvent
+using UnityEngine.Events;
 using TMPro;
 using Yarn.Unity;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,35 +14,45 @@ public class GameManager : MonoBehaviour
     [Header("--- YARN SPINNER ---")]
     public DialogueRunner dialogueRunner;
 
-    [Header("--- STORY STATES (Sổ tay cốt truyện) ---")]
-    public bool isArmoryCleared = false;
-
-    [Tooltip("VI: Biến ghi nhớ lựa chọn của Player. True = Theo Zenith, False = Theo Apex.\nEN: Variable remembering Player's choice. True = Trust Zenith, False = Trust Apex.")]
+    [Header("--- STORY STATES ---")]
+    [Tooltip("VI: Lựa chọn của Player. True = Theo Zenith, False = Theo Apex.\nEN: Player's choice. True = Trust Zenith, False = Trust Apex.")]
     public bool isTrustingZenith = false;
-
+    
     [Header("--- QUEST UI ---")]
     public GameObject questPanel;
     public TextMeshProUGUI questTextUI;
 
-    [Header("--- NARRATIVE BRANCHES: ARMORY ---")]
-    public UnityEvent onArmoryTrustZenith;
-    public UnityEvent onArmoryBetrayZenith;
-
-    [Header("--- NARRATIVE BRANCHES: MONITOR ---")]
-    public UnityEvent onMonitorTrustZenith;
-    public UnityEvent onMonitorBetrayZenith;
-
-    [Header("--- NARRATIVE BRANCHES: ENDING ---")]
+    [Header("--- FINAL ENDING EVENTS ---")]
     [Tooltip("VI: Kích hoạt khi chạy đến điểm cuối và Player đã chọn THEO Zenith.\nEN: Triggered at the end point if Player TRUSTED Zenith.")]
     public UnityEvent onEndingTrustZenith;
 
-    [Tooltip("VI: Kích hoạt khi chạy đến điểm cuối và Player đã chọn THEO Apex (Phản Zenith).\nEN: Triggered at the end point if Player TRUSTED Apex (Betrayed Zenith).")]
-    public UnityEvent onEndingTrustApex;
+    [Tooltip("VI: Kích hoạt khi chạy đến điểm cuối và Player đã chọn THEO Apex.\nEN: Triggered at the end point if Player TRUSTED Apex.")]
+    public UnityEvent onEndingLoyalToApex;
+
+    [Header("--- FADE EFFECT SETTINGS ---")]
+    [Tooltip("VI: Kéo thả thành phần CanvasGroup của UI màn hình đen vào đây.\nEN: Drag and drop the CanvasGroup component of the black screen UI here.")]
+    public CanvasGroup fadeCanvasGroup;
+
+    [Tooltip("VI: Thời gian hiệu ứng làm mờ diễn ra (tính bằng giây).\nEN: Fade effect duration (in seconds).")]
+    public float fadeDuration = 1.5f;
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return; // VI: Ngăn code chạy tiếp nếu bị hủy / EN: Prevent further execution if destroyed
+        }
+
+        if (fadeCanvasGroup != null)
+        {
+            fadeCanvasGroup.alpha = 0f;
+            fadeCanvasGroup.blocksRaycasts = false;
+        }
     }
 
     private void Start()
@@ -55,23 +67,75 @@ public class GameManager : MonoBehaviour
         if (dialogueRunner == null) return;
 
         // ==========================================
-        // ĐĂNG KÝ LỆNH CHO QUEST (QUEST COMMANDS)
+        // VI: ĐĂNG KÝ LỆNH CHO QUEST 
+        // EN: REGISTER QUEST COMMANDS
         // ==========================================
         dialogueRunner.AddCommandHandler<string>("set_quest", SetQuest);
         dialogueRunner.AddCommandHandler("complete_quest", CompleteQuest);
         dialogueRunner.AddCommandHandler("clear_quest", ClearQuest);
 
         // ==========================================
-        // ĐĂNG KÝ LỆNH CHO CỐT TRUYỆN (STORY COMMANDS)
+        // VI: ĐĂNG KÝ LỆNH CHO CỐT TRUYỆN 
+        // EN: REGISTER STORY COMMANDS
         // ==========================================
-        dialogueRunner.AddCommandHandler("armory_trust_zenith", ArmoryTrustZenith);
-        dialogueRunner.AddCommandHandler("armory_betray_zenith", ArmoryBetrayZenith);
-        dialogueRunner.AddCommandHandler("monitor_trust_zenith", MonitorTrustZenith);
-        dialogueRunner.AddCommandHandler("monitor_betray_zenith", MonitorBetrayZenith);
+        dialogueRunner.AddCommandHandler("choose_zenith", ChooseZenith);
+        dialogueRunner.AddCommandHandler("choose_apex", ChooseApex);
+    }
+
+
+    public void ChooseZenith()
+    {
+        Debug.Log("<color=green>[STORY]</color> Người chơi đã chọn: PHẢN BỘI ĐỂ THEO ZENITH.");
+        isTrustingZenith = true;
+    }
+
+    public void ChooseApex()
+    {
+        Debug.Log("<color=cyan>[STORY]</color> Người chơi đã chọn: TRUNG THÀNH VỚI APEX.");
+        isTrustingZenith = false;
     }
 
     // ==========================================
-    // HÀM XỬ LÝ NHIỆM VỤ (QUEST FUNCTIONS)
+    // VI: HÀM KÍCH HOẠT ENDING 
+    // EN: ENDING TRIGGER FUNCTION
+    // ==========================================
+    public void TriggerFinalEndingEvents()
+    {
+        if (isTrustingZenith)
+        {
+            Debug.Log("<color=green>[ENDING]</color> Gọi sự kiện: Theo Zenith.");
+            if (onEndingTrustZenith != null) onEndingTrustZenith.Invoke();
+        }
+        else
+        {
+            Debug.Log("<color=cyan>[ENDING]</color> Gọi sự kiện: Trung thành với Apex.");
+            if (onEndingLoyalToApex != null) onEndingLoyalToApex.Invoke();
+        }
+    }
+
+    // ==========================================
+    // VI: BƯỚC 2 - HÀM CHUYỂN SCENE ENDING 
+    // EN: STEP 2 - LOAD ENDING SCENE FUNCTION
+    // VI: (Bạn có thể tự gọi hàm này từ Animation Event, Timeline, hoặc code bên ngoài)
+    // EN: (You can manually call this from an Animation Event, Timeline, or external code)
+    // ==========================================
+    public void ExecuteEndingTransition()
+    {
+        if (isTrustingZenith)
+        {
+            Debug.Log("<color=green>[SCENE]</color> Bắt đầu chuyển sang Scene: ZenithEndingScene.");
+            ChangeSceneWithFade("ZenithEndingScene");
+        }
+        else
+        {
+            Debug.Log("<color=cyan>[SCENE]</color> Bắt đầu chuyển sang Scene: ApexEndingScene.");
+            ChangeSceneWithFade("ApexEndingScene");
+        }
+    }
+
+    // ==========================================
+    // VI: HÀM XỬ LÝ NHIỆM VỤ 
+    // EN: QUEST FUNCTIONS
     // ==========================================
     public void SetQuest(string questDescription)
     {
@@ -99,65 +163,54 @@ public class GameManager : MonoBehaviour
     }
 
     // ==========================================
-    // HÀM XỬ LÝ CỐT TRUYỆN (STORY FUNCTIONS)
+    // VI: QUẢN LÝ FADE VÀ CHUYỂN SCENE
+    // EN: FADE AND SCENE MANAGEMENT
     // ==========================================
-    private void ArmoryTrustZenith()
+    public void ChangeSceneWithFade(string targetSceneName)
     {
-        Debug.Log("<color=yellow>[STORY]</color> Armory Branch: Trust Zenith");
-        isTrustingZenith = true; // Lưu lựa chọn / Save choice
-        if (onArmoryTrustZenith != null) onArmoryTrustZenith.Invoke();
+        StartCoroutine(FadeAndLoadRoutine(targetSceneName));
     }
 
-    private void ArmoryBetrayZenith()
+    private IEnumerator FadeAndLoadRoutine(string sceneName)
     {
-        Debug.Log("<color=yellow>[STORY]</color> Armory Branch: Betray Zenith");
-        isTrustingZenith = false; // Lưu lựa chọn / Save choice
-        if (onArmoryBetrayZenith != null) onArmoryBetrayZenith.Invoke();
-    }
-
-    private void MonitorTrustZenith()
-    {
-        Debug.Log("<color=yellow>[STORY]</color> Monitor Branch: Trust Zenith");
-        isTrustingZenith = true; // Lưu lựa chọn / Save choice
-        if (onMonitorTrustZenith != null) onMonitorTrustZenith.Invoke();
-    }
-
-    private void MonitorBetrayZenith()
-    {
-        Debug.Log("<color=yellow>[STORY]</color> Monitor Branch: Betray Zenith");
-        isTrustingZenith = false; // Lưu lựa chọn / Save choice
-        if (onMonitorBetrayZenith != null) onMonitorBetrayZenith.Invoke();
-    }
-
-    // ==========================================
-    // HÀM KÍCH HOẠT ENDING TỪ MÁY BAY
-    // ENDING TRIGGER FUNCTIONS FROM HELICOPTER
-    // ==========================================
-    public void EndingGiveCore()
-    {
-        Debug.Log("<color=magenta>[ACTION]</color> Player đã chạy vào vùng sáng và NỘP LÕI!");
-        if (isTrustingZenith)
+        // VI: Kiểm tra an toàn trước khi chạy
+        // EN: Safety check before running
+        if (fadeCanvasGroup == null || string.IsNullOrEmpty(sceneName))
         {
-            Debug.Log("<color=green>=> Kết quả:</color> THEO ZENITH (Lên máy bay thoát khỏi hòn đảo).");
-            if (onEndingTrustZenith != null) onEndingTrustZenith.Invoke();
+            if (!string.IsNullOrEmpty(sceneName)) SceneManager.LoadScene(sceneName);
+            yield break;
         }
-        else
-        {
-            Debug.Log("<color=red>=> Kết quả:</color> THEO APEX (Giao nộp lõi nhưng bị tẩu tán/tiêu diệt).");
-            if (onEndingTrustApex != null) onEndingTrustApex.Invoke();
-        }
-    }
 
-    public void EndingShootHelicopter()
-    {
-        Debug.Log("<color=magenta>[ACTION]</color> Player đã BẮN RƠI máy bay Apex!");
-        if (isTrustingZenith)
+        fadeCanvasGroup.blocksRaycasts = true;
+
+        // VI: Fade In (Màn hình tối dần) / EN: Fade In (Screen gets dark)
+        float timer = 0f;
+        while (timer < fadeDuration)
         {
-            Debug.Log("<color=orange>=> Kết quả:</color> THEO ZENITH (Zenith thả quân ra, kích hoạt Escape Run).");
+            timer += Time.deltaTime;
+            fadeCanvasGroup.alpha = Mathf.Clamp01(timer / fadeDuration);
+            yield return null;
         }
-        else
+        fadeCanvasGroup.alpha = 1f;
+
+        yield return new WaitForSeconds(0.5f);
+
+        // VI: Tải cảnh mới / EN: Load new scene
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        while (!asyncLoad.isDone)
         {
-            Debug.Log("<color=orange>=> Kết quả:</color> THEO APEX (Bắn rụng mồi nhử, kẹt lại đảo tử chiến).");
+            yield return null;
         }
+
+        // VI: Fade Out (Màn hình sáng dần) / EN: Fade Out (Screen lights up)
+        timer = 0f;
+        while (timer < fadeDuration)
+        {
+            timer += Time.deltaTime;
+            fadeCanvasGroup.alpha = Mathf.Clamp01(1f - (timer / fadeDuration));
+            yield return null;
+        }
+        fadeCanvasGroup.alpha = 0f;
+        fadeCanvasGroup.blocksRaycasts = false;
     }
 }

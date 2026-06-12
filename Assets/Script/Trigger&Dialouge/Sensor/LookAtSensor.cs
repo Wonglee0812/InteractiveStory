@@ -20,9 +20,6 @@ public class LookAtSensor : MonoBehaviour
     [Tooltip("VI: Chọn Layer của tường/vật cản để cảm biến không nhìn xuyên qua.\nEN: Select the Layer for walls/obstacles so the sensor doesn't see through them.")]
     public LayerMask obstacleMask;
 
-    [Header("--- CONDITIONS (TÙY CHỌN) ---")]
-    public bool requireArmoryCleared = false;
-
     [Header("--- OUTPUT EVENTS ---")]
     public UnityEvent onLookAtTriggered;
 
@@ -44,8 +41,6 @@ public class LookAtSensor : MonoBehaviour
     {
         if (_hasTriggered && playOnce) return;
 
-        if (requireArmoryCleared && GameManager.Instance != null && !GameManager.Instance.isArmoryCleared)
-            return;
 
         // VI: Sử dụng tâm của Collider thay vì transform.position
         // EN: Use the Collider's center instead of transform.position
