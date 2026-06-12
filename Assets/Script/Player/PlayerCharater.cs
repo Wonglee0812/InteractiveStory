@@ -524,6 +524,8 @@ public class PlayerCharater : MonoBehaviour, ICharacterController
 
         // (Tùy chọn) Có đang di chuyển không
         animator.SetBool("IsMoving", motor.Velocity.sqrMagnitude > 0.1f);
+
+        animator.SetBool("isAiming", currentInputs.AimHeld);
     }
 
     public void UpdateBody(float deltaTime)

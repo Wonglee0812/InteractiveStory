@@ -14,16 +14,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GunData
   Type: 0
   gunName: Glock
-  damage: 100
+  damage: 50
   isAutomatic: 1
-  soundRadius: 50
-  ModelPrefabs: {fileID: 3692935368119522926, guid: 200a9d0baa904ac48b8d6069018b6fe9,
-    type: 3}
-  SpawnPoint: {x: 0.366, y: 1.181, z: 0.4115326}
-  SpawnRotation: {x: 0, y: 180, z: 0}
+  fireRate: 0.1
+  soundRadius: 30
   hitMask:
     serializedVersion: 2
     m_Bits: 328
-  Spread: {x: 0.03, y: 0.03, z: 0.03}
-  fireRate: 0.1
+  spread: {x: 0.01, y: 0.01, z: 0.01}
+  modelPrefab: {fileID: 6455099759014823543, guid: bd8367450f333124f9996f336fc6fbc6,
+    type: 3}
+  holdPositionOffset: {x: 0.195, y: 0.011, z: -0.109}
+  holdRotationOffset: {x: 357.19208, y: 265.54706, z: 104.740746}
+  holsterPositionOffset: {x: -0.184, y: -0.092, z: -0.206}
+  holsterRotationOffset: {x: -0.00001007149, y: 269.99997, z: -0.000009228815}
+  spawnPositionOffset: {x: -0.184, y: -0.092, z: -0.206}
+  spawnRotationOffset: {x: -0.00001007149, y: 269.99997, z: -0.000009228815}
   trailConfig: {fileID: 11400000, guid: b030cfd795fa16f4b8982e6ad07230ef, type: 2}
+  shakeData: {fileID: 11400000, guid: 1156e12570383604092fe897c1d08e7c, type: 2}

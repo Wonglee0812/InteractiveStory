@@ -41,53 +41,49 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        // [VI] Gom Input từ Unity Input System / [EN] Gather Input from Unity Input System
+        // 1. [VI] Gom Input từ Unity Input System / [EN] Gather Input from Unity Input System
         inputs.MoveInput = playerInput.actions["Move"].ReadValue<Vector2>();
         inputs.LookInput = playerInput.actions["Look"].ReadValue<Vector2>();
         inputs.JumpDown = playerInput.actions["Jump"].WasPressedThisFrame();
         inputs.JumpHeld = playerInput.actions["Jump"].IsPressed();
-        inputs.SlideDown = playerInput.actions["Crouch"].IsPressed(); // Tái sử dụng biến struct SlideDown làm phím Crouch giữ
-        inputs.SlidePressedThisFrame = playerInput.actions["Crouch"].WasPressedThisFrame(); // Tái sử dụng biến struct SlidePressedThisFrame làm phím Crouch vừa bấm
+        inputs.SlideDown = playerInput.actions["Crouch"].IsPressed();
+        inputs.SlidePressedThisFrame = playerInput.actions["Crouch"].WasPressedThisFrame();
 
-
-        // 2. [VI] Đọc Input súng đạn (Đã sửa lỗi WasPerformedThisFrame)
-        //    [EN] Read Gun Input (Fixed WasPerformedThisFrame error)
+        // 2. [VI] Đọc Input súng đạn / [EN] Read Gun Input
         bool aimInput = playerInput.actions["Aim"].IsPressed();
         bool attackDown = playerInput.actions["Attack"].WasPressedThisFrame();
         bool attackHeld = playerInput.actions["Attack"].IsPressed();
 
-        // Ép ngắm (Style TLOU)
+        // [VI] Ép ngắm (Style TLOU): Bấm bắn cũng sẽ tự động đưa súng lên ngắm
+        // [EN] Force aim (TLOU Style): Pressing fire also automatically raises the gun to aim
         inputs.AimHeld = aimInput || attackHeld;
         inputs.FirePressedThisFrame = attackDown;
 
         if (isInputLocked) { inputs = new CharacterInputs(); }
 
-        // 3. [Logic Bắn] Kiểm tra Aim mới cho bắn
-        if (inputs.AimHeld && gunController != null && weaponInventory != null)
+        // ==========================================
+        // 3. [VI] GIAO PHÓ QUYỀN BẮN CHO GUN CONTROLLER
+        //    [EN] DELEGATE FIRING AUTHORITY TO GUN CONTROLLER
+        // ==========================================
+        if (inputs.AimHeld && gunController != null && !isInputLocked)
         {
-            GunData gun = weaponInventory.CurrentWeapon;
-            if (gun != null)
-            {
-                bool wantsToShoot = gun.isAutomatic ? attackHeld : attackDown;
-                if (wantsToShoot)
-                {
-                    Debug.Log($"<color=cyan>[DEBUG]</color> Lệnh bắn được gửi từ Player. Súng: {gun.gunName}");
-                    gunController.Shoot();
-                }
-            }
+            // [VI] Chỉ truyền trạng thái nút bấm vào, Controller sẽ tự lo liệu (Auto/Semi, Cooldown...)
+            // [EN] Only pass the button states in, the Controller will handle it (Auto/Semi, Cooldown...)
+            gunController.HandleFiring(attackDown, attackHeld);
         }
 
-
+        // 4. [VI] Cập nhật vật lý và trạng thái nhân vật / [EN] Update physics and character state
         if (playerCharacter != null)
         {
             playerCharacter.UpdateBody(Time.unscaledDeltaTime);
-            playerCharacter.UpdateInput(ref inputs); // [VI] DÒNG THÊM MỚI / [EN] NEWLY ADDED LINE
-
+            playerCharacter.UpdateInput(ref inputs);
         }
+
         if (playerInput.actions["Sprint"].WasPressedThisFrame())
         {
-            inputs.SprintToggle = !inputs.SprintToggle; // Bấm 1 lần bật, bấm lần nữa tắt
+            inputs.SprintToggle = !inputs.SprintToggle;
         }
+
         if (inputs.MoveInput.sqrMagnitude == 0)
         {
             inputs.SprintToggle = false;

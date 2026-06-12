@@ -2030,6 +2030,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &857234586 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2425720943796511570, guid: 73ffbc06802a247cfb1b26f4ee67eba8,
+    type: 3}
+  m_PrefabInstance: {fileID: 1439208150}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &857386274 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 73ffbc06802a247cfb1b26f4ee67eba8,
@@ -2711,6 +2717,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1098462642 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8580684477638385493, guid: 73ffbc06802a247cfb1b26f4ee67eba8,
+    type: 3}
+  m_PrefabInstance: {fileID: 1439208150}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1133811631 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8021281246067094308, guid: b32272eac63afc545bf755a64a6e2d27,
@@ -4868,9 +4880,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3171178377590978946, guid: b32272eac63afc545bf755a64a6e2d27,
         type: 3}
+      propertyPath: gunParent
+      value: 
+      objectReference: {fileID: 857386274}
+    - target: {fileID: 3171178377590978946, guid: b32272eac63afc545bf755a64a6e2d27,
+        type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3171178377590978946, guid: b32272eac63afc545bf755a64a6e2d27,
+        type: 3}
+      propertyPath: handSocket
+      value: 
+      objectReference: {fileID: 1098462642}
+    - target: {fileID: 3171178377590978946, guid: b32272eac63afc545bf755a64a6e2d27,
+        type: 3}
+      propertyPath: holsterSocket
+      value: 
+      objectReference: {fileID: 857234586}
     - target: {fileID: 3329840837573800872, guid: b32272eac63afc545bf755a64a6e2d27,
         type: 3}
       propertyPath: m_Enabled
@@ -4889,8 +4916,19 @@ PrefabInstance:
     - target: {fileID: 4396340815157741326, guid: b32272eac63afc545bf755a64a6e2d27,
         type: 3}
       propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4396340815157741326, guid: b32272eac63afc545bf755a64a6e2d27,
+        type: 3}
+      propertyPath: currentGunIndex
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4396340815157741326, guid: b32272eac63afc545bf755a64a6e2d27,
+        type: 3}
+      propertyPath: 'availableGuns.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 0d15a192c83d29f4f933ab40a462fc76,
+        type: 2}
     - target: {fileID: 4692713037661230666, guid: b32272eac63afc545bf755a64a6e2d27,
         type: 3}
       propertyPath: airSpeed

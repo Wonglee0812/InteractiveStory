@@ -26,8 +26,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0.31182963
     - serializedVersion: 3
-      time: 1.0013428
-      value: 0.0026893616
+      time: 0.8951144
+      value: 0.00015640259
       inSlope: -0.07099398
       outSlope: -0.07099398
       tangentMode: 0
@@ -37,7 +37,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  Duration: 0.2
+  Duration: 0.1
   MinVertexDistance: 0.1
   Color:
     serializedVersion: 2
@@ -69,5 +69,5 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
-  MissDisstance: 50
-  StimlationSpeed: 100
+  MissDisstance: 100
+  StimlationSpeed: 350

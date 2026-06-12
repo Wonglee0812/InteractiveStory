@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Sniper
   m_EditorClassIdentifier: Assembly-CSharp::CameraShakeData
   shakeType: 0
-  recoilForce: {x: 0, y: 2, z: -0.5}
-  noiseIntensity: 2
+  recoilForce: {x: 0.1, y: 0.1, z: -0.5}
+  noiseIntensity: 0.03
   duration: 0.1
