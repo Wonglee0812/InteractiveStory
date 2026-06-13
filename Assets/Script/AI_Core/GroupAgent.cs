@@ -29,21 +29,29 @@ public class GroupAgent : MonoBehaviour
 
     private void ManageCombatTokens()
     {
-        Members.RemoveAll(a => a == null || a.Equals(null) || a.gameObject == null || !a.gameObject.activeInHierarchy);
+        // 1. Dọn dẹp danh sách chính trước
+        Members.RemoveAll(a => a == null || a.Equals(null) || a.gameObject == null);
         if (Members.Count == 0) return;
 
-        var combatAgents = Members.Where(a => a != null && a.Context.HasState(AIWorldState.HasTarget)).ToList();
+        // 2. Lọc danh sách chiến đấu với lớp bảo vệ (Null Check an toàn)
+        var combatAgents = Members
+            .Where(a => a != null && a.Context != null && a.Context.HasState(AIWorldState.HasTarget) && a.Context.Target != null)
+            .ToList();
+
         if (combatAgents.Count == 0) return;
 
-        // Đếm số vé đang lưu hành
+        // 3. Đếm vé
         int activeCombatTokens = combatAgents.Count(a => a.Context.HasState(AIWorldState.HasCombatToken));
 
-        // NẾU CÒN DƯ VÉ -> Phát cho đứa thèm khát nhất (Tạm tính là đứa gần nhất)
+        // 4. Phát vé cho ứng viên
         if (activeCombatTokens < MaxSimultaneousAttacks)
         {
             var candidate = combatAgents
                 .Where(a => !a.Context.HasState(AIWorldState.HasCombatToken))
-                .OrderBy(a => Vector3.Distance(a.transform.position, a.Context.Target.position))
+                // [FIX]: Thêm điều kiện an toàn khi tính khoảng cách
+                .OrderBy(a => (a.transform != null && a.Context.Target != null)
+                              ? Vector3.Distance(a.transform.position, a.Context.Target.position)
+                              : float.MaxValue)
                 .FirstOrDefault();
 
             if (candidate != null)

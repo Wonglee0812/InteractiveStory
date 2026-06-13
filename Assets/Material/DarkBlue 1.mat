@@ -43,6 +43,6 @@ Material:
     - _Metallic: 0.387
     m_Colors:
     - _BaseColor: {r: 0.047297962, g: 0.09497607, b: 0.2754717, a: 1}
-    - _Color: {r: 0.04729794, g: 0.094976045, b: 0.27547166, a: 1}
+    - _Color: {r: 0.047297962, g: 0.09497607, b: 0.2754717, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

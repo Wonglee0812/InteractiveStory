@@ -1,93 +1,55 @@
-﻿title: Armory_PlayerCC_1
-tags: 
+﻿title: PlayerArmory_01
 ---
-Player: Có một đường hầm ở đây sao? #line:0c2183e 
-Player: Đường hầm hơi nhỏ,  #line:0024ba6 
-Player: ta phải cúi-Q xuống mới qua được #line:039949f 
+Player: Đây chắc là kho vũ khí, cũng khá đông đấy chứ. #line:077f1c8 
+Player: Còn đó chắc là Mech-721 sao #line:0deecba 
+===
+title: PlayerMonitor_01
+---
+Player: Đây chắc là phòng giám sát, có vẻ khá ít lính canh gác. #line:001e951 
+Player: Còn đó chắc là Mech-721 sao #line:0ed00de 
 ===
 
-title: Armory_PlayerCC_2
-tags: 
+title: PlayerArmory_02
 ---
-Player: Hình như ở dưới góc cây bên phải có thứ gì đó,  #line:0ca562b 
-Player: là vũ khí sao? #line:0ac2256 
-Player: Có lẽ ta có thể dùng được #line:05416c1 
+Player: Có vẻ ở đây xong rồi, tiến vào trong thôi #line:0ef8205 
 ===
 
-title: Armory_PlayerCC_3
-tags: 
+title: PlayerMonitor_02
 ---
-Player: Có vẻ còn khá nhiều lính canh gác ở đây,  #line:0f348ae 
-Player: khu này có vẻ là kho vũ khí rồi #line:042dd94 
+Player: Có vẻ ở đây xong rồi, tiến vào trong thôi #line:00d7acc 
 ===
 
-title: Armory_PlayerCC_4
-tags: 
+title: PlayerArmory_03
 ---
-Player: Có vẻ còn khá nhiều lính canh gác ở đây,  #line:0403d8f 
-Player: khu này có vẻ là kho vũ khí rồi #line:0d97253 
+Player: Đây có lẽ là thông tin thiết kế của những cổ máy kia #line:04ba5f3 
+Player: Nhưng sao...., trông nó lại kỳ lạ thế này #line:0d61ec3 
+Player: Bọn chúng đã làm gì với những cổ máy này Đây #line:03752fd 
+===
+title: PlayerMonitor_03
+---
+Player: Có lẽ đây là bảng điều khiển trung tâm, #line:0f4e308 
+Player: Nhưng tại sao lại có cảnh báo vậy chứ,   #line:0b6f4d7 
+Player: Xung quanh đây có gì sao? #line:0820e3e 
 ===
 
-title: Armory_PlayerCC_5
+title: PlayerArmory_04
 tags: 
 ---
-Player: Bên trong có vẻ còn khá nhiều kẻ địch,  #line:038f3df 
-Player: vẫn nên cẩn thận chút thì hơn. #line:0870f64 
+Player: Đây...đây là gì thế này...  #line:02cc90f 
+Player: Hình như là..... não người mà, #line:0ee65ab 
+Player: chúng chúng... #line:0f56d84 
+Player: Dùng bộ não để để,...điều khiển những cổ máy này sao #line:03aaba1 
+Player: Ra vậy đó là lý do vì sao những cổ máy này lại thông minh đến vậy,  #line:0c57125 
+Player: ra là.... #line:07aeec0 
 ===
-
-title: Armory_PlayerCC_6
-tags: 
+title: PlayerMonitor_04
 ---
-Player: Đây có vẻ là kho vũ khí của chúng. #line:028b460 
-Player: Có khá nhiều thứ ta có thể dùng được đây #line:09b7396 
-Player: Hình như vẫn còn một tầng phía trên,  #line:082ff22 
-Player: lên đó xem sao #line:0963fec 
-===
-
-title: Armory_PlayerCC_7
-tags: 
----
-Player: Đây có lẽ là thông tin thiết kế của những cổ máy kia. #line:0da0dcf 
-Player: Nhưng sao...., trông nó lại kỳ lạ thế này #line:0d16c6c 
-Player: Bọn chúng đã làm gì với những cổ máy này đây #line:015797e 
-===
-
-title: Armory_PlayerCC_8
-tags: 
----
-Player: Đây...đây là gì thế này... #line:07c6488 
-Player: Hình như là..... não người mà,  #line:0f4777b 
-Player: chúng chúng... #line:08aa10f 
-Player: Dùng bộ não để điều khiển những cổ máy này sao #line:064a421 
-Player: Ra vậy đó là lý do vì sao những cổ máy này lại thông minh đến vậy,  #line:01c1106 
-Player: ra là.... #line:0f9d205 
-Player: Thật là vô đạo đức đi #line:07aea72 
-===
-
-title: Armory_PlayerCC_9
-tags: 
----
-Player: Có khá nhiều thứ ta có thể dùng được đây #line:050fc6a 
-===
-
-title: Armory_PlayerCC_10
-tags: 
----
-Player: Đây có lẽ là thông tin thiết kế của những cổ máy kia. #line:0aacf85 
-Player: Nhưng sao...., trông nó lại kỳ lạ thế này #line:0f6e33d 
-Player: Bọn chúng đã làm gì với những cổ máy này đây #line:00f6f3e 
-===
-
-title: Armory_PlayerCC_11
-tags: 
----
-Player: Đây...đây là gì thế này... #line:02daf87 
-Player: Hình như là..... não người mà,  #line:0d98c70 
-Player: chúng chúng... #line:0755ddb 
-Player: Dùng bộ não để điều khiển những cổ máy này sao #line:0434d0a 
-Player: Ra vậy đó là lý do vì sao những cổ máy này lại thông minh đến vậy,  #line:0d6af1a 
-Player: ra là.... #line:0d87bb2 
-Player: Thật là vô đạo đức đi #line:067608d 
+Player: Đây là.... #line:0979920 
+Player: Hòn đảo này đang bị đe dọa sao? #line:0f1da50 
+Player: Bởi.... Buster Call?,.... đây là gì cơ chứ.  #line:053fc2a 
+Player: Nhưng ai là người đang chuẩn bị tấn công hòn đảo này chứ.   #line:0e259f6 
+Player: Và nếu hòn đảo này thực sự bị tấn công mình cũng sẽ gặp nguy hiểm, #line:0a13b9e 
+Player: Vẫn nên nhanh chóng hoàn thành nhiệm vụ rồi rút lui thì hơn   #line:0414bca 
 ===
 
 title: Armory_00
@@ -96,6 +58,17 @@ tags:
 <<switch_camera vcam_GeneralFace>>
 Stranger: Khá khen cho ngươi khi có thể đến tận đây #line:000007e 
 Stranger: Nói chuyện chút chứ? #line:033cd0c 
+<<reset_camera>>
+===
+
+title: Monitor_00
+---
+<<switch_camera vcam_GeneralFace1>>
+Zenith General: Hahaha, rời đi sao,  #line:0026af2 
+Zenith General: ngươi nói như thể muốn đến là đến, đi là đi nhỉ #line:07c192c 
+Player: Ngươi là ai... #line:038ea88 
+Zenith General: Này này bình tĩnh, ta không có ý xấu đâu,  #line:0251d91 
+Zenith General: trò chuyện chút đi #line:07fe02a 
 <<reset_camera>>
 ===
 
@@ -263,73 +236,6 @@ Zenith General: Haha, rất tốt, ta mong ngươi sẽ đưa ra lựa chọn th
    <<choose_apex armory>>
 ===
 
-title: Armory_01
----
-Player: Ở đây chắc xong rồi,  #line:0e06464 
-Player: Nhanh chóng tiến vào trong thôi #line:0c2081f 
-===
-
-
-title: Monitor_Console_RedAlert
-tags: 
----
-Player: Có lẽ đây là bảng điều khiển trung tâm,  #line:0dcf07d 
-Player: nhưng tại sao lại có cảnh báo vậy chứ,  #line:0fbe9b1 
-Player: xung quanh đây có gì sao? #line:0fec9c0 
-===
-
-title: Monitor_Investigate_BusterCall
-tags: 
----
-Player: Đây là.... #line:0c15c63 
-
-Player: Hòn đảo này đang bị đe dọa sao? #line:0bdbd40 
-
-Player: Bởi.... Buster Call?,.... đây là gì cơ chứ. #line:0917c6f 
-
-Player: Nhưng ai là người đang chuẩn bị tấn công hòn đảo này chứ. #line:0e65e84 
-
-Player: Ngoài Apex thì rõ ràng Zenisth không hề có đối thủ cạnh tranh khác cơ mày #line:0d2c200 
-
-Player: Nhưng nếu hòn đảo này thực sự bị tấn công mình cũng sẽ gặp nguy hiểm,  #line:06e0710 
-
-Player: Vẫn nên nhanh chóng hoàn thành nhiệm vụ rồi rút lui thì hơn #line:0c98fe0 
-===
-
-title: Monitor_00
----
-<<switch_camera vcam_GeneralFace1>>
-Zenith General: Hahaha, rời đi sao,  #line:0026af2 
-Zenith General: ngươi nói như thể muốn đến là đến, đi là đi nhỉ #line:07c192c 
-Player: Ngươi là ai... #line:038ea88 
-Zenith General: Này này bình tĩnh, ta không có ý xấu đâu,  #line:0251d91 
-Zenith General: trò chuyện chút đi #line:07fe02a 
-<<reset_camera>>
-===
-
-title: Monitor_01
----
-Player: Ở đây chắc là khu vực giám sát rồi. #line:0fa3623 
-Player: Có vẻ ở đây ít lính canh gác hơn. #line:0dd0f06 
-===
-
-title: Monitor_02
----
-Player: Ở đây xem ra cũng không có quá nhiều lính canh. #line:0e3208f 
-===
-
-title: Monitor_03
----
-Player: Ở đây có khá nhiều máy móc #line:05548d8 
-Player: Biết đâu lại có những thông tin dùng được #line:0070c3e 
-===
-
-title: Monitor_04
----
-Player: Có lẻ ở đây đã xong hết rồi. #line:0258c91 
-Player: Nhanh chóng tiếp tục nhiệm vụ thôi. #line:06faf40 
-Player: Lối đi tiếp theo hình như ở tầng trên rồi. #line:0e50269 
-===
 
 title: Monitor_General_Meet
 tags: 
@@ -515,4 +421,14 @@ Zenith General: nhưng ta mong ngươi sẽ ra quyết định thật thông min
    Zenith General: Vậy thì cứ chết cho những kẻ chủ nhân thậm chí còn chả thèm nhớ tên ngươi đi! #line:0b475e9 
       <<choose_apex monitor>>
    <<reset_camera>>
+===
+
+title: Ending_00
+---
+Zenith General: Ngươi được lắm, nhưng dù thế nào đi nữa kết cục của ngươi cũng chỉ có 1 mà thôi #line:018d65f 
+===
+
+title: Ending_01
+---
+Zenith General: Mau lên, mau bắn hạ chiếc máy bay đó đi. #line:094b82d 
 ===

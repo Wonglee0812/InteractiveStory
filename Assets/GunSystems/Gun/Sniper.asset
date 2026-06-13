@@ -13,17 +13,27 @@ MonoBehaviour:
   m_Name: Sniper
   m_EditorClassIdentifier: Assembly-CSharp::GunData
   Type: 1
-  gunName: Sniper
-  damage: 1000
+  gunName: M4A1
+  damage: 100
   isAutomatic: 0
-  soundRadius: 100
-  ModelPrefabs: {fileID: 8724995162720010764, guid: bb5641185e4b28e4ebac57c02341bf8d,
-    type: 3}
-  SpawnPoint: {x: 0, y: 1.31, z: 2.5}
-  SpawnRotation: {x: 0, y: 180, z: 0}
+  fireRate: 1
+  soundRadius: 40
   hitMask:
     serializedVersion: 2
     m_Bits: 328
-  Spread: {x: 0, y: 0, z: 0}
-  fireRate: 1
+  spread: {x: 0.01, y: 0.01, z: 0.01}
+  modelPrefab: {fileID: 5695678261082846160, guid: e208e33ddaa1a974985920bcd2864c0b,
+    type: 3}
+  baseScale: {x: 100, y: 100, z: 100}
+  holdPositionOffset: {x: -116.4, y: -0.8, z: -18.4}
+  holdRotationOffset: {x: -0.000015367927, y: 89.99993, z: 269.9999}
+  holsterPositionOffset: {x: 27.7, y: 74.74823, z: -56.8}
+  holsterRotationOffset: {x: 270, y: 90.000015, z: 0}
+  spawnPositionOffset: {x: 27.7, y: 74.74823, z: -56.8}
+  spawnRotationOffset: {x: 270, y: 90.000015, z: 0}
   trailConfig: {fileID: 11400000, guid: 6bdaee1f8910b2e47a509aa01c313e38, type: 2}
+  shakeData: {fileID: 11400000, guid: 1156e12570383604092fe897c1d08e7c, type: 2}
+  recoilKickPosition: {x: 0, y: 0, z: -0.35}
+  recoilKickRotation: {x: 0, y: 0, z: 0}
+  recoilSnappiness: 2
+  recoilReturnSpeed: 30

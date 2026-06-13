@@ -9,8 +9,8 @@ public class AIWeaponPart : MonoBehaviour, IDamageable
 
     [Header("--- AI INTEGRATION ---")]
     public AIHealth mainHealth;
-    public AISkillController skillController;
-    public AISkillData assignedSkill;
+    // [VI] ĐÃ XÓA 2 biến skillController và assignedSkill
+    // [EN] DELETED the 2 variables skillController and assignedSkill
 
     [Header("--- EFFECTS ---")]
     public float tearOffForce = 15f;
@@ -19,8 +19,6 @@ public class AIWeaponPart : MonoBehaviour, IDamageable
     private void Start()
     {
         _currentHealth = maxHealth;
-        if (skillController != null && assignedSkill != null)
-            skillController.AddSkill(assignedSkill);
     }
 
     public void TakeDamage(float damage, Vector3 hitPoint, Vector3 hitNormal = default)
@@ -40,11 +38,10 @@ public class AIWeaponPart : MonoBehaviour, IDamageable
         _isBroken = true;
         if (breakVFX != null) Instantiate(breakVFX, transform.position, Quaternion.identity);
 
-        if (skillController != null && assignedSkill != null)
-            skillController.RemoveSkill(assignedSkill);
-
-        // [VI] ĐÃ XÓA LOGIC GỌI STAGGER LÊN MAIN HEALTH
-        // [EN] REMOVED STAGGER LOGIC CALL TO MAIN HEALTH
+        // [VI] Báo cho bộ não AI biết là súng đã gãy, ngừng bắn ngay lập tức
+        // [EN] Tell the AI brain that the gun is broken, stop shooting immediately
+        AIGunController gunCtrl = GetComponentInParent<AIGunController>();
+        if (gunCtrl != null) gunCtrl.AbortCombat(FluidHTN.TaskStatus.Failure);
 
         transform.SetParent(null);
         Rigidbody rb = gameObject.GetComponent<Rigidbody>();

@@ -19,7 +19,23 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 54298804224
-    m_Localized: Investigate the armory
+    m_Localized: Investigate the surrounding situation.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351940650598400
+    m_Localized: Break inside
+    m_Metadata:
+      m_Items: []
+  - m_Id: 352253692477440
+    m_Localized: Investigate the surrounding area.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 352360588509184
+    m_Localized: Continue moving inside
+    m_Metadata:
+      m_Items: []
+  - m_Id: 352482407874560
+    m_Localized: Find for core design
     m_Metadata:
       m_Items: []
   references:

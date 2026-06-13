@@ -54,31 +54,17 @@ public class AILookController : MonoBehaviour
         }
 
         // ==========================================
-        // [MỚI] GIỚI HẠN GÓC NGẮM LÊN/XUỐNG (PITCH CLAMP)
-        // [NEW] UP/DOWN AIM PITCH CLAMP
+        // [VI] ĐÃ FIX: KHÓA CHẾT TRỤC Y (CHỈ CHO XOAY YAW)
+        // [EN] FIXED: HARD LOCK Y AXIS (ONLY ALLOW YAW)
         // ==========================================
         Vector3 dirToTarget = rawTargetPos - turretBase.position;
 
-        // VI: Chuyển hướng nhìn sang Không gian cục bộ của Mech để không bị lỗi khi đứng trên dốc
-        // EN: Convert look direction to Mech's Local Space to avoid errors when standing on slopes
-        Vector3 localDir = transform.InverseTransformDirection(dirToTarget);
+        // San phẳng hướng nhìn (Loại bỏ hoàn toàn góc ngóc lên / chúi xuống)
+        // Flatten the look direction (Completely remove pitch up / pitch down)
+        dirToTarget.y = 0f;
 
-        // VI: Tính khoảng cách trên mặt phẳng ngang (X-Z)
-        // EN: Calculate distance on the horizontal plane (X-Z)
-        float flatDist = new Vector2(localDir.x, localDir.z).magnitude;
-
-        // VI: Dùng lượng giác (Tan) để tìm ra chiều cao Y tối đa/tối thiểu cho phép
-        // EN: Use trigonometry (Tan) to find the maximum/minimum allowed Y height
-        float maxY = flatDist * Mathf.Tan(maxLookUpAngle * Mathf.Deg2Rad);
-        float minY = flatDist * Mathf.Tan(maxLookDownAngle * Mathf.Deg2Rad);
-
-        // VI: Kẹp (Clamp) trục Y cục bộ lại
-        // EN: Clamp the local Y axis
-        localDir.y = Mathf.Clamp(localDir.y, minY, maxY);
-
-        // VI: Trả ngược hướng nhìn về Không gian thế giới và áp dụng
-        // EN: Convert look direction back to World Space and apply
-        dirToTarget = transform.TransformDirection(localDir);
+        // Tái tạo lại vị trí mục tiêu mới với độ cao bằng đúng gốc cổ
+        // Reconstruct the new target position with the exact height of the neck base
         rawTargetPos = turretBase.position + dirToTarget;
         // ==========================================
 

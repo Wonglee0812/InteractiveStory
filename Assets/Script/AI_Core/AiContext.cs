@@ -17,8 +17,6 @@ public class AiContext : BaseContext
     public Transform Target;
     public Vector3 SuspectedLocation;
     public Vector3 LastKnownPosition;
-    public ActiveSkill CurrentSelectedSkill { get; set; } = null;
-    public AISkillData CurrentExecutingSkill { get; set; } = null;
 
     [Header("--- PATROL SYSTEM ---")]
     public AIPatrolPath PatrolPath;

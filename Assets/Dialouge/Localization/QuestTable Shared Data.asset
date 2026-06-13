@@ -16,7 +16,23 @@ MonoBehaviour:
   m_TableCollectionNameGuidString: adaba5f0be991f74d81f6e430856178d
   m_Entries:
   - m_Id: 54298804224
-    m_Key: Quest_Armory
+    m_Key: Quest_01
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351940650598400
+    m_Key: Quest_02
+    m_Metadata:
+      m_Items: []
+  - m_Id: 352253692477440
+    m_Key: Quest_03
+    m_Metadata:
+      m_Items: []
+  - m_Id: 352360588509184
+    m_Key: Quest_04
+    m_Metadata:
+      m_Items: []
+  - m_Id: 352482407874560
+    m_Key: Quest_05
     m_Metadata:
       m_Items: []
   m_Metadata:

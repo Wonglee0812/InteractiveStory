@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: RadarTable_en
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 89dd67fbf5e964441bea496aa57dc507, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 332590874624
+    m_Localized: Alpha-01, can you hear me?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 729908903936
+    m_Localized: The warehouse area has been sealed off, and a Mech-721 has also
+      appeared
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1002580606976
+    m_Localized: The top priority is to obtain the core technology blueprint and
+      withdraw
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1223628816384
+    m_Localized: End!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6047455903744
+    m_Localized: Alpha-01, can you hear me?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6171083014144
+    m_Localized: This version sometimes loses signal.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6275563126784
+    m_Localized: If there's nothing else, quickly find the blueprint.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6415283781632
+    m_Localized: A helicopter was already waiting outside.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6538009116672
+    m_Localized: End!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 133840822992896
+    m_Localized: Alpha-01, this is the route to the surveillance area
+    m_Metadata:
+      m_Items: []
+  - m_Id: 134020079157248
+    m_Localized: There were fewer guards in this area, so it was relatively safe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 134226220810240
+    m_Localized: But the top priority is still to obtain the core technology blueprint
+      and withdraw
+    m_Metadata:
+      m_Items: []
+  - m_Id: 134353320804352
+    m_Localized: End!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 141322857349120
+    m_Localized: Hurry up, quickly grab the redesigned aircraft blueprints and retreat!
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

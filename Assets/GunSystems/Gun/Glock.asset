@@ -24,7 +24,8 @@ MonoBehaviour:
   spread: {x: 0.01, y: 0.01, z: 0.01}
   modelPrefab: {fileID: 6455099759014823543, guid: bd8367450f333124f9996f336fc6fbc6,
     type: 3}
-  holdPositionOffset: {x: 0.195, y: 0.011, z: -0.109}
+  baseScale: {x: 1, y: 1, z: 1}
+  holdPositionOffset: {x: 0.195, y: -0.03, z: -0.109}
   holdRotationOffset: {x: 357.19208, y: 265.54706, z: 104.740746}
   holsterPositionOffset: {x: -0.184, y: -0.092, z: -0.206}
   holsterRotationOffset: {x: -0.00001007149, y: 269.99997, z: -0.000009228815}
@@ -32,3 +33,7 @@ MonoBehaviour:
   spawnRotationOffset: {x: -0.00001007149, y: 269.99997, z: -0.000009228815}
   trailConfig: {fileID: 11400000, guid: b030cfd795fa16f4b8982e6ad07230ef, type: 2}
   shakeData: {fileID: 11400000, guid: 1156e12570383604092fe897c1d08e7c, type: 2}
+  recoilKickPosition: {x: 0, y: 0, z: -0.15}
+  recoilKickRotation: {x: 0, y: 0, z: 0}
+  recoilSnappiness: 1
+  recoilReturnSpeed: 30

@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: RadarTable_vi
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: vi
+  m_SharedData: {fileID: 11400000, guid: 89dd67fbf5e964441bea496aa57dc507, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 332590874624
+    m_Localized: "Alpha-01, nghe r\xF5 kh\xF4ng?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 729908903936
+    m_Localized: "Khu v\u1EF1c kho v\u0169 kh\xED hi\u1EC7n \u0111\u01B0\u1EE3c canh
+      g\xE1c, c\xF2n xu\u1EA5t hi\u1EC7n Mech-721 n\u1EEFa"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1002580606976
+    m_Localized: "Nhi\u1EC7m v\u1EE5 \u01B0u ti\xEAn nh\u1EA5t l\xE0 l\u1EA5y \u0111\u01B0\u1EE3c
+      b\u1EA3n b\u1EA3n thi\u1EBFt k\u1EBF c\xF4ng ngh\u1EC7 l\xF5i v\xE0 r\xFAt
+      lui"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1223628816384
+    m_Localized: "H\u1EBFt!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6047455903744
+    m_Localized: "Alpha-01 nghe r\xF5 ch\u1EE9?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6171083014144
+    m_Localized: "Ban n\xE3y \u0111\u1ED9t nhi\xEAn l\u1EA1i m\u1EA5t t\xEDn hi\u1EC7u"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6275563126784
+    m_Localized: "N\u1EBFu kh\xF4ng c\xF3 g\xEC th\xEC nhanh ch\xF3ng t\xECm ra b\u1EA3n
+      thi\u1EBFt k\u1EBF \u0111i"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6415283781632
+    m_Localized: "\u0110\xE3 c\xF3 tr\u1EF1c th\u0103ng \u0111\u1EE3i s\u1EB5n b\xEAn
+      ngo\xE0i r\u1ED3i"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6538009116672
+    m_Localized: "H\u1EBFt!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 133840822992896
+    m_Localized: "Alpha-01, \u0111\xE2y l\xE0 h\u01B0\u1EDBng \u0111i \u0111\u1EBFn
+      khu gi\xE1m s\xE1t"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 134020079157248
+    m_Localized: "\u1EDE h\u01B0\u1EDBng n\xE0y th\xEC l\xEDnh canh ph\xF2ng \u0111\xE3
+      \xEDt h\u01A1n n\xEAn kh\xE1 an to\xE0n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 134226220810240
+    m_Localized: "Nh\u01B0ng m\u1EE5c ti\xEAu cu\u1ED1i c\xF9ng v\u1EABn l\xE0 t\xECm
+      ki\u1EBFm b\u1EA3n thi\u1EBFt k\u1EBF l\xF5i v\xE0 r\xFAt lui"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 134353320804352
+    m_Localized: "H\u1EBFt!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 141322857349120
+    m_Localized: "Nhanh l\xEAn, mau ch\xF3ng mang b\u1EA3n thi\u1EBFt k\u1EBF l\u1EA1i
+      m\xE1y bay r\u1ED3i r\xFAt lui \u0111i!"
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

@@ -387,33 +387,35 @@ public class CircleTargetOperator : IOperator
 // ==========================================================
 public class UtilityCombatOperator : IOperator
 {
-    private AISkillController _skillController;
+    // [VI] ĐỔI THÀNH AIGunController
+    // [EN] CHANGED TO AIGunController
+    private AIGunController _gunController;
 
     public TaskStatus Start(IContext ctx)
     {
         AiContext context = (AiContext)ctx;
         if (context.Target == null) return TaskStatus.Failure;
 
-        _skillController = context.Agent.GetComponent<AISkillController>();
-        if (_skillController == null) return TaskStatus.Failure;
+        _gunController = context.Agent.GetComponent<AIGunController>();
+        if (_gunController == null) return TaskStatus.Failure;
 
-        // Ra lệnh cho Controller thực thi chiêu tốt nhất
-        _skillController.StartBestSkill(context.Target);
+        // [VI] Gọi hàm xả đạn của hệ thống súng mới
+        // [EN] Call the firing function of the new gun system
+        _gunController.StartCombatSequence(context.Target);
 
-        // Đọc trạng thái (Nếu StartBestSkill trả về Failure ngay lập tức vì kẹt FOV/hết đạn)
-        return _skillController.CurrentSkillStatus;
+        return _gunController.CurrentCombatStatus;
     }
 
     public TaskStatus Update(IContext ctx)
     {
-        // HTN chỉ ngồi chơi xơi nước và lắng nghe Controller báo cáo
-        return _skillController.CurrentSkillStatus;
+        // HTN chỉ ngồi chờ súng xả đạn xong / HTN just waits for the gun to finish firing
+        return _gunController.CurrentCombatStatus;
     }
 
     public void Stop(IContext ctx)
     {
-        // Bị ngắt ngang (Do Stagger) -> Ép Controller dọn dẹp
-        if (_skillController != null) _skillController.AbortExecution(TaskStatus.Failure);
+        // Bị ngắt ngang -> Ép Controller ngừng bắn / Interrupted -> Force Controller to stop firing
+        if (_gunController != null) _gunController.AbortCombat(TaskStatus.Failure);
     }
 
     public void Abort(IContext ctx) => Stop(ctx);

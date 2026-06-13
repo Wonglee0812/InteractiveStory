@@ -114,29 +114,24 @@ public class AIHealth : MonoBehaviour, IDamageable
         }
     }
 
-    // ==========================================
-    // [VI] PHẢN XẠ NHẬN DIỆN KẺ ĐỊCH KHI BỊ BẮN LÉN
-    // [EN] ENEMY DETECTION REFLEX WHEN SHOT IN BACK
-    // ==========================================
     private void HandleHitReaction(Vector3 hitPoint, Vector3 hitNormal)
     {
         if (_agent != null && _agent.Context != null && !_isDead)
         {
-            // Nếu chưa thấy Player, nó sẽ tính toán vị trí dựa trên hướng đạn dội lại
             if (!_agent.Context.HasState(AIWorldState.HasTarget))
             {
-                // Vector hướng đạn tới (hitNormal là hướng nảy ra, nên ta lấy chính hitNormal)
-                Vector3 suspectDir = hitNormal != Vector3.zero ? hitNormal : Random.onUnitSphere;
-                suspectDir.y = 0; // Đừng ngó lên trời
+                // [VI] TÌM NGAY LẬP TỨC PLAYER VÀ ĐƯA VÀO TRẠNG THÁI CHIẾN ĐẤU (COMBAT)
+                // [EN] INSTANTLY FIND PLAYER AND ENTER COMBAT STATE
+                Transform playerTransform = GameObject.FindGameObjectWithTag("Player")?.transform;
 
-                // Suy đoán vị trí kẻ địch cách đó 15m
-                Vector3 suspectPos = hitPoint + (suspectDir.normalized * 15f);
-
-                _agent.Context.SuspectedLocation = suspectPos;
-                _agent.Context.SetState(AIWorldState.HasSuspectedLocation, true, EffectType.PlanAndExecute);
-
-                if (_agent.Context.Group != null)
-                    _agent.Context.Group.BroadcastPlayerLocation(suspectPos);
+                if (playerTransform != null)
+                {
+                    VisionSensor vs = GetComponent<VisionSensor>();
+                    if (vs != null)
+                    {
+                        vs.ForceDetectPlayer(playerTransform);
+                    }
+                }
             }
         }
     }
@@ -148,32 +143,50 @@ public class AIHealth : MonoBehaviour, IDamageable
     {
         if (_isDead) return;
         _isDead = true;
-        AISkillController skillCtrl = GetComponent<AISkillController>();
-        if (skillCtrl != null) skillCtrl.AbortExecution(FluidHTN.TaskStatus.Failure);
+
+        // 1. NGỪNG BẮN SÚNG / STOP SHOOTING
+        AIGunController gunCtrl = GetComponent<AIGunController>();
+        if (gunCtrl != null) gunCtrl.AbortCombat(FluidHTN.TaskStatus.Failure);
+
+        // 2. ẨN GIAO DIỆN & VẬT LÝ / HIDE UI & PHYSICS
         if (healthBarCanvas != null) healthBarCanvas.gameObject.SetActive(false);
         if (_agent.NavAgent != null) _agent.NavAgent.enabled = false;
 
         Collider mainCollider = GetComponent<Collider>();
         if (mainCollider != null) mainCollider.enabled = false;
 
+        // 3. XỬ LÝ ANIMATION NGÃ CHẾT / HANDLE DEATH ANIMATION
         AIRagdollController ragdoll = GetComponent<AIRagdollController>();
-        if (ragdoll != null) ragdoll.EnableRagdoll();
+        if (ragdoll != null)
+        {
+            ragdoll.EnableRagdoll();
+        }
         else
         {
-            Animator anim = GetComponentInChildren<Animator>();
-            if (anim != null) anim.enabled = false;
+            Animator anim = GetComponent<Animator>();
+            if (anim != null)
+            {
+                // [VI] Kích hoạt hoạt ảnh gục ngã thay vì tắt Animator
+                // [EN] Trigger the falling animation instead of turning off the Animator
+                anim.SetTrigger("isDie");
+            }
         }
 
+        // 4. TẮT CÁC SCRIPT ĐỂ TỐI ƯU / DISABLE SCRIPTS FOR OPTIMIZATION
         MonoBehaviour[] allScripts = GetComponents<MonoBehaviour>();
         foreach (MonoBehaviour script in allScripts)
         {
-            if (script != this && script.GetType() != typeof(AIRagdollController))
+            // [VI] Bỏ qua AIAnimatorBridge để nó không làm gián đoạn animation chết
+            // [EN] Skip AIAnimatorBridge so it doesn't interrupt the death animation
+            if (script != this &&
+                script.GetType() != typeof(AIRagdollController) &&
+                script.GetType() != typeof(AIAnimatorBridge))
             {
                 script.enabled = false;
             }
         }
 
         this.enabled = false;
-        Destroy(gameObject, 10f);
+        Destroy(gameObject, 10f); // Xóa sạch xác sau 10 giây / Clean up corpse after 10 seconds
     }
 }

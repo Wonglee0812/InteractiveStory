@@ -19,7 +19,23 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 54298804224
-    m_Localized: "\u0110i\u1EC1u tra kho v\u0169 kh\xED"
+    m_Localized: "Th\u0103m d\xF2 t\xECnh h\xECnh xung quanh"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351940650598400
+    m_Localized: "\u0110\u1ED9t nh\u1EADp v\xE0o trong"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 352253692477440
+    m_Localized: "\u0110i\u1EC1u tra xung quanh"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 352360588509184
+    m_Localized: "Ti\u1EBFp t\u1EE5c ti\u1EBFn v\xE0o trong"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 352482407874560
+    m_Localized: "T\xECm ki\u1EBFm b\u1EA3n thi\u1EBFt k\u1EBF l\xF5i"
     m_Metadata:
       m_Items: []
   references:

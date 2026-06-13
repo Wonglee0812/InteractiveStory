@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1934426250279298227}
   - component: {fileID: 825697550380450326}
   - component: {fileID: 5180332157303139285}
-  - component: {fileID: 8468572413502265526}
+  - component: {fileID: 1298331918291224702}
   m_Layer: 8
   m_Name: WallHor
   m_TagString: Untagged
@@ -370,24 +370,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8efa5d9fec4dc740a3d634e25bc552f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DestructionBuild
-  maxHealth: 10000
+  maxHealth: 1000
   fracturedPrefab: {fileID: 886731318526125536, guid: a8158446c7b32f84aa823d421b00648c,
     type: 3}
   cleanupTime: Infinity
   breakForce: 25
---- !u!208 &8468572413502265526
-NavMeshObstacle:
+--- !u!114 &1298331918291224702
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3401222793221186545}
   m_Enabled: 1
-  serializedVersion: 3
-  m_Shape: 1
-  m_Extents: {x: 2.5, y: 2.5, z: 0.5}
-  m_MoveThreshold: 0.1
-  m_Carve: 0
-  m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 0, z: 0}
-  m_TimeToStationary: 0.5
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
+  m_SerializedVersion: 0
+  m_OverrideArea: 1
+  m_Area: 1
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 0
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff

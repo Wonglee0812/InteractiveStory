@@ -8,6 +8,8 @@ public class DialogueExecutor : MonoBehaviour
 {
     [Header("--- YARN SPINNER ---")]
     public DialogueRunner dialogueRunner;
+    [Tooltip("VI: Dành riêng cho Độc thoại tự động lướt / EN: Specifically for auto-advancing Monologues")]
+    public DialogueRunner monologueRunner;
 
     [Header("--- RADAR 3D DIALOGUE (CUSTOM) ---")]
     [Tooltip("Kéo Canvas của UI Radar vào đây / Drag the Radar Canvas here")]
@@ -49,7 +51,16 @@ public class DialogueExecutor : MonoBehaviour
             dialogueRunner.StartDialogue(nodeName);
         }
     }
-
+    public void PlayMonologueNode(string nodeName)
+    {
+        // [VI] Kiểm tra Runner mới xem có đang trống không
+        // [EN] Check if the new Runner is idle
+        if (monologueRunner != null && !monologueRunner.IsDialogueRunning)
+        {
+            Debug.Log($"<color=cyan>[EXECUTOR]</color> Đang chạy Độc thoại Yarn: {nodeName}");
+            monologueRunner.StartDialogue(nodeName);
+        }
+    }
     public void PlayRadarDialogue(DialogueData3D dialogueData)
     {
         if (_isRadarPlaying || dialogueData == null) return;

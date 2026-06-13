@@ -526,6 +526,8 @@ public class PlayerCharater : MonoBehaviour, ICharacterController
         animator.SetBool("IsMoving", motor.Velocity.sqrMagnitude > 0.1f);
 
         animator.SetBool("isAiming", currentInputs.AimHeld);
+
+        animator.SetBool("isWeaponDrawn", currentInputs.WeaponDrawn);
     }
 
     public void UpdateBody(float deltaTime)
@@ -558,6 +560,14 @@ public class PlayerCharater : MonoBehaviour, ICharacterController
         if (currentInputs.SlidePressedThisFrame && !motor.GroundingStatus.IsStableOnGround)
         {
             _slideRequestedInAir = true;
+        }
+    }
+
+    public void SetShootingAnimation(bool isShooting)
+    {
+        if (animator != null)
+        {
+            animator.SetBool("isShooting", isShooting);
         }
     }
     public Transform GetCameraTarget() => cameraTarget;

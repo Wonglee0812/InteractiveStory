@@ -11,8 +11,8 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] private CinemachineCamera vCam;
     [Space]
     [Header("Post Processing")]
-    [SerializeField] private Volume inventoryBlurVolume; // [VI] Kéo cái Inventory Volume có Priority=1 vào đây / [EN] Drag the Inventory Volume with Priority=1 here
     [SerializeField] private float blurFadeDuration = 0.25f; // [VI] Thời gian mờ dần / [EN] Fade duration
+    [SerializeField] private Volume aimVolume;
     [Header("Look Settings")]
     public float lookSensitivity = 0.5f;
     public float minPitch = -85f;
@@ -36,9 +36,7 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] private Vector3 normalShoulder = new Vector3(1.5f, 0.5f, 0f);
     [SerializeField] private Vector3 aimShoulder = new Vector3(1f, 0.5f, 0f); // [VI] Đưa tâm về giữa / [EN] Center the crosshair
     [SerializeField] private Vector3 slideShoulder = new Vector3(1.5f, 1.2f, 0f); // [VI] Nhấc cao lên để khỏi đụng đất / [EN] Lift high to avoid ground
-    [Header("Crosshair UI")]
-    [SerializeField] private CanvasGroup crosshairCanvasGroup; // [VI] Dùng CanvasGroup để làm mờ mượt mà / [EN] Use CanvasGroup for smooth fading
-    [SerializeField] private float crosshairFadeDuration = 0.15f;
+
     private CinemachineThirdPersonFollow _tpFollow;
     private float currentPitch;
     private float currentYaw;
@@ -127,44 +125,14 @@ public class PlayerCamera : MonoBehaviour
             _tpFollow.CameraDistance = Mathf.Lerp(_tpFollow.CameraDistance, targetDistance, fovChangeSpeed * deltaTime);
             _tpFollow.ShoulderOffset = Vector3.Lerp(_tpFollow.ShoulderOffset, targetShoulder, fovChangeSpeed * deltaTime);
         }
-    }
-    public void ToggleFocusBlur(bool isInventoryOpen)
-    {
-        if (inventoryBlurVolume == null) return;
 
-        // [VI] Hủy các animation đang chạy lở dở để tránh lỗi giật hình
-        // [EN] Kill unfinished animations to avoid jittering
-        DOTween.Kill(inventoryBlurVolume);
-
-        // [VI] Nếu mở: Đích đến là 1 (Mờ tịt). Nếu đóng: Đích đến là 0 (Rõ nét)
-        // [EN] If open: Target is 1 (Heavy blur). If closed: Target is 0 (Sharp)
-        float targetWeight = isInventoryOpen ? 1f : 0f;
-
-        // [VI] Dùng DOTween để tween thuộc tính 'weight'
-        // [EN] Use DOTween to tween the 'weight' property
-        DOTween.To(() => inventoryBlurVolume.weight, x => inventoryBlurVolume.weight = x, targetWeight, blurFadeDuration)
-            .SetEase(Ease.InOutSine)
-            .SetUpdate(true); // [VI] LƯU Ý QUAN TRỌNG: Phải có SetUpdate(true) vì lúc này game đang bị Slow Motion
-                              // [EN] CRITICAL NOTE: Must have SetUpdate(true) because the game is in Slow Motion right now
-    }
-    public void UpdateCrosshair(bool isAiming)
-    {
-        if (crosshairCanvasGroup == null) return;
-
-        // [VI] Hủy các animation cũ để tránh xung đột
-        // [EN] Kill old animations to avoid conflicts
-        crosshairCanvasGroup.DOKill();
-
-        float targetAlpha = isAiming ? 1f : 0f;
-        Vector3 targetScale = isAiming ? Vector3.one : Vector3.one * 0.5f;
-
-        // [VI] Làm mờ dần (Fade)
-        // [EN] Fade in/out
-        crosshairCanvasGroup.DOFade(targetAlpha, crosshairFadeDuration).SetUpdate(true);
-
-        // [VI] Hiệu ứng nảy nhẹ khi hiện ra (Scale)
-        // [EN] Slight bounce effect when appearing (Scale)
-        crosshairCanvasGroup.transform.DOScale(targetScale, crosshairFadeDuration).SetUpdate(true);
+        if (aimVolume != null)
+        {
+            // [VI] Nếu đang ngắm -> Đẩy Weight lên 1. Ngược lại -> Trả về 0
+            // [EN] If aiming -> Push Weight to 1. Otherwise -> Return to 0
+            float targetAimWeight = isAiming ? 1f : 0f;
+            aimVolume.weight = Mathf.Lerp(aimVolume.weight, targetAimWeight, fovChangeSpeed * deltaTime);
+        }
     }
 }
 

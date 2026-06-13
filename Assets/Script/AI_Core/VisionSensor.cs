@@ -126,4 +126,36 @@ public class VisionSensor : MonoBehaviour
         }
         return false;
     }
+
+    public void ForceDetectPlayer(Transform playerTarget)
+    {
+        if (playerTarget == null) return;
+
+        _detectionLevel = 1f;
+        _agent.Context.SetTarget(playerTarget);
+
+        if (_agent.Context.Group != null)
+        {
+            _agent.Context.Group.BroadcastPlayerLocation(playerTarget.position);
+        }
+    }
+
+    // [VI] Kiểm tra xem mục tiêu có đang nằm trong tầm mắt không (Dùng cho Combat)
+    // [EN] Check if target is currently in line of sight (Used for Combat)
+    public bool IsTargetVisible(Transform target)
+    {
+        if (target == null) return false;
+
+        Vector3 dirToTarget = (target.position - eyeSource.position).normalized;
+
+        // 1. Kiểm tra góc FOV / Check FOV Angle
+        if (Vector3.Dot(eyeSource.forward, dirToTarget) < Mathf.Cos(viewAngle * 0.5f * Mathf.Deg2Rad))
+            return false;
+
+        // 2. Kiểm tra vật cản (Tường) / Check for obstacles (Walls)
+        if (Physics.Linecast(eyeSource.position, target.position + Vector3.up * 1.0f, obstacleLayerMask))
+            return false;
+
+        return true;
+    }
 }
