@@ -143,7 +143,7 @@ public class AIHealth : MonoBehaviour, IDamageable
     {
         if (_isDead) return;
         _isDead = true;
-
+        GetComponent<TargetBracket>()?.OnTargetDeath();
         // 1. NGỪNG BẮN SÚNG / STOP SHOOTING
         AIGunController gunCtrl = GetComponent<AIGunController>();
         if (gunCtrl != null) gunCtrl.AbortCombat(FluidHTN.TaskStatus.Failure);

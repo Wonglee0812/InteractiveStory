@@ -669,6 +669,7 @@ GameObject:
   - component: {fileID: 2622160976697004299}
   - component: {fileID: 5768659915679575584}
   - component: {fileID: 561014197933316568}
+  - component: {fileID: 6619561589577001924}
   m_Layer: 6
   m_Name: Agent
   m_TagString: Enemy
@@ -868,7 +869,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   groundLayer:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 264
   bodyMesh: {fileID: 4500551023785346725}
   moveBobSpeed: 15
   moveBobAmount: 0.15
@@ -1004,6 +1005,23 @@ MonoBehaviour:
   mechMuzzleFlash: {fileID: 8962228523588630901}
   burstDuration: 15
   recoveryTime: 1.5
+--- !u!114 &6619561589577001924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2491391812287757171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7916c3e431c6eb9458c7c36fb7dd338c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TargetBracket
+  bracketPrefab: {fileID: 8623101845653254113, guid: 0cbf6e1985e94094084ee45152aa5a2c,
+    type: 3}
+  targetOffset: {x: 0, y: 1.2, z: 0}
+  maxTrackingDistance: 60
+  lockRadius: 300
 --- !u!1 &2502629700293487715
 GameObject:
   m_ObjectHideFlags: 0

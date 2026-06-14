@@ -237,6 +237,19 @@ public class GunController : MonoBehaviour
                 SurfaceManager.Instance.PlayImpact(hit.point, hit.normal, hit.collider.tag); //
             }
 
+
+            if (DynamicCrosshair.Instance != null)
+            {
+                if (hit.collider.CompareTag("Head"))
+                {
+                    DynamicCrosshair.Instance.ShowHitMarker(true);  // Headshot X Mark
+                }
+                else if (hit.collider.CompareTag("Body") || hit.collider.CompareTag("Enemy"))
+                {
+                    DynamicCrosshair.Instance.ShowHitMarker(false); // Normal X Mark
+                }
+            }
+
             // Gọi Coroutine di chuyển vệt đạn từ Pool đến điểm trúng
             // Call Coroutine to move trail renderer to impact point
             StartCoroutine(PlayTrailRoutine(startPoint, hit.point, hit)); //

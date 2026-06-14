@@ -21,7 +21,7 @@ MonoBehaviour:
   hitMask:
     serializedVersion: 2
     m_Bits: 328
-  spread: {x: 0.01, y: 0.01, z: 0.01}
+  spread: {x: 0, y: 0, z: 0}
   modelPrefab: {fileID: 5695678261082846160, guid: e208e33ddaa1a974985920bcd2864c0b,
     type: 3}
   baseScale: {x: 100, y: 100, z: 100}

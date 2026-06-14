@@ -5,19 +5,13 @@ TagManager:
   serializedVersion: 3
   tags:
   - Wall
-  - Metal
-  - Blood
   - Dirt
-  - Concrete
-  - ExplosiveBarrel
   - Target
-  - GasTank
-  - Metal (Static)
-  - Wood (Static)
-  - Dirt (Static)
   - Wood
   - StealthGrass
   - Enemy
+  - Head
+  - Body
   layers:
   - Default
   - TransparentFX

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 [RequireComponent(typeof(CanvasGroup))]
 public class DynamicCrosshair : MonoBehaviour
@@ -21,6 +22,17 @@ public class DynamicCrosshair : MonoBehaviour
     public float spreadReturnSpeed = 8f;
     public float fadeSpeed = 15f;
 
+    [Header("--- HIT MARKER SETTINGS ---")]
+    [Tooltip("VI: Kéo object CrosshairHit_Parent vào đây\nEN: Drag the CrosshairHit_Parent object here")]
+    public CanvasGroup hitMarkerGroup;
+    public Color normalHitColor = Color.white;
+    public Color headshotColor = Color.red;
+    //public AudioClip hitSound; // [VI] Tiếng trúng thân / [EN] Body hit sound
+    //public AudioClip headshotSound; // [VI] Tiếng Ping headshot / [EN] Headshot Ping sound
+
+    //private AudioSource _audioSource;
+    private Image[] _hitMarkerLines; // [VI] Bộ nhớ chứa 4 line con / [EN] Cache for the 4 child lines
+
     private float _currentSpread;
     private bool _isAiming;
 
@@ -34,6 +46,12 @@ public class DynamicCrosshair : MonoBehaviour
         _canvasGroup = GetComponent<CanvasGroup>();
         _canvasGroup.alpha = 0f;
         _currentSpread = baseAimSpread;
+
+        if (hitMarkerGroup != null)
+        {
+            hitMarkerGroup.alpha = 0f;
+            _hitMarkerLines = hitMarkerGroup.GetComponentsInChildren<Image>();
+        }
     }
 
     private void Update()
@@ -69,5 +87,43 @@ public class DynamicCrosshair : MonoBehaviour
         {
             _currentSpread = Mathf.Min(_currentSpread + fireSpreadKick, maxSpread);
         }
+    }
+    public void ShowHitMarker(bool isHeadshot)
+    {
+        if (hitMarkerGroup == null) return;
+
+        // 1. Cấu hình màu sắc cho toàn bộ 4 vạch Line bên trong
+        // 1. Configure colors for all 4 internal Lines
+        Color targetColor = isHeadshot ? headshotColor : normalHitColor;
+        if (_hitMarkerLines != null)
+        {
+            foreach (var line in _hitMarkerLines)
+            {
+                line.color = targetColor;
+            }
+        }
+
+        // 2. Phát âm thanh
+        // 2. Play Audio
+        //if (_audioSource != null)
+        //{
+        //    AudioClip clipToPlay = isHeadshot ? headshotSound : hitSound;
+        //    if (clipToPlay != null) _audioSource.PlayOneShot(clipToPlay);
+        //}
+
+        // 3. Chặn các hiệu ứng cũ đang chạy dở
+        // 3. Kill ongoing effects
+        DOTween.Kill(hitMarkerGroup.transform);
+        DOTween.Kill(hitMarkerGroup);
+
+        // 4. Phóng đại kích thước Parent lên nếu là Headshot
+        // 4. Scale up the Parent if it's a Headshot
+        hitMarkerGroup.transform.localScale = Vector3.one * (isHeadshot ? 1.5f : 1.0f);
+
+        // 5. Chuỗi Tween: Hiện tức thì -> Giật nảy Parent -> Mờ dần về 0
+        // 5. Tween Sequence: Instant fade-in -> Punch Parent -> Fade out to 0
+        hitMarkerGroup.DOFade(1f, 0f);
+        hitMarkerGroup.transform.DOPunchScale(Vector3.one * 0.3f, 0.2f, 10, 1f);
+        hitMarkerGroup.DOFade(0f, 0.3f).SetDelay(0.1f);
     }
 }
